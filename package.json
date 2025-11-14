@@ -1,8 +1,24 @@
 {
-  "name": "ksef-pdf-generator",
-  "version": "0.0.26",
+  "name": "@akmf/ksef-fe-invoice-converter",
+  "version": "0.0.30",
   "scripts": {
-    "start": "vite ./src/app"
+    "dev": "vite --mode public --config vite.config.ts",
+    "build": "vite build --mode production",
+    "type": "tsc -p src/app-public/tsconfig.json --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:ci": "vitest run --coverage"
+  },
+  "main": "./ksef-fe-invoice-converter.umd.js",
+  "module": "./ksef-fe-invoice-converter.es.js",
+  "types": "./src/lib/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/lib/index.d.ts",
+      "import": "./ksef-fe-invoice-converter.es.js",
+      "require": "./ksef-fe-invoice-converter.umd.js"
+    }
   },
   "keywords": [],
   "author": "",
