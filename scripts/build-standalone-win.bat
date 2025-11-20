@@ -136,10 +136,65 @@ echo ========================================
 echo.
 echo Standalone executable created: bin\ksef-pdf-generator.exe
 echo.
+
+REM Get file size
+for %%A in ("bin\ksef-pdf-generator.exe") do set SIZE=%%~zA
+set /a SIZE_MB=!SIZE! / 1048576
+echo File size: !SIZE_MB! MB (!SIZE! bytes)
+echo.
+
 echo This executable includes:
 echo   - Node.js runtime (v%NODE_VERSION%)
 echo   - All dependencies bundled
 echo   - Your application code
+echo.
+
+REM Check if UPX is available
+where upx >nul 2>nul
+if %ERRORLEVEL% equ 0 (
+    echo.
+    echo ========================================
+    echo UPX detected - Would you like to compress?
+    echo ========================================
+    echo.
+    echo UPX can reduce the file size by 50-70%% (e.g., 90MB to 30-40MB)
+    echo First launch will be slightly slower due to decompression.
+    echo.
+    choice /C YN /M "Compress with UPX"
+    if !ERRORLEVEL! equ 1 (
+        echo.
+        echo Compressing with UPX...
+        upx --best --lzma bin\ksef-pdf-generator.exe
+        if !ERRORLEVEL! equ 0 (
+            echo.
+            echo Compression successful!
+            for %%A in ("bin\ksef-pdf-generator.exe") do set NEW_SIZE=%%~zA
+            set /a NEW_SIZE_MB=!NEW_SIZE! / 1048576
+            set /a SAVED=!SIZE! - !NEW_SIZE!
+            set /a SAVED_MB=!SAVED! / 1048576
+            echo New size: !NEW_SIZE_MB! MB (!NEW_SIZE! bytes)
+            echo Saved: !SAVED_MB! MB (!SAVED! bytes)
+        ) else (
+            echo WARNING: Compression failed, but executable is still usable.
+        )
+    )
+) else (
+    echo.
+    echo ========================================
+    echo TIP: Reduce file size by 50-70%%
+    echo ========================================
+    echo.
+    echo Install UPX to compress the executable:
+    echo   winget install upx.upx
+    echo   OR
+    echo   scoop install upx
+    echo   OR
+    echo   Download from: https://upx.github.io/
+    echo.
+    echo Then run: scripts\compress-exe.bat
+    echo.
+)
+
 echo.
 echo You can now copy bin\ksef-pdf-generator.exe to any Windows machine
 echo without requiring Node.js installation!

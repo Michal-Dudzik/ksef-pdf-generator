@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "npm run bundle && npm run copy-worker",
-    "bundle": "esbuild src/cli/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/cli.cjs --external:fsevents",
+    "bundle": "esbuild src/cli/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/cli.cjs --external:fsevents --minify --tree-shaking=true --keep-names",
     "copy-worker": "node -e \"require('fs').copyFileSync('node_modules/jsdom/lib/jsdom/living/xhr/xhr-sync-worker.js', 'dist/xhr-sync-worker.js')\"",
     "cli": "node dist/cli.cjs",
     "setup": "npm install && npm run build",
@@ -18,7 +18,8 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:integration": "node tests/run-all.mjs"
+    "test:integration": "node tests/run-all.mjs",
+    "analyze-bundle": "node scripts/analyze-bundle.mjs"
   },
   "keywords": [
     "ksef",

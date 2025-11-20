@@ -8,6 +8,7 @@
 - [Source Code Structure](#source-code-structure)
 - [Development](#development)
 - [Building Standalone Executables](#building-standalone-executables)
+- [Size Optimization](#size-optimization)
 - [Backend Integration](#backend-integration)
 - [Testing Your Installation](#testing-your-installation)
 - [Troubleshooting](#troubleshooting)
@@ -176,12 +177,15 @@ scripts\build-standalone-win.bat
 This will:
 
 1. Install dependencies (if not already installed)
-2. Bundle all code with esbuild
+2. Bundle all code with esbuild (with minification and tree-shaking)
 3. Create SEA configuration
 4. Generate the SEA blob
 5. Copy Node.js binary
 6. Inject the blob into `bin/ksef-pdf-generator.exe`
-7. Clean up temporary files
+7. Prompt to compress with UPX (if installed)
+8. Clean up temporary files
+
+**File Size:** The executable will be ~90 MB (or ~30-40 MB if compressed with UPX). See [Size Optimization](#size-optimization) for details.
 
 ### Manual Build Steps (Windows)
 
@@ -213,6 +217,44 @@ node -e "require('fs').copyFileSync(process.execPath, 'bin/ksef-pdf-generator.ex
 npx postject bin\ksef-pdf-generator.exe NODE_SEA_BLOB build\sea-prep.blob ^
   --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 ```
+
+---
+
+## Size Optimization
+
+The standalone executable is approximately **90 MB** because it includes:
+
+- Node.js runtime (~50-70 MB)
+- Dependencies (jsdom, pdfmake, xml-js)
+- Application code
+
+### Quick Solution: Reduce to ~30-40 MB (70% reduction)
+
+**Use UPX compression** (recommended for distribution):
+
+```batch
+# Install UPX
+winget install upx.upx
+
+# Compress the executable
+scripts\compress-exe.bat
+```
+
+This compresses the executable from ~90 MB to ~30-40 MB with minimal trade-offs:
+
+- ✅ Massive size reduction (60-70%)
+- ✅ No runtime performance impact
+- ⚠️ First launch ~0.5s slower (one-time decompression)
+
+### Analyze Bundle Size
+
+To see what's taking up space:
+
+```bash
+npm run analyze-bundle
+```
+
+---
 
 ## Backend Integration
 
