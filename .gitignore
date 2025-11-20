@@ -1,17 +1,26 @@
 node_modules/
-dist/
-*.log
-*.lock
-.DS_Store
-
-.vite/
-coverage
-.vitest
-.cache
-temp
-out
-*.tsbuildinfo
-
 .idea
 .vscode
-*.swp
+
+# Build outputs (CLI bundle)
+dist/
+# Exception: keep xhr-sync-worker.js (required by jsdom at runtime)
+!dist/xhr-sync-worker.js
+
+# Standalone executables (in bin directory)
+bin/ksef-pdf-generator.exe
+bin/ksef-pdf-generator-linux
+bin/ksef-pdf-generator-macos
+
+# SEA build artifacts (in build directory)
+build/sea-config.json
+build/sea-prep.blob
+build/*.blob
+
+# Test artifacts
+tests/*.log
+tests/*-output.pdf
+tests/test-*.pdf
+
+# Coverage reports
+coverage/

@@ -132,7 +132,7 @@ function createTable(cols: Kol[], rows: Wiersz[], subTableIndex: number, totalLe
   const definedHeader: Content[] = cols.map((item: Kol): string | ContentText =>
     formatText(item.NKom?._text, FormatTyp.GrayBoldTitle)
   );
-  const tableBody: TableCell[] = [];
+  const tableBody: TableCell[][] = [];
 
   rows.forEach((item: Wiersz): void => {
     const WKom: FP[] = getTable(item.WKom);
