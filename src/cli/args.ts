@@ -45,12 +45,20 @@ export async function parseArguments(): Promise<CliOptions | null> {
         options.nrKSeF = nextArg;
         i++;
         break;
-      case '--qrCode':
+      case '--qrCode1':
         if (!nextArg) {
-          console.error('Error: --qrCode requires a value');
+          console.error('Error: --qrCode1 requires a value');
           return null;
         }
-        options.qrCode = nextArg;
+        options.qrCode1 = nextArg;
+        i++;
+        break;
+      case '--qrCode2':
+        if (!nextArg) {
+          console.error('Error: --qrCode2 requires a value');
+          return null;
+        }
+        options.qrCode2 = nextArg;
         i++;
         break;
       case '--help':

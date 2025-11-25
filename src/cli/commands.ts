@@ -27,8 +27,9 @@ Required Arguments:
   --type, -t     Type of document: "invoice" or "upo"
 
 Optional Arguments (for invoice type):
-  --nrKSeF       KSeF number for the invoice
-  --qrCode       QR code URL for the invoice
+  --nrKSeF       KSeF number for the invoice (use "OFFLINE" for offline invoices)
+  --qrCode1      QR code data for the first QR code
+  --qrCode2      QR code data for the second QR code (shown below the first with label "certyfikat")
 
 Other Options:
   --help, -h     Show this help message
@@ -43,10 +44,16 @@ Examples:
   # Generate invoice PDF
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice
 
-  # Generate invoice PDF with KSeF data
+  # Generate invoice PDF with KSeF data (online)
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
     --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
-    --qrCode "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..."
+    --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..."
+
+  # Generate offline invoice PDF with certificate QR code
+  ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
+    --nrKSeF "OFFLINE" \\
+    --qrCode1 "offline-qr-code-data" \\
+    --qrCode2 "certificate-qr-code-data"
 
   # Generate UPO PDF
   ksef-pdf-generator --input upo.xml --output upo.pdf --type upo

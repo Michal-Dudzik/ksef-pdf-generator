@@ -3,7 +3,8 @@ export interface CliOptions {
   output: string;
   type: 'invoice' | 'upo';
   nrKSeF?: string;
-  qrCode?: string;
+  qrCode1?: string;
+  qrCode2?: string;
 }
 
 export interface GeneratorFunctions {

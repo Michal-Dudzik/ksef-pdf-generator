@@ -63,9 +63,13 @@ export async function main(): Promise<void> {
         additionalData.nrKSeF = options.nrKSeF;
         log(`Using nrKSeF: ${options.nrKSeF}`, 'debug');
       }
-      if (options.qrCode) {
-        additionalData.qrCode = options.qrCode;
-        log(`Using qrCode: ${options.qrCode}`, 'debug');
+      if (options.qrCode1) {
+        additionalData.qrCode1 = options.qrCode1;
+        log(`Using qrCode1: ${options.qrCode1}`, 'debug');
+      }
+      if (options.qrCode2) {
+        additionalData.qrCode2 = options.qrCode2;
+        log(`Using qrCode2: ${options.qrCode2}`, 'debug');
       }
 
       log('Generating invoice PDF...', 'info');

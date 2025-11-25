@@ -74,10 +74,16 @@ npm run build
 # Generate Invoice PDF
 bin\ksef-pdf-generator.exe -i assets\invoice.xml -o invoice.pdf -t invoice
 
-# Generate Invoice PDF with KSeF Data
+# Generate Invoice PDF with KSeF Data (online)
 bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
   --nrKSeF "5265877635-20250808-9231003CA67B-BE" ^
-  --qrCode "https://ksef-test.mf.gov.pl/client-app/invoice/..."
+  --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..."
+
+# Generate Offline Invoice PDF with Certificate QR Code
+bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
+  --nrKSeF "OFFLINE" ^
+  --qrCode1 "offline-qr-code-data" ^
+  --qrCode2 "certificate-qr-code-data"
 
 # Generate UPO PDF
 bin\ksef-pdf-generator.exe -i assets\upo.xml -o upo.pdf -t upo
@@ -106,8 +112,9 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 
 ### Optional Arguments (for invoices only)
 
-- `--nrKSeF` - KSeF number for the invoice
-- `--qrCode` - QR code URL for the invoice
+- `--nrKSeF` - KSeF number for the invoice (use "OFFLINE" for offline invoices)
+- `--qrCode1` - QR code data for the first QR code
+- `--qrCode2` - QR code data for the second QR code (shown below the first with label "certyfikat")
 
 ### Utility Commands
 

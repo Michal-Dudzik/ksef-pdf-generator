@@ -424,16 +424,19 @@ export function generateTwoColumns(kol1: Column, kol2: Column, margin?: Margins)
   };
 }
 
-export function generateQRCode(qrCode?: string): ContentQr | undefined {
-  return qrCode
-    ? {
-        qr: qrCode,
-        fit: 150,
-        foreground: 'black',
-        background: 'white',
-        eccLevel: 'M',
-      }
-    : undefined;
+export function generateQRCode(qrCode?: string, size: number = 150): ContentQr | undefined {
+  if (!qrCode) return undefined;
+  
+  // Use lower error correction for large data (>200 chars) to reduce density
+  const eccLevel = qrCode.length > 200 ? 'L' : 'M';
+  
+  return {
+    qr: qrCode,
+    fit: size,
+    foreground: 'black',
+    background: 'white',
+    eccLevel: eccLevel,
+  };
 }
 
 export function verticalSpacing(height: number): ContentText {

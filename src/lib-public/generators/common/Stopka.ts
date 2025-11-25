@@ -119,8 +119,8 @@ function generateInformacje(stopka?: Stopka): Content[] {
 function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
   const result: Content = [];
 
-  if (additionalData?.qrCode && additionalData.nrKSeF) {
-    const qrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode);
+  if (additionalData?.qrCode1 && additionalData.nrKSeF) {
+    const qrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode1);
 
     result.push(createHeader('Sprawdź, czy Twoja faktura znajduje się w KSeF!'));
     if (qrCode) {
@@ -147,9 +147,9 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
                 'Nie możesz zeskanować kodu z obrazka? Kliknij w link weryfikacyjny i przejdź do weryfikacji faktury!',
                 FormatTyp.Value
               ),
-              { stack: [formatText(additionalData.qrCode, FormatTyp.Link)], marginTop: 5 },
+              { stack: [formatText(additionalData.qrCode1, FormatTyp.Link)], marginTop: 5 },
             ],
-            link: additionalData.qrCode,
+            link: additionalData.qrCode1,
             margin: [10, (qrCode.fit ?? 120) / 2 - 30, 0, 0],
             width: 'auto',
           } as ContentStack,
@@ -157,5 +157,33 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
       });
     }
   }
+
+  // second QR code for certificate if provided
+  if (additionalData?.qrCode2) {
+   
+    const qrCodeSize = 170;
+    const certQrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode2, qrCodeSize);
+
+    if (certQrCode) {
+      result.push({
+        columns: [
+          {
+            stack: [
+              certQrCode,
+              {
+                text: 'CERTYFIKAT',
+                alignment: 'center',
+                fontSize: 10,
+                margin: [0, 10, 0, 0],
+              },
+            ],
+            width: qrCodeSize,
+          } as ContentStack,
+        ],
+        margin: [0, 10, 0, 0],
+      });
+    }
+  }
+
   return createSection(result, true);
 }
