@@ -14,7 +14,27 @@ vi.mock('../../../shared/PDF-functions', () => ({
   createSection: vi.fn((content: any, flag: boolean) => ({ content, flag })),
   getTable: vi.fn((data: any) => data || []),
   getValue: vi.fn((val: any) => val?._text ?? val),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: any, opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
 }));
 
 vi.mock('./Podmiot1', () => ({

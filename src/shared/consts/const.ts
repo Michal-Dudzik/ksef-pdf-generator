@@ -405,9 +405,85 @@ export const DEFAULT_TABLE_LAYOUT: {
   vLineColor: (): string => '#BABABA',
 };
 
+/**
+ * Maps taxpayer status codes to human-readable descriptions.
+ * 
+ * Current numeric codes (as of latest KSeF spec):
+ * - '1': Stan likwidacji (Liquidation status)
+ * - '2': Postępowanie restrukturyzacyjne (Restructuring proceedings)
+ * - '3': Stan upadłości (Bankruptcy status)
+ * - '4': Przedsiębiorstwo w spadku (Inherited business)
+ */
 export const TAXPAYER_STATUS: Record<string, string> = {
   '1': 'Stan likwidacji',
   '2': 'Postępowanie restrukturyzacyjne',
   '3': 'Stan upadłości',
   '4': 'Przedsiębiorstwo w spadku',
 };
+
+/**
+ * Legacy text-based taxpayer status codes mapped to current numeric codes.
+ * Used for backward compatibility with older data sources.
+ */
+const LEGACY_TAXPAYER_STATUS_MAP: Record<string, string> = {
+  'SAMO': '1', // Stan likwidacji
+  'zarejestrowany': '2', // Postępowanie restrukturyzacyjne
+  'stan upadłości': '3',
+  'przedsiębiorstwo w spadku': '4',
+};
+
+/**
+ * Normalizes taxpayer status codes to current numeric format.
+ * Accepts both legacy text values and current numeric codes.
+ * 
+ * @param statusCode - The status code from StatusInfoPodatnika (may be text or numeric)
+ * @returns Normalized numeric code ('1', '2', '3', '4') or undefined if invalid/empty
+ * 
+ * @example
+ * normalizeTaxpayerStatus('SAMO') // returns '1'
+ * normalizeTaxpayerStatus('1') // returns '1'
+ * normalizeTaxpayerStatus('zarejestrowany') // returns '2'
+ * normalizeTaxpayerStatus('invalid') // returns undefined
+ * normalizeTaxpayerStatus(null) // returns undefined
+ */
+export function normalizeTaxpayerStatus(statusCode: string | null | undefined): string | undefined {
+  if (!statusCode) {
+    return undefined;
+  }
+
+  const trimmedCode = statusCode.trim();
+
+  // If already a valid numeric code, return it
+  if (TAXPAYER_STATUS[trimmedCode]) {
+    return trimmedCode;
+  }
+
+  // Try legacy mapping (case-insensitive)
+  const legacyKey = Object.keys(LEGACY_TAXPAYER_STATUS_MAP).find(
+    (key) => key.toLowerCase() === trimmedCode.toLowerCase()
+  );
+  
+  if (legacyKey) {
+    return LEGACY_TAXPAYER_STATUS_MAP[legacyKey];
+  }
+
+  // Return undefined for unrecognized codes (fail gracefully)
+  return undefined;
+}
+
+/**
+ * Gets the human-readable description for a taxpayer status code.
+ * Handles both legacy text values and current numeric codes with backward compatibility.
+ * 
+ * @param statusCode - The status code from StatusInfoPodatnika
+ * @returns Human-readable status description or undefined if invalid
+ * 
+ * @example
+ * getTaxpayerStatusDescription('1') // returns 'Stan likwidacji'
+ * getTaxpayerStatusDescription('SAMO') // returns 'Stan likwidacji'
+ * getTaxpayerStatusDescription('invalid') // returns undefined
+ */
+export function getTaxpayerStatusDescription(statusCode: string | null | undefined): string | undefined {
+  const normalizedCode = normalizeTaxpayerStatus(statusCode);
+  return normalizedCode ? TAXPAYER_STATUS[normalizedCode] : undefined;
+}

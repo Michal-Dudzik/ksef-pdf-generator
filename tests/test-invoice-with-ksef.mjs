@@ -32,7 +32,7 @@ try {
 }
 
 try {
-  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice --nrKSeF "${KSEF_NUMBER}" --qrCode "${QR_CODE}"`, { stdio: 'pipe' });
+  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice --nrKSeF "${KSEF_NUMBER}" --qrCode1 "${QR_CODE}"`, { stdio: 'pipe' });
   
   if (existsSync(OUTPUT_FILE)) {
     console.log(`PASS: ${TEST_NAME}`);

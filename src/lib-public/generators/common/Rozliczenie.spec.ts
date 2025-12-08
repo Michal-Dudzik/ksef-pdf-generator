@@ -5,8 +5,34 @@ import { Content } from 'pdfmake/interfaces';
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn((...args) => ({ header: args[0], margin: args[1] })),
   createSubHeader: vi.fn((label) => ({ subHeader: label })),
-  generateTwoColumns: vi.fn((left, right) => ({ columns: [left, right] })),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateTwoColumns: vi.fn((left, right) => ({
+    columns: [
+      { stack: left, width: '50%' },
+      { stack: right, width: '50%' },
+    ],
+    columnGap: 20,
+  })),
+  generateColumns: vi.fn((cols: any, opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
   getTable: vi.fn((rows) => rows ?? []),
   getContentTable: vi.fn((header, rows) => ({ content: rows })),
   createLabelText: vi.fn((label, value) => ({ label, value })),

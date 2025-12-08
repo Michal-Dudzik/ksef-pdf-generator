@@ -12,7 +12,27 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((data: any) => data || []),
   hasValue: vi.fn((value: any) => value !== undefined && value !== null),
   verticalSpacing: vi.fn((margin: number) => ({ margin })),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: any, opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
 }));
 
 vi.mock('./Adres', () => ({
@@ -51,9 +71,9 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     expect(result[1].columns[1].length).toBe(0);
 
     expect(result[2]).toHaveProperty('columns');
-    expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(false);
-    expect(result[2].columns[0].length).toBeGreaterThan(0);
+    expect(Array.isArray(result[2].columns[0].stack)).toBe(true);
+    expect(Array.isArray(result[2].columns[1].stack)).toBe(true);
+    expect(result[2].columns[0].stack.length).toBeGreaterThan(0);
 
     expect(result[3]).toEqual({ margin: 1 });
   });
@@ -98,9 +118,9 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     expect(result[0]).toEqual({ text: 'Nabywca', style: 'header' });
 
     expect(result[2]).toHaveProperty('columns');
-    expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(false);
-    expect(result[2].columns[0].length).toBeGreaterThanOrEqual(0);
+    expect(Array.isArray(result[2].columns[0].stack)).toBe(true);
+    expect(Array.isArray(result[2].columns[1].stack)).toBe(true);
+    expect(result[2].columns[0].stack.length).toBeGreaterThanOrEqual(0);
 
     expect(result[result.length - 1]).toHaveProperty('margin');
   });

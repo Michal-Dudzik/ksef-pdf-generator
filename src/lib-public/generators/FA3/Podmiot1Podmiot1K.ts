@@ -5,13 +5,16 @@ import {
   formatText,
   generateColumns,
   getTable,
+  getValue,
+  hasValue,
   verticalSpacing,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
-import { Podmiot1, Podmiot1K } from '../../types/fa2.types';
+import { Podmiot1, Podmiot1K } from '../../types/fa3.types';
 import { generateDaneIdentyfikacyjneTPodmiot1Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot1Dto';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
 import { generateAdres } from './Adres';
+import { getTaxpayerStatusDescription } from '../../../shared/consts/const';
 
 export function generatePodmiot1Podmiot1K(podmiot1: Podmiot1, podmiot1K: Podmiot1K): Content[] {
   const result: Content[] = createHeader('Sprzedawca');
@@ -31,14 +34,16 @@ export function generatePodmiot1Podmiot1K(podmiot1: Podmiot1, podmiot1K: Podmiot
       firstColumn.push(daneKontaktowe);
     }
   }
-  if (podmiot1.StatusInfoPodatnika) {
-    firstColumn.push(createLabelText('Status podatnika: ', podmiot1.StatusInfoPodatnika));
+  if (hasValue(podmiot1.StatusInfoPodatnika)) {
+    const statusCode = getValue(podmiot1.StatusInfoPodatnika);
+    const statusInfo = getTaxpayerStatusDescription(statusCode);
+
+    if (statusInfo) {
+      firstColumn.push(createLabelText('Status podatnika: ', statusInfo));
+    }
   }
   if (firstColumn.length) {
-    result.push({
-      columns: [firstColumn, []],
-      columnGap: 20,
-    });
+    result.push(generateColumns([firstColumn, []]));
   }
 
   firstColumn = generateCorrectedContent(podmiot1K, 'Treść korygowana');

@@ -30,14 +30,15 @@ export function generatePodmioty(invoice: Faktura): Content[] {
       result.push(createSection(generatePodmiot2(invoice.Podmiot2!), true));
     }
   } else {
-    result.push([
-      generateColumns([generatePodmiot1(invoice.Podmiot1!), generatePodmiot2(invoice.Podmiot2!)], {
-
-        margin: [0, 0, 0, 8],
-        columnGap: 20,
-      }),
-    ]);
-  }
+    if (invoice.Podmiot1 && invoice.Podmiot2) {
+            result.push([
+              generateColumns([generatePodmiot1(invoice.Podmiot1), generatePodmiot2(invoice.Podmiot2)], {
+                margin: [0, 0, 0, 8],
+                columnGap: 20,
+              }),
+            ]);
+          }
+        }
 
   if (podmiot3.length > 0) {
     const podmiot3Podmiot2KDto: Podmiot3Podmiot2KDto[] = getPodmiot3Podmiot2KDto(podmiot2K, podmiot3);

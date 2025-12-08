@@ -7,7 +7,27 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((obj) => (obj ? (Array.isArray(obj) ? obj : [obj]) : [])),
   getValue: vi.fn((val) => (val && val._text ? val._text : '')),
   hasValue: vi.fn((val) => Boolean(val && val._text)),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: any, opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
 }));
 vi.mock('./Podmiot1', () => ({
   generatePodmiot1: vi.fn(() => [{ podmiot1: true }]),

@@ -12,8 +12,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   formatText: vi.fn(),
   makeBreakable: vi.fn(),
   getValue: (val: any) => val?._text || '',
-  hasValue: (val: any) => val?._text || '',
-}));
+  hasValue: (val: any) => !!(val?._text),}));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
   getTypRachunkowWlasnych: vi.fn(),
@@ -109,11 +108,11 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Nazwa banku',
+        mockAccount.NazwaBanku?._text ? makeBreakable(mockAccount.NazwaBanku._text, 20) : 'Nazwa banku',
         FormatTyp.Default
       );
-    });
-
+    });    
+    
     it('should format "Opis rachunku" field', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 

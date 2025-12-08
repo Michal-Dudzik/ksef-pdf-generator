@@ -13,7 +13,22 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((arr) => arr || []),
   getValue: vi.fn((val) => (val && val._text ? val._text : '')),
   hasValue: vi.fn((val) => Boolean(val && val._text)),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: any, opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const columns = arr.map((c: any, idx: number) => ({
+      stack: Array.isArray(c) ? [...c] : c,
+      width: opts?.widths?.[idx] ?? `${(100 / arr.length).toFixed(0)}%`,
+    }));
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
 }));
 vi.mock('./PodmiotAdres', () => ({
   generatePodmiotAdres: vi.fn((adres, label) => ({ adr: label })),
@@ -64,9 +79,10 @@ describe('generatePodmiot2Podmiot2K', () => {
     };
     const podmiot2K: Podmiot2K = {};
     const result: any = generatePodmiot2Podmiot2K(podmiot2, podmiot2K);
-    const firstCol: Content = result.find(hasColumns)?.columns[0];
+    const firstCol: any = result.find(hasColumns)?.columns[0];
 
-    expect(firstCol).toEqual(
+    expect(Array.isArray(firstCol.stack)).toBe(true);
+    expect(firstCol.stack).toEqual(
       expect.arrayContaining([
         { text: 'SUBHEADER:Dane identyfikacyjne' },
         { text: 'LABEL:Numer EORI: EORI-X' },
@@ -89,9 +105,11 @@ describe('generatePodmiot2Podmiot2K', () => {
       Adres: { AdresZagr: { Kraj: { _text: 'UK' } } },
     };
     const result: any = generatePodmiot2Podmiot2K(podmiot2, podmiot2K);
-    const cols: Content[] = result.find(hasColumns)?.columns;
+    const cols: any[] = result.find(hasColumns)?.columns;
 
-    expect(cols[1]).toEqual([]);
+    expect(Array.isArray(cols[0].stack)).toBe(true);
+    expect(Array.isArray(cols[1].stack)).toBe(true);
+    expect(cols[0].stack.length).toBeGreaterThan(0);
   });
 
   it('ends with verticalSpacing', () => {

@@ -91,4 +91,101 @@ describe('generatePodmiot1', () => {
 
     expect(result).toEqual(expect.arrayContaining([{ text: 'LABEL:Status podatnika: Stan likwidacji' }]));
   });
+
+  describe('StatusInfoPodatnika - comprehensive tests', () => {
+    it('handles all numeric status codes correctly', () => {
+      const testCases = [
+        { code: '1', expected: 'Stan likwidacji' },
+        { code: '2', expected: 'Postępowanie restrukturyzacyjne' },
+        { code: '3', expected: 'Stan upadłości' },
+        { code: '4', expected: 'Przedsiębiorstwo w spadku' },
+      ];
+
+      testCases.forEach(({ code, expected }) => {
+        const podmiot1: Podmiot1 = {
+          NrEORI: { _text: 'xxx' },
+          PrefiksPodatnika: { _text: 'PL' },
+          StatusInfoPodatnika: { _text: code },
+        };
+        const result = generatePodmiot1(podmiot1);
+
+        expect(result).toEqual(
+          expect.arrayContaining([{ text: `LABEL:Status podatnika: ${expected}` }])
+        );
+      });
+    });
+
+    it('handles legacy text values with backward compatibility', () => {
+      const testCases = [
+        { legacyValue: 'SAMO', expected: 'Stan likwidacji' },
+        { legacyValue: 'zarejestrowany', expected: 'Postępowanie restrukturyzacyjne' },
+      ];
+
+      testCases.forEach(({ legacyValue, expected }) => {
+        const podmiot1: Podmiot1 = {
+          NrEORI: { _text: 'xxx' },
+          PrefiksPodatnika: { _text: 'PL' },
+          StatusInfoPodatnika: { _text: legacyValue },
+        };
+        const result = generatePodmiot1(podmiot1);
+
+        expect(result).toEqual(
+          expect.arrayContaining([{ text: `LABEL:Status podatnika: ${expected}` }])
+        );
+      });
+    });
+
+    it('handles undefined StatusInfoPodatnika gracefully', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: { _text: 'xxx' },
+        PrefiksPodatnika: { _text: 'PL' },
+        StatusInfoPodatnika: undefined,
+      };
+      const result = generatePodmiot1(podmiot1);
+
+      expect(result).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ text: expect.stringContaining('Status podatnika') })])
+      );
+    });
+
+    it('handles null StatusInfoPodatnika gracefully', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: { _text: 'xxx' },
+        PrefiksPodatnika: { _text: 'PL' },
+        StatusInfoPodatnika: { _text: '' },
+      };
+      const result = generatePodmiot1(podmiot1);
+
+      expect(result).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ text: expect.stringContaining('Status podatnika') })])
+      );
+    });
+
+    it('handles unexpected status codes gracefully', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: { _text: 'xxx' },
+        PrefiksPodatnika: { _text: 'PL' },
+        StatusInfoPodatnika: { _text: 'invalid_code' },
+      };
+      const result = generatePodmiot1(podmiot1);
+
+      // Should not render status label if code is unrecognized
+      expect(result).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ text: expect.stringContaining('Status podatnika') })])
+      );
+    });
+
+    it('handles whitespace in status codes', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: { _text: 'xxx' },
+        PrefiksPodatnika: { _text: 'PL' },
+        StatusInfoPodatnika: { _text: '  1  ' },
+      };
+      const result = generatePodmiot1(podmiot1);
+
+      expect(result).toEqual(
+        expect.arrayContaining([{ text: 'LABEL:Status podatnika: Stan likwidacji' }])
+      );
+    });
+  });
 });

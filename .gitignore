@@ -24,3 +24,4 @@ tests/test-*.pdf
 
 # Coverage reports
 coverage/
+outputs/

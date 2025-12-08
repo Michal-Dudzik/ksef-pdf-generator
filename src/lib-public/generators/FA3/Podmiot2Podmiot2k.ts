@@ -33,10 +33,7 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot2, podmiot2K: Podmiot
   }
 
   if (firstColumn.length) {
-    result.push({
-      columns: [firstColumn, []],
-      columnGap: 20,
-    });
+    result.push(generateColumns([firstColumn, []]));
   }
   firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
   secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');

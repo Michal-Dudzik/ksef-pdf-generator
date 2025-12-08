@@ -40,16 +40,15 @@ export const generujRachunekBankowy: (accounts?: Record<string, FP>[], title?: s
         formatText('Polski', FormatTyp.Default),
       ]);
     }
-    if (hasValue(account.NrRBPL)) {
-      table.push([
-        formatText('Pełny numer rachunku w standardzie NRB', FormatTyp.GrayBoldTitle),
-        formatText(getValue(account.NrRBPL), FormatTyp.Default),
-      ]);
-    }
     if (hasValue(account.NrRBZagr)) {
       table.push([
         formatText('Pełny numer rachunku zagranicznego', FormatTyp.GrayBoldTitle),
         formatText(getValue(account.NrRBZagr), FormatTyp.Default),
+      ]);
+    } else if (hasValue(account.NrRBPL)) {
+      table.push([
+        formatText('Pełny numer rachunku w standardzie NRB', FormatTyp.GrayBoldTitle),
+        formatText(getValue(account.NrRBPL), FormatTyp.Default),
       ]);
     }
     table.push([

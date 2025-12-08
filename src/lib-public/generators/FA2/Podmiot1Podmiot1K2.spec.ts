@@ -8,7 +8,27 @@ vi.mock('../../../shared/PDF-functions', () => ({
   createLabelText: vi.fn((label: string, value: any): Content[] => [{ text: `${label}${value ?? ''}` }]),
   formatText: vi.fn((text: string, style?: any): Content => ({ text, style })),
   verticalSpacing: vi.fn().mockImplementation((size) => ({ margin: size })),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: Content[][], opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
 }));
 
 vi.mock('./Adres', () => ({
@@ -60,7 +80,7 @@ describe(generateCorrectedContent.name, () => {
   });
   it('should generate corrected content with address ', () => {
     const podmiot: Podmiot1K = { Adres: { KodKraju: 'PL' as FP } };
-    const result: any = generateCorrectedContent(podmiot, header);;
+    const result: any = generateCorrectedContent(podmiot, header);
     expect(result.length).equal(3);
     expect((result[0] as any).some((c: any) => c.text === header)).toBe(true);
     expect((result[1] as any).text.includes('Adres')).toBe(true);

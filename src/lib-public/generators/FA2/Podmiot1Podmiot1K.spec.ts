@@ -10,7 +10,29 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((data: any) => data || []),
   formatText: vi.fn((text: string, style?: any): Content => ({ text, style })),
   verticalSpacing: vi.fn((margin: number) => ({ margin })),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: Content[][], opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
+  getValue: vi.fn((val) => val?._text || ''),
+  hasValue: vi.fn((val) => Boolean(val && val._text)),
 }));
 
 vi.mock('./Adres', () => ({
@@ -60,9 +82,9 @@ describe(generatePodmiot1Podmiot1K.name, () => {
     expect(result[1].columns[1].length).toBe(0);
 
     expect(result[2]).toHaveProperty('columns');
-    expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(false);
-    expect(result[2].columns[0].length).toBeGreaterThan(0);
+    expect(Array.isArray(result[2].columns[0].stack)).toBe(true);
+    expect(Array.isArray(result[2].columns[1].stack)).toBe(true);
+    expect(result[2].columns[0].stack.length).toBeGreaterThan(0);
 
     expect(result[3]).toEqual({ margin: 1 });
   });
@@ -79,7 +101,7 @@ describe(generatePodmiot1Podmiot1K.name, () => {
       NrEORI: '123',
       DaneIdentyfikacyjne: { NIP: '123', Nazwa: 'Firma' } as any,
       DaneKontaktowe: [{ Telefon: '123' }] as any,
-      StatusInfoPodatnika: 'active',
+      StatusInfoPodatnika: { _text: '2' },
       AdresKoresp: { Ulica: 'Test' },
     } as any;
     const podmiot1K: Podmiot1K = { PrefiksPodatnika: { _text: 'PL' } } as any;
@@ -94,5 +116,56 @@ describe(generatePodmiot1Podmiot1K.name, () => {
     expect(result[2].columns[0]).toBeInstanceOf(Array);
 
     expect(result[3]).toEqual({ margin: 1 });
+  });
+
+  describe('StatusInfoPodatnika handling', () => {
+    it('renders status with numeric code', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: '123',
+        StatusInfoPodatnika: { _text: '4' },
+      } as any;
+      const podmiot1K: Podmiot1K = {} as any;
+      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+
+      const firstCol = result[1]?.columns[0];
+      // createLabelText returns array, so we need to check in nested arrays
+      const hasExpectedStatus = firstCol?.some((item: any) => 
+        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Przedsiębiorstwo w spadku')) :
+        item?.text?.includes?.('Przedsiębiorstwo w spadku')
+      );
+      expect(hasExpectedStatus).toBeTruthy();
+    });
+
+    it('renders status with legacy text code', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: '123',
+        StatusInfoPodatnika: { _text: 'zarejestrowany' },
+      } as any;
+      const podmiot1K: Podmiot1K = {} as any;
+      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+
+      const firstCol = result[1]?.columns[0];
+      const hasExpectedStatus = firstCol?.some((item: any) => 
+        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Postępowanie restrukturyzacyjne')) :
+        item?.text?.includes?.('Postępowanie restrukturyzacyjne')
+      );
+      expect(hasExpectedStatus).toBeTruthy();
+    });
+
+    it('does not render invalid status', () => {
+      const podmiot1: Podmiot1 = {
+        NrEORI: '123',
+        StatusInfoPodatnika: { _text: 'invalid' },
+      } as any;
+      const podmiot1K: Podmiot1K = {} as any;
+      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+
+      const firstCol = result[1]?.columns[0];
+      const hasStatus = firstCol?.some((item: any) => 
+        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Status podatnika')) :
+        item?.text?.includes?.('Status podatnika')
+      );
+      expect(hasStatus).toBeFalsy();
+    });
   });
 });

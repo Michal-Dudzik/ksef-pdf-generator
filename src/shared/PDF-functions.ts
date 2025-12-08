@@ -440,14 +440,45 @@ export function generateTwoColumns(kol1: Column, kol2: Column, margin?: Margins)
   };
 }
 
-export function generateColumns(contents: Content[][], style: Style | undefined = undefined): Content {
-  const width: string = (100 / contents.length).toFixed(0) + '%';
-  const columns: Column = contents.map((content: Content[]) => ({ stack: content, width }));
-  const columnStyle: Style = style ? { ...style } : { columnGap: 20 };
+type GenerateColumnsOptions = {
+  widths?: (string | number)[];
+  columnGap?: number;
+  margin?: Margins;
+  style?: Style;
+};
+
+export function generateColumns(contents: Content[][], styleOrOptions: Style | GenerateColumnsOptions = {}): Content {
+  const isStyleOnly =
+    styleOrOptions &&
+    !('widths' in (styleOrOptions as GenerateColumnsOptions)) &&
+    !('columnGap' in (styleOrOptions as GenerateColumnsOptions)) &&
+    !('margin' in (styleOrOptions as GenerateColumnsOptions)) &&
+    !('style' in (styleOrOptions as GenerateColumnsOptions));
+
+  const options: GenerateColumnsOptions = isStyleOnly
+    ? { style: styleOrOptions as Style }
+    : (styleOrOptions as GenerateColumnsOptions);
+
+  const defaultWidth: string = (100 / contents.length).toFixed(0) + '%';
+  const widths = options.widths;
+  const columns: Column[] = contents.map((content: Content[], index: number) => ({
+    stack: content,
+    width: widths?.[index] ?? defaultWidth,
+  }));
+
+  const columnGap =
+    options.columnGap ??
+    (options.style && 'columnGap' in options.style ? (options.style as any).columnGap : undefined) ??
+    20;
+
+  const margin = options.margin ?? (options.style as any)?.margin;
+  const style = options.style ?? (isStyleOnly ? (styleOrOptions as Style) : undefined);
 
   return {
     columns,
-    ...columnStyle,
+    columnGap,
+    ...(margin ? { margin } : {}),
+    ...(style ? style : {}),
   };
 }
 

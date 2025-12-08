@@ -38,7 +38,7 @@ try {
   execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE_WITHOUT_KSEF}" -t invoice`, { stdio: 'pipe' });
   
   // Generate PDF with KSeF and QR code
-  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE_WITH_KSEF}" -t invoice --nrKSeF "${KSEF_NUMBER}" --qrCode "${QR_CODE}"`, { stdio: 'pipe' });
+  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE_WITH_KSEF}" -t invoice --nrKSeF "${KSEF_NUMBER}" --qrCode1 "${QR_CODE}"`, { stdio: 'pipe' });
   
   if (!existsSync(OUTPUT_FILE_WITH_KSEF) || !existsSync(OUTPUT_FILE_WITHOUT_KSEF)) {
     console.log(`FAIL: ${TEST_NAME} - PDF files not created`);

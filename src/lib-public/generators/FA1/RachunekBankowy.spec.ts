@@ -220,7 +220,7 @@ describe(generujRachunekBankowy.name, () => {
   });
 
   describe('table structure', () => {
-    it('should create table with 5 rows', () => {
+    it('should create table with 3 rows', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       const sectionCall = vi.mocked(PDFFunctions.createSection).mock.calls[0][0] as any[];

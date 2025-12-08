@@ -77,16 +77,16 @@ describe(generatePodmiot1.name, (): void => {
   it('generates contact data', (): void => {
     const podmiot: Partial<Podmiot1> = {
       DaneKontaktowe: [{ Telefon: { _text: '123' } }],
-      StatusInfoPodatnika: { _text: 'active' },
+      StatusInfoPodatnika: { _text: '2' },
     };
     const result = generatePodmiot1(podmiot as Podmiot1);
 
     expect(generateDaneKontaktowe).toHaveBeenCalledWith([{ Telefon: { _text: '123' } }]);
-    expect(createLabelText).toHaveBeenCalledWith('Status podatnika: ', { _text: 'active' });
+    expect(createLabelText).toHaveBeenCalledWith('Status podatnika: ', 'Postępowanie restrukturyzacyjne');
     expect(result.some((c: Content): boolean => (c as any).text === 'mockDaneKontaktowe')).toBe(true);
   });
 
-  it('generates taxpayer status ', () => {
+  it('generates taxpayer status', () => {
     const podmiot: Partial<Podmiot1> = {
     StatusInfoPodatnika: { _text: '1' },
     };
@@ -99,5 +99,91 @@ describe(generatePodmiot1.name, (): void => {
       expect.stringContaining('Stan likwidacji')
     );
     expect(result.some((c: Content): boolean => (c as any).text === 'mockDaneKontaktowe')).toBe(false);
+  });
+
+  describe('StatusInfoPodatnika - comprehensive tests', () => {
+    it('handles all numeric status codes correctly', () => {
+      const testCases = [
+        { code: '1', expected: 'Stan likwidacji' },
+        { code: '2', expected: 'Postępowanie restrukturyzacyjne' },
+        { code: '3', expected: 'Stan upadłości' },
+        { code: '4', expected: 'Przedsiębiorstwo w spadku' },
+      ];
+
+      testCases.forEach(({ code, expected }) => {
+        const podmiot: Partial<Podmiot1> = {
+          StatusInfoPodatnika: { _text: code },
+        };
+        const result = generatePodmiot1(podmiot as Podmiot1);
+
+        expect(createLabelText).toHaveBeenCalledWith('Status podatnika: ', expected);
+      });
+    });
+
+    it('handles legacy text values with backward compatibility', () => {
+      const testCases = [
+        { legacyValue: 'SAMO', expected: 'Stan likwidacji' },
+        { legacyValue: 'zarejestrowany', expected: 'Postępowanie restrukturyzacyjne' },
+      ];
+
+      testCases.forEach(({ legacyValue, expected }) => {
+        vi.clearAllMocks();
+        const podmiot: Partial<Podmiot1> = {
+          StatusInfoPodatnika: { _text: legacyValue },
+        };
+        const result = generatePodmiot1(podmiot as Podmiot1);
+
+        expect(createLabelText).toHaveBeenCalledWith('Status podatnika: ', expected);
+      });
+    });
+
+    it('handles undefined StatusInfoPodatnika gracefully', () => {
+      vi.clearAllMocks();
+      const podmiot: Partial<Podmiot1> = {
+        StatusInfoPodatnika: undefined,
+      };
+      const result = generatePodmiot1(podmiot as Podmiot1);
+
+      const statusCalls = (createLabelText as any).mock.calls.filter((call: any[]) =>
+        call[0]?.includes('Status podatnika')
+      );
+      expect(statusCalls).toHaveLength(0);
+    });
+
+    it('handles null/empty StatusInfoPodatnika gracefully', () => {
+      vi.clearAllMocks();
+      const podmiot: Partial<Podmiot1> = {
+        StatusInfoPodatnika: { _text: '' },
+      };
+      const result = generatePodmiot1(podmiot as Podmiot1);
+
+      const statusCalls = (createLabelText as any).mock.calls.filter((call: any[]) =>
+        call[0]?.includes('Status podatnika')
+      );
+      expect(statusCalls).toHaveLength(0);
+    });
+
+    it('handles unexpected status codes gracefully', () => {
+      vi.clearAllMocks();
+      const podmiot: Partial<Podmiot1> = {
+        StatusInfoPodatnika: { _text: 'invalid_code' },
+      };
+      const result = generatePodmiot1(podmiot as Podmiot1);
+
+      const statusCalls = (createLabelText as any).mock.calls.filter((call: any[]) =>
+        call[0]?.includes('Status podatnika')
+      );
+      expect(statusCalls).toHaveLength(0);
+    });
+
+    it('handles whitespace in status codes', () => {
+      vi.clearAllMocks();
+      const podmiot: Partial<Podmiot1> = {
+        StatusInfoPodatnika: { _text: '  3  ' },
+      };
+      const result = generatePodmiot1(podmiot as Podmiot1);
+
+      expect(createLabelText).toHaveBeenCalledWith('Status podatnika: ', 'Stan upadłości');
+    });
   });
 });

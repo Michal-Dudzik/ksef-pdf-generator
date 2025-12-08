@@ -11,7 +11,29 @@ vi.mock('../../../shared/PDF-functions', () => ({
   createSubHeader: vi.fn((label: string) => ({ text: `SUBHEADER:${label}` })),
   verticalSpacing: vi.fn((v: number) => ({ text: `SPACING:${v}` })),
   getTable: vi.fn((data) => data || []),
-  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
+  generateColumns: vi.fn((cols: Content[][], opts?: any) => {
+    const arr = Array.isArray(cols) ? cols : [cols];
+    const withStack = arr.map((c: any, idx: number) => {
+      if (Array.isArray(c)) {
+        (c as any).stack = c;
+      }
+      if (opts?.widths && opts.widths[idx] !== undefined) {
+        (c as any).width = opts.widths[idx];
+      }
+      return c;
+    });
+    const columnGap = opts?.columnGap ?? opts?.style?.columnGap ?? 20;
+    const margin = opts?.margin ?? opts?.style?.margin;
+    const style = opts?.style ?? (opts && !opts.widths && !opts.columnGap && !opts.margin ? opts : undefined);
+    return {
+      columns: withStack,
+      columnGap,
+      ...(margin ? { margin } : {}),
+      ...(style ? style : {}),
+    };
+  }),
+  getValue: vi.fn((val) => val?._text || ''),
+  hasValue: vi.fn((val) => Boolean(val && val._text)),
 }));
 vi.mock('./PodmiotAdres', () => ({
   generatePodmiotAdres: vi.fn((adres: any, label: string) => ({ adr: label })),
@@ -30,7 +52,7 @@ describe('generatePodmiot1Podmiot1K', () => {
     const podmiot1: Podmiot1 = {
       NrEORI: { _text: 'EORI' },
       DaneIdentyfikacyjne: { NIP: { _text: '777' } },
-      StatusInfoPodatnika: { _text: 'AKTYWNY' },
+      StatusInfoPodatnika: { _text: '3' },
     };
     const podmiot1K: Podmiot1K = {};
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
@@ -41,7 +63,39 @@ describe('generatePodmiot1Podmiot1K', () => {
         { text: 'SUBHEADER:Dane identyfikacyjne' },
         { text: 'LABEL:Numer EORI: EORI' },
         { id: 'ID' },
-        { text: 'LABEL:Status podatnika: AKTYWNY' },
+        { text: 'LABEL:Status podatnika: Stan upadłości' },
+      ])
+    );
+  });
+
+  it('handles legacy status codes', () => {
+    const podmiot1: Podmiot1 = {
+      NrEORI: { _text: 'EORI' },
+      StatusInfoPodatnika: { _text: 'SAMO' },
+    };
+    const podmiot1K: Podmiot1K = {};
+    const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+
+    expect(firstCol).toEqual(
+      expect.arrayContaining([
+        { text: 'LABEL:Status podatnika: Stan likwidacji' },
+      ])
+    );
+  });
+
+  it('does not render status for invalid codes', () => {
+    const podmiot1: Podmiot1 = {
+      NrEORI: { _text: 'EORI' },
+      StatusInfoPodatnika: { _text: 'INVALID' },
+    };
+    const podmiot1K: Podmiot1K = {};
+    const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+
+    expect(firstCol).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ text: expect.stringContaining('Status podatnika') }),
       ])
     );
   });
