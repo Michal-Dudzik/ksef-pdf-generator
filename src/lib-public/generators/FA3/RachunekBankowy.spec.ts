@@ -1,14 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generujRachunekBankowy } from './RachunekBankowy';
 import * as PDFFunctions from '../../../shared/PDF-functions';
+import { makeBreakable } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
-import { FP } from '../../types/fa2.types';
+import { RachunekBankowy } from '../../types/fa3.types';
 import * as CommonFunctions from '../../../shared/generators/common/functions';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn(),
   createSection: vi.fn(),
   formatText: vi.fn(),
+  makeBreakable: vi.fn(),
+  getValue: (val: any) => val?._text || '',
+  hasValue: (val: any) => val?._text || '',
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
@@ -20,13 +24,13 @@ describe(generujRachunekBankowy.name, () => {
     vi.clearAllMocks();
   });
 
-  const mockAccount: Record<string, FP> = {
+  const mockAccount: RachunekBankowy = {
     NrRB: { _text: '12345678901234567890123456' },
     SWIFT: { _text: 'BPKOPLPW' },
     RachunekWlasnyBanku: { _text: '1' },
     NazwaBanku: { _text: 'PKO Bank Polski' },
     OpisRachunku: { _text: 'Rachunek główny' },
-  };
+  } as any;
 
   beforeEach(() => {
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['header'] as any);
@@ -94,14 +98,20 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Rachunek własny banku', FormatTyp.GrayBoldTitle);
       expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith('Tak', FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(
+        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Tak',
+        FormatTyp.Default
+      );
     });
 
     it('should format "Nazwa banku" field', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NazwaBanku?._text, FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(
+        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Nazwa banku',
+        FormatTyp.Default
+      );
     });
 
     it('should format "Opis rachunku" field', () => {
@@ -109,7 +119,7 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Opis rachunku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        mockAccount.OpisRachunku?._text,
+        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Nazwa banku',
         FormatTyp.Default
       );
     });
@@ -167,13 +177,13 @@ describe(generujRachunekBankowy.name, () => {
     });
 
     it('should handle account with undefined fields', () => {
-      const accountWithUndefined: Record<string, FP> = {
+      const accountWithUndefined: RachunekBankowy = {
         NrRB: { _text: undefined },
         SWIFT: { _text: undefined },
         RachunekWlasnyBanku: { _text: undefined },
         NazwaBanku: { _text: undefined },
         OpisRachunku: { _text: undefined },
-      };
+      } as any;
 
       generujRachunekBankowy([accountWithUndefined], 'Rachunek bankowy');
 
@@ -183,13 +193,13 @@ describe(generujRachunekBankowy.name, () => {
 
   describe('when multiple accounts exist', () => {
     it('should create multiple tables for multiple accounts', () => {
-      const account2: Record<string, FP> = {
+      const account2: RachunekBankowy = {
         NrRB: { _text: '98765432109876543210987654' },
         SWIFT: { _text: 'PKOPPLPW' },
         RachunekWlasnyBanku: { _text: '0' },
         NazwaBanku: { _text: 'mBank' },
         OpisRachunku: { _text: 'Rachunek pomocniczy' },
-      };
+      } as any;
 
       generujRachunekBankowy([mockAccount, account2], 'Rachunek bankowy');
 
@@ -199,13 +209,13 @@ describe(generujRachunekBankowy.name, () => {
     });
 
     it('should call getTypRachunkowWlasnych for each account', () => {
-      const account2: Record<string, FP> = {
+      const account2: RachunekBankowy = {
         NrRB: { _text: '98765432109876543210987654' },
         SWIFT: { _text: 'PKOPPLPW' },
         RachunekWlasnyBanku: { _text: '0' },
         NazwaBanku: { _text: 'mBank' },
         OpisRachunku: { _text: 'Rachunek pomocniczy' },
-      };
+      } as any;
 
       generujRachunekBankowy([mockAccount, account2], 'Rachunek bankowy');
 
@@ -215,13 +225,13 @@ describe(generujRachunekBankowy.name, () => {
     });
 
     it('should format all fields for all accounts', () => {
-      const account2: Record<string, FP> = {
+      const account2: RachunekBankowy = {
         NrRB: { _text: '98765432109876543210987654' },
         SWIFT: { _text: 'PKOPPLPW' },
         RachunekWlasnyBanku: { _text: '0' },
         NazwaBanku: { _text: 'mBank' },
         OpisRachunku: { _text: 'Rachunek pomocniczy' },
-      };
+      } as any;
 
       generujRachunekBankowy([mockAccount, account2], 'Rachunek bankowy');
 

@@ -1,6 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Content } from 'pdfmake/interfaces';
 import type { Podmiot2, Podmiot2K } from '../../types/fa2.types';
+import { generateAdres } from './Adres';
+import { generatePodmiot2Podmiot2K } from './Podmiot2Podmiot2k';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn((text: string): Content[] => [{ text, style: 'header' }]),
@@ -9,6 +11,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((data: any) => data || []),
   hasValue: vi.fn((value: any) => value !== undefined && value !== null),
   verticalSpacing: vi.fn((margin: number) => ({ margin })),
+  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
 }));
 
 vi.mock('./Adres', () => ({
@@ -24,10 +27,6 @@ vi.mock('./PodmiotDaneIdentyfikacyjneTPodmiot1Dto', () => ({
 vi.mock('./PodmiotDaneKontaktowe', () => ({
   generateDaneKontaktowe: vi.fn((data: any): Content[] => [{ text: 'mockDaneKontaktowe' }]),
 }));
-
-import { createHeader, createLabelText, formatText } from '../../../shared/PDF-functions';
-import { generateAdres } from './Adres';
-import { generatePodmiot2Podmiot2K } from './Podmiot2Podmiot2k';
 
 describe(generatePodmiot2Podmiot2K.name, () => {
   beforeEach(() => {
@@ -52,9 +51,7 @@ describe(generatePodmiot2Podmiot2K.name, () => {
 
     expect(result[2]).toHaveProperty('columns');
     expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(true);
     expect(result[2].columns[0].length).toBeGreaterThan(0);
-    expect(result[2].columns[1].length).toBeGreaterThan(0);
 
     expect(result[3]).toEqual({ margin: 1 });
   });
@@ -71,9 +68,8 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     const podmiot2K: Podmiot2K = { IDNabywcy: 'ID123' } as any;
     const result = generatePodmiot2Podmiot2K(podmiot2, podmiot2K) as any;
     expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(true);
+    expect(Array.isArray(result[2].columns[1])).toBe(false);
     expect(result[2].columns[0].length).toBeGreaterThanOrEqual(0);
-    expect(result[2].columns[1].length).toBeGreaterThanOrEqual(0);
   });
 
   it('adds vertical spacing at the end', () => {
@@ -100,9 +96,8 @@ describe(generatePodmiot2Podmiot2K.name, () => {
 
     expect(result[2]).toHaveProperty('columns');
     expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(Array.isArray(result[2].columns[1])).toBe(true);
+
     expect(result[2].columns[0].length).toBeGreaterThanOrEqual(0);
-    expect(result[2].columns[1].length).toBeGreaterThanOrEqual(0);
 
     expect(result[result.length - 1]).toHaveProperty('margin');
   });

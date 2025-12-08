@@ -3,11 +3,15 @@ import { generujRachunekBankowy } from './RachunekBankowy';
 import * as PDFFunctions from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
 import * as CommonFunctions from '../../../shared/generators/common/functions';
+import { makeBreakable } from '../../../shared/PDF-functions';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn(),
   createSection: vi.fn(),
   formatText: vi.fn(),
+  makeBreakable: vi.fn(),
+  getValue: vi.fn((val) => (val && val._text ? val._text : '')),
+  hasValue: vi.fn((val) => Boolean(val && val._text)),
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
@@ -86,14 +90,17 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Rachunek własny banku', FormatTyp.GrayBoldTitle);
       expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith('Tak', FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(makeBreakable('Tak'), FormatTyp.Default);
     });
 
     it('should format "Nazwa banku" field', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NazwaBanku?._text, FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(
+        makeBreakable(mockAccount.NazwaBanku?._text),
+        FormatTyp.Default
+      );
     });
 
     it('should create table structure with correct widths', () => {

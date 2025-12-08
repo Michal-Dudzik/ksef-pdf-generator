@@ -50,7 +50,7 @@ describe(generatePodmiot2.name, () => {
 
     expect(createHeader).toHaveBeenCalledWith('Nabywca');
     expect(createLabelText).toHaveBeenCalledWith('Identyfikator nabywcy: ', 'ID123');
-    expect(createLabelText).toHaveBeenCalledWith('NrEORI: ', 'EORI123');
+    expect(createLabelText).toHaveBeenCalledWith('Numer EORI: ', 'EORI123');
     expect(result[0]).toEqual({ text: 'Nabywca', style: 'header' });
   });
 

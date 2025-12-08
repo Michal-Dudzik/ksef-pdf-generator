@@ -1,5 +1,5 @@
 import { Content } from 'pdfmake/interfaces';
-import { createSection, getTable, getValue } from '../../../shared/PDF-functions';
+import { createSection, getTable, getValue, generateColumns } from '../../../shared/PDF-functions';
 import { Faktura, Podmiot2K, Podmiot3 } from '../../types/fa1.types';
 import { Podmiot3Podmiot2KDto } from '../../types/fa1-additional-types';
 import { generatePodmiot1 } from './Podmiot1';
@@ -31,10 +31,11 @@ export function generatePodmioty(invoice: Faktura): Content[] {
     }
   } else {
     result.push([
-      {
-        columns: [generatePodmiot1(invoice.Podmiot1!), generatePodmiot2(invoice.Podmiot2!)],
+      generateColumns([generatePodmiot1(invoice.Podmiot1!), generatePodmiot2(invoice.Podmiot2!)], {
+
         margin: [0, 0, 0, 8],
-      },
+        columnGap: 20,
+      }),
     ]);
   }
 

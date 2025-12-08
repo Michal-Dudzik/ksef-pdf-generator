@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach, test } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { createHeader, createLabelText, formatText, getTable } from '../../../shared/PDF-functions';
+import { generateAdnotacje, generateDostawy } from './Adnotacje';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn((text: string) => ({ text, style: 'header' })),
@@ -7,10 +9,8 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn(() => []),
   hasValue: vi.fn((v) => !!v?._text),
   verticalSpacing: vi.fn((n: number) => ({ text: `space-${n}` })),
+  generateColumns: vi.fn((left, right) => ({ columns: [left, right] })),
 }));
-
-import { createHeader, createLabelText, getTable, formatText } from '../../../shared/PDF-functions';
-import { generateAdnotacje, generateDostawy } from './Adnotacje';
 
 describe(generateAdnotacje.name, () => {
   beforeEach(() => {
