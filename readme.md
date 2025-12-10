@@ -5,6 +5,7 @@
 - [Installation Options](#installation-options)
 - [Quick Start](#quick-start)
 - [Command Line Options](#command-line-options)
+- [Logging](#persistent-session-logging)
 - [Source Code Structure](#source-code-structure)
 - [Development](#development)
 - [Building Standalone Executables](#building-standalone-executables)
@@ -465,6 +466,68 @@ set KSEF_VERBOSE=1
 set KSEF_LOG_FILE=debug.log
 bin\ksef-pdf-generator.exe -i input.xml -o output.pdf -t invoice --verbose
 ```
+
+### Persistent Session Logging
+
+The application automatically logs all operations to monthly log files. This feature is **enabled by default** and helps with auditing, debugging, and compliance.
+
+**Log Location:**
+
+Logs are created in a `logs/` folder:
+- **Standalone exe**: Next to the `.exe` file → `logs/ksef-generator-2025-12.log`
+- **Development**: In the project directory → `logs/ksef-generator-2025-12.log`
+
+**What Gets Logged:**
+
+Each session records:
+- Session ID, start/end times, duration, status (SUCCESS/FAILED)
+- Document type, input/output files
+- All parameters (nrKSeF, QR codes, etc.)
+- Full command for easy replay
+- Error details if operation failed
+
+**Configuration:**
+
+```batch
+# Disable logging
+set KSEF_PERSISTENT_LOG=0
+
+# Custom log directory
+set KSEF_LOG_DIR=C:\custom\path\logs
+
+# On Linux/Mac
+export KSEF_LOG_DIR=/var/log/ksef
+```
+
+**Example Log:**
+
+```
+────────────────────────────────────────────────────────────────────────────────
+SESSION START
+Session ID: 1765377040039-abc123def
+
+Status: SUCCESS
+Start Time: 2025-12-10 14:30:40
+End Time: 2025-12-10 14:30:40
+Duration: 0.13s
+
+Type: invoice
+Input File: assets/invoice.xml
+Output File: outputs/invoice.pdf
+Parameters: {
+  "input": "assets/invoice.xml",
+  "output": "outputs/invoice.pdf",
+  "type": "invoice",
+  "nrKSeF": "5265877635-20251210-ABC123"
+}
+
+Full command: ksef-pdf-generator --input assets/invoice.xml --output outputs/invoice.pdf --type invoice --nrKSeF 5265877635-20251210-ABC123
+
+SESSION END
+────────────────────────────────────────────────────────────────────────────────
+```
+
+**For complete documentation**, see [docs/Logging.md](docs/Logging.md)
 
 ---
 

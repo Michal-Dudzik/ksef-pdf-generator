@@ -22,6 +22,6 @@ tests/*.log
 tests/*-output.pdf
 tests/test-*.pdf
 
-# Coverage reports
 coverage/
 outputs/
+logs/

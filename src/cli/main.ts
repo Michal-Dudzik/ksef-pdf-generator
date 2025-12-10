@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { log, logError, VERBOSE } from './logger';
+import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
 import type { CliOptions, GeneratorFunctions } from './types';
 import { parseArguments } from './args';
 import { initializeApp } from './init';
@@ -13,6 +13,10 @@ export async function main(): Promise<void> {
   log(`Platform: ${process.platform} ${process.arch}`, 'debug');
   log(`Working directory: ${process.cwd()}`, 'debug');
   
+  if (isPersistentLogEnabled()) {
+    log(`Persistent logging enabled: ${getLogFilePath()}`, 'debug');
+  }
+  
   const options = await parseArguments();
 
   if (!options) {
@@ -22,6 +26,21 @@ export async function main(): Promise<void> {
   // Initialize the application (setup jsdom, load generator module)
   const generators = await initializeApp();
 
+  // Start logging session with all parameters
+  startSession(
+    {
+      input: options.input,
+      output: options.output,
+      type: options.type,
+      nrKSeF: options.nrKSeF || null,
+      qrCode1: options.qrCode1 || null,
+      qrCode2: options.qrCode2 || null
+    },
+    options.type,
+    options.input,
+    options.output
+  );
+
   try {
     log(`Command line arguments: ${JSON.stringify(options)}`, 'debug');
     
@@ -29,6 +48,7 @@ export async function main(): Promise<void> {
     if (!fs.existsSync(options.input)) {
       logError(`Input file not found: ${options.input}`);
       console.error(`Error: Input file not found: ${options.input}`);
+      endSession(false, options.output, new Error(`Input file not found: ${options.input}`));
       process.exit(1);
     }
     
@@ -90,10 +110,16 @@ export async function main(): Promise<void> {
     console.log(`✓ PDF generated successfully: ${options.output}`);
     log(`Success! Output file size: ${buffer.length} bytes`, 'info');
     
+    // End session with success
+    endSession(true, options.output);
+    
     // Explicitly set exit code to 0 for success
     process.exitCode = 0;
     process.exit(0);
   } catch (error) {
+    // End session with failure
+    endSession(false, options.output, error);
+    
     logError('Error generating PDF', error);
     console.error('Error generating PDF:');
     if (error instanceof Error) {
@@ -112,6 +138,10 @@ export async function main(): Promise<void> {
     
     if (LOG_FILE) {
       console.error(`\nDetailed logs written to: ${LOG_FILE}`);
+    }
+    
+    if (isPersistentLogEnabled()) {
+      console.error(`\nSession logs written to: ${getLogFilePath()}`);
     }
     
     process.exit(1);
