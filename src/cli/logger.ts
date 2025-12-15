@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 
 const VERBOSE = process.env.KSEF_VERBOSE === '1' || process.argv.includes('--verbose');
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
@@ -112,32 +111,60 @@ function formatDate(date: Date): string {
  * Formats time as HH:MM:SS
  */
 function formatTime(date: Date): string {
-  return date.toISOString().split('T')[1].split('.')[0];
+  // Use local time (not UTC) for human-friendly logs
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${h}:${m}:${s}`;
 }
 
-// Track if we've added the date header in this session
-let dateHeaderAddedInThisProcess = false;
+/**
+ * Safely formats parameters as a single-line JSON object with spaces after `:` and `,`,
+ * without touching content inside string values.
+ */
+function stringifyInlineJson(obj: Record<string, any>): string {
+  const entries = Object.entries(obj).filter(([, v]) => v !== undefined);
+  const body = entries
+    .map(([k, v]) => `"${k}": ${JSON.stringify(v)}`)
+    .join(', ');
+  return `{${body}}`;
+}
 
 /**
- * Check if date header already exists in the log file for today
+ * Gets the next sequential "Nr" for the current monthly log file.
+ * This is resilient across multiple CLI runs by scanning the existing log file.
  */
-function dateHeaderExistsInFile(currentDate: string): boolean {
+function getNextLogNumber(): number {
   const logFile = getMonthlyLogFilePath();
-  
+
   if (!fs.existsSync(logFile)) {
-    return false;
+    return 1;
   }
-  
+
   try {
     const content = fs.readFileSync(logFile, 'utf-8');
-    const lines = content.trim().split('\n');
-    
-    // Look through last 200 lines for today's date header
-    // This should cover even verbose sessions with many log lines
-    const recentLines = lines.slice(-200);
-    return recentLines.some(line => line.includes(`===== ${currentDate} =====`));
-  } catch (err) {
-    return false;
+    const lines = content.split('\n');
+
+    // Scan the tail first for performance; fall back to full scan if needed.
+    const tail = lines.slice(-2000);
+    const candidates = [...tail, ...lines.slice(0, Math.max(0, lines.length - 2000))];
+
+    let maxNr = 0;
+    const re = /^\s*Nr:\s*(\d+)\s*$/;
+
+    for (const line of candidates) {
+      const m = re.exec(line);
+      if (!m) continue;
+      const nr = Number(m[1]);
+      if (Number.isFinite(nr) && nr > maxNr) {
+        maxNr = nr;
+      }
+    }
+
+    return maxNr + 1;
+  } catch {
+    // If we can't read/parse, still produce a valid entry.
+    return 1;
   }
 }
 
@@ -208,39 +235,34 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
     qrCode2: params.qrCode2,
   };
   
-  // Build consolidated session log
-  const sessionLog = [
-    `${'─'.repeat(80)}`,
-    `SESSION START`,
-    `Session ID: ${currentSession.sessionId}`,
+  const nr = getNextLogNumber();
+
+  // Build consolidated session log in the requested format
+  const sessionLogLines: string[] = [
+    `{`,
+    `    Nr: ${nr}`,
+    `    Status: ${success ? 'SUCCESS' : 'FAILED'}`,
+    `    Operation Time: ${formatTime(currentSession.startTime)} - ${formatTime(endTime)} (${durationSeconds}s)`,
     ``,
-    `Status: ${success ? 'SUCCESS' : 'FAILED'}`,
-    `Start Time: ${formatDate(currentSession.startTime)} ${formatTime(currentSession.startTime)}`,
-    `End Time: ${formatDate(endTime)} ${formatTime(endTime)}`,
-    `Duration: ${durationSeconds}s`,
+    `    Parameters: ${stringifyInlineJson(cleanParams)}`,
     ``,
-    `Type: ${currentSession.type || 'unknown'}`,
-    `Input File: ${currentSession.inputFile || 'N/A'}`,
-    `Output File: ${currentSession.outputFile || 'N/A'}`,
-    `Parameters: ${JSON.stringify(cleanParams, null, 2)}`,
-    ``,
-    `Full command: ${commandLine}`,
-    error ? `\nError: ${error instanceof Error ? error.message : JSON.stringify(error)}` : '',
-    ``,
-    `SESSION END`,
-    `${'─'.repeat(80)}`
-  ].filter(line => line !== null && line !== undefined).join('\n');
-  
-  // Add date separator if this is the first session of the day
-  const currentDate = formatDate(new Date());
-  let finalLog = '';
-  
-  if (!dateHeaderAddedInThisProcess && !dateHeaderExistsInFile(currentDate)) {
-    finalLog = `\n${'='.repeat(80)}\n===== ${currentDate} =====\n${'='.repeat(80)}\n\n${sessionLog}\n\n`;
-    dateHeaderAddedInThisProcess = true;
-  } else {
-    finalLog = `\n${sessionLog}\n\n`;
+    `    Full command: ${commandLine}`,
+  ];
+
+  if (error) {
+    const errMsg =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'string'
+          ? error
+          : JSON.stringify(error);
+    sessionLogLines.push(`    Error: ${errMsg}`);
   }
+
+  sessionLogLines.push(`}`);
+
+  // Separate entries with a single blank line, but do not add trailing blank lines
+  const finalLog = `\n${sessionLogLines.join('\n')}\n`;
   
   writeToPersistentLog(finalLog);
   log(`Session ended: ${currentSession.sessionId} (${success ? 'success' : 'failed'})`, 'debug');
@@ -260,7 +282,8 @@ export function logSessionAction(message: string, level: 'info' | 'error' | 'deb
 }
 
 export function log(message: string, level: 'info' | 'error' | 'debug' = 'info'): void {
-  const timestamp = new Date().toISOString();
+  // Time-only timestamp (no date), per requirement
+  const timestamp = formatTime(new Date());
   const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
   
   if (level === 'error' || VERBOSE || level === 'info') {
