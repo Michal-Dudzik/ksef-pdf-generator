@@ -71,6 +71,13 @@ function getMonthlyLogFilePath(): string {
   return path.join(PERSISTENT_LOG_DIR, filename);
 }
 
+/**
+ * Cross-process lock file path used to serialize "Nr" allocation + append.
+ */
+function getLogLockFilePath(): string {
+  return path.join(PERSISTENT_LOG_DIR, '.ksef-generator.lock');
+}
+
 export { VERBOSE };
 
 // Session tracking
@@ -116,6 +123,91 @@ function formatTime(date: Date): string {
   const m = String(date.getMinutes()).padStart(2, '0');
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${h}:${m}:${s}`;
+}
+
+/**
+ * Blocking sleep without timers/async (keeps the logger API synchronous).
+ */
+function sleepSync(ms: number): void {
+  if (ms <= 0) return;
+  // Atomics.wait is the most reliable sync sleep available in Node.
+  // It blocks the current thread without busy looping.
+  const sab = new SharedArrayBuffer(4);
+  const arr = new Int32Array(sab);
+  Atomics.wait(arr, 0, 0, ms);
+}
+
+/**
+ * Runs `fn` while holding a cross-process lock, to make "read max Nr -> append log"
+ * effectively atomic across concurrent CLI processes.
+ *
+ * Without this, multiple processes can read the same max Nr before any of them append,
+ * producing duplicate "Nr:" entries.
+ */
+function withPersistentLogLock<T>(fn: () => T): T {
+  if (!PERSISTENT_LOG_ENABLED) {
+    return fn();
+  }
+
+  ensureLogDirectory();
+
+  const lockFile = getLogLockFilePath();
+  const timeoutMs = Number(process.env.KSEF_LOG_LOCK_TIMEOUT_MS || 5000);
+  const staleMs = Number(process.env.KSEF_LOG_LOCK_STALE_MS || 60_000);
+  const startedAt = Date.now();
+
+  let fd: number | null = null;
+
+  while (fd === null) {
+    try {
+      // 'wx' => create exclusively; throws EEXIST if already present (atomic).
+      fd = fs.openSync(lockFile, 'wx');
+      // Store metadata for stale-lock detection.
+      fs.writeFileSync(fd, `${process.pid} ${new Date().toISOString()}\n`);
+    } catch (e: any) {
+      if (e && e.code === 'EEXIST') {
+        // Handle stale locks (process crash / forced kill)
+        try {
+          const stat = fs.statSync(lockFile);
+          const ageMs = Date.now() - stat.mtimeMs;
+          if (ageMs > staleMs) {
+            fs.unlinkSync(lockFile);
+            continue;
+          }
+        } catch {
+          // If stat/unlink failed (race), just retry normally.
+        }
+
+        if (Date.now() - startedAt > timeoutMs) {
+          // If we can't get the lock in time, proceed without it (best effort),
+          // but keep behavior predictable (still log).
+          return fn();
+        }
+
+        // Small sleep + jitter to reduce thundering herd.
+        sleepSync(20 + Math.floor(Math.random() * 30));
+        continue;
+      }
+
+      // Unexpected error acquiring lock: proceed without lock (best effort).
+      return fn();
+    }
+  }
+
+  try {
+    return fn();
+  } finally {
+    try {
+      fs.closeSync(fd);
+    } catch {
+      // ignore
+    }
+    try {
+      fs.unlinkSync(lockFile);
+    } catch {
+      // ignore (may already be removed)
+    }
+  }
 }
 
 /**
@@ -207,14 +299,15 @@ export function startSession(parameters: any, type?: string, inputFile?: string,
  */
 export function endSession(success: boolean, outputFile?: string, error?: any): void {
   if (!currentSession) return;
+  const session = currentSession;
   
   const endTime = new Date();
-  const duration = endTime.getTime() - currentSession.startTime.getTime();
+  const duration = endTime.getTime() - session.startTime.getTime();
   const durationSeconds = (duration / 1000).toFixed(2);
   
   // Build command line representation
-  const params = currentSession.parameters;
-  let commandLine = `ksef-pdf-generator --input ${currentSession.inputFile || 'N/A'} --output ${currentSession.outputFile || 'N/A'} --type ${currentSession.type || 'unknown'}`;
+  const params = session.parameters;
+  let commandLine = `ksef-pdf-generator --input ${session.inputFile || 'N/A'} --output ${session.outputFile || 'N/A'} --type ${session.type || 'unknown'}`;
   if (params.nrKSeF) {
     commandLine += ` --nrKSeF ${params.nrKSeF}`;
   }
@@ -234,38 +327,41 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
     qrCode1: params.qrCode1,
     qrCode2: params.qrCode2,
   };
-  
-  const nr = getNextLogNumber();
 
-  // Build consolidated session log in the requested format
-  const sessionLogLines: string[] = [
-    `{`,
-    `    Nr: ${nr}`,
-    `    Status: ${success ? 'SUCCESS' : 'FAILED'}`,
-    `    Operation Time: ${formatTime(currentSession.startTime)} - ${formatTime(endTime)} (${durationSeconds}s)`,
-    ``,
-    `    Parameters: ${stringifyInlineJson(cleanParams)}`,
-    ``,
-    `    Full command: ${commandLine}`,
-  ];
+  withPersistentLogLock(() => {
+    const nr = getNextLogNumber();
 
-  if (error) {
-    const errMsg =
-      error instanceof Error
-        ? error.message
-        : typeof error === 'string'
-          ? error
-          : JSON.stringify(error);
-    sessionLogLines.push(`    Error: ${errMsg}`);
-  }
+    // Build consolidated session log in the requested format
+    const sessionLogLines: string[] = [
+      `{`,
+      `    Nr: ${nr}`,
+      `    Status: ${success ? 'SUCCESS' : 'FAILED'}`,
+      `    Operation Time: ${formatTime(session.startTime)} - ${formatTime(endTime)} (${durationSeconds}s)`,
+      ``,
+      `    Parameters: ${stringifyInlineJson(cleanParams)}`,
+      ``,
+      `    Full command: ${commandLine}`,
+    ];
 
-  sessionLogLines.push(`}`);
+    if (error) {
+      const errMsg =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'string'
+            ? error
+            : JSON.stringify(error);
+      sessionLogLines.push(`    Error: ${errMsg}`);
+    }
 
-  // Separate entries with a single blank line, but do not add trailing blank lines
-  const finalLog = `\n${sessionLogLines.join('\n')}\n`;
-  
-  writeToPersistentLog(finalLog);
-  log(`Session ended: ${currentSession.sessionId} (${success ? 'success' : 'failed'})`, 'debug');
+    sessionLogLines.push(`}`);
+
+    // Separate entries with a single blank line, but do not add trailing blank lines
+    const finalLog = `\n${sessionLogLines.join('\n')}\n`;
+
+    writeToPersistentLog(finalLog);
+  });
+
+  log(`Session ended: ${session.sessionId} (${success ? 'success' : 'failed'})`, 'debug');
   
   currentSession = null;
 }
