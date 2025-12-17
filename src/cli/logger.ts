@@ -60,14 +60,15 @@ function getDefaultLogDir(): string {
 const PERSISTENT_LOG_DIR = getDefaultLogDir();
 
 /**
- * Gets the log file path for the current month
- * Format: ksef-generator-YYYY-MM.log
+ * Gets the log file path for the current day
+ * Format: ksef-generator-YYYY-MM-DD.log
  */
-function getMonthlyLogFilePath(): string {
+function getDailyLogFilePath(): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
-  const filename = `ksef-generator-${year}-${month}.log`;
+  const day = String(now.getDate()).padStart(2, '0');
+  const filename = `ksef-generator-${year}-${month}-${day}.log`;
   return path.join(PERSISTENT_LOG_DIR, filename);
 }
 
@@ -223,11 +224,11 @@ function stringifyInlineJson(obj: Record<string, any>): string {
 }
 
 /**
- * Gets the next sequential "Nr" for the current monthly log file.
+ * Gets the next sequential "Nr" for the current daily log file.
  * This is resilient across multiple CLI runs by scanning the existing log file.
  */
 function getNextLogNumber(): number {
-  const logFile = getMonthlyLogFilePath();
+  const logFile = getDailyLogFilePath();
 
   if (!fs.existsSync(logFile)) {
     return 1;
@@ -268,7 +269,7 @@ function writeToPersistentLog(message: string): void {
   
   try {
     ensureLogDirectory();
-    const logFile = getMonthlyLogFilePath();
+    const logFile = getDailyLogFilePath();
     fs.appendFileSync(logFile, message);
   } catch (err) {
     // Silently fail if we can't write to log file
@@ -414,10 +415,10 @@ export function logError(message: string, error?: any): void {
 }
 
 /**
- * Gets the path to the current month's persistent log file
+ * Gets the path to the current day's persistent log file
  */
 export function getLogFilePath(): string {
-  return getMonthlyLogFilePath();
+  return getDailyLogFilePath();
 }
 
 /**
