@@ -25,3 +25,5 @@ tests/test-*.pdf
 coverage/
 outputs/
 logs/
+
+!.github/
