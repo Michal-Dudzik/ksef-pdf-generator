@@ -2,8 +2,6 @@
 
 [![Download Latest](https://img.shields.io/github/v/release/Michal-Dudzik/ksef-pdf-generator?label=Download%20Latest&style=for-the-badge&logo=github)](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
 
-> **Quick Download**: [Get the latest release →](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
-
 A command-line tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files.
 
 ## Table of Contents
@@ -262,6 +260,7 @@ Every GitHub Release contains:
   - Supported document types
   - Build information
   - Link to commit history
+
 ---
 
 ## Backend Integration

@@ -3,6 +3,8 @@ name: Test
 on:
   push:
     branches: [main, master, develop]
+    tags-ignore:
+      - "v*.*.*" # Don't run on version tags (release workflow handles this)
   pull_request:
     branches: [main, master, develop]
 
