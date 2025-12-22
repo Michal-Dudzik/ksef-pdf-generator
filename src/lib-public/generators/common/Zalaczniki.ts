@@ -128,13 +128,13 @@ function generateTable(tabela: Tabela): Content[] {
   return result;
 }
 
-function createTable(cols: Kol[], rows: Wiersz[], subTableIndex: number, totalLength: number): ContentTable {
+function createTable(cols: Kol[], rows: Wiersz | Wiersz[], subTableIndex: number, totalLength: number): ContentTable {
   const definedHeader: Content[] = cols.map((item: Kol): string | ContentText =>
     formatText(item.NKom?._text, FormatTyp.GrayBoldTitle)
   );
   const tableBody: TableCell[][] = [];
 
-  rows.forEach((item: Wiersz): void => {
+  getTable(rows).forEach((item: Wiersz): void => {
     const WKom: FP[] = getTable(item.WKom);
 
     while (WKom.length < totalLength) {
