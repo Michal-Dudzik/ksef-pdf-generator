@@ -115,18 +115,12 @@ jobs:
             ## KSeF PDF Generator v${{ steps.package-version.outputs.VERSION }}
 
             ### Installation
-            1. Download `ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe`
-            2. No installation required - standalone executable with Node.js runtime included
-            3. Run from any location on Windows (no dependencies needed)
+            Download `ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe`
 
             ### Usage
             ```bash
             ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe -i input.xml -o output.pdf -t invoice
             ```
-
-            ### Supported Types
-            - `invoice` - FA(1), FA(2), FA(3) invoice types
-            - `upo` - UPO (Urzędowe Poświadczenie Odbioru)
 
             ### Build Information
             - Built with Node.js ${{ steps.setup-node.outputs.node-version }}
