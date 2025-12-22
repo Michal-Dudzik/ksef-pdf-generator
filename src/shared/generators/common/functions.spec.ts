@@ -130,14 +130,35 @@ describe('formatDateTime', () => {
 
   it('formats date with seconds by default', () => {
     const date = '2025-10-03T12:15:30Z';
+    const result = formatDateTime(date);
 
-    expect(formatDateTime(date)).toBe('2025-10-03 14:15:30');
+    // Should match format YYYY-MM-DD HH:MM:SS
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+    // Should contain the correct date part
+    expect(result).toContain('2025-10-03');
+    // Verify the date is parsed correctly (local time conversion applied)
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+    const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
+
+    expect(result).toBe(`2025-10-03 ${expectedHour}:${expectedMinute}:${expectedSecond}`);
   });
 
   it('formats date without seconds if withoutSeconds true', () => {
     const date = '2025-10-03T12:15:30Z';
+    const result = formatDateTime(date, true);
 
-    expect(formatDateTime(date, true)).toBe('2025-10-03 14:15');
+    // Should match format YYYY-MM-DD HH:MM
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    // Should contain the correct date part
+    expect(result).toContain('2025-10-03');
+    // Verify the date is parsed correctly (local time conversion applied)
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+
+    expect(result).toBe(`2025-10-03 ${expectedHour}:${expectedMinute}`);
   });
 });
 
@@ -149,7 +170,13 @@ describe('getDateTimeWithoutSeconds', () => {
 
   it('returns formatted date without seconds if _text present', () => {
     const isoDate = { _text: '2025-10-03T12:15:30Z' } as any;
+    const result = getDateTimeWithoutSeconds(isoDate);
 
-    expect(getDateTimeWithoutSeconds(isoDate)).toBe('2025-10-03 14:15');
+    // Should match format YYYY-MM-DD HH:MM
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    // Should contain the correct date part
+    expect(result).toContain('2025-10-03');
+    // Verify it matches formatDateTime output
+    expect(result).toBe(formatDateTime(isoDate._text, true));
   });
 });

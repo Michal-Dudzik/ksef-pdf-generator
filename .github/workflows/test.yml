@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: windows-latest
+    env:
+      TZ: Europe/Warsaw
 
     steps:
       - name: Checkout code

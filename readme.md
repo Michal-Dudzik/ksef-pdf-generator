@@ -1,20 +1,23 @@
 # KSeF PDF Generator - CLI Tool
 
+[![Download Latest](https://img.shields.io/github/v/release/Michal-Dudzik/ksef-pdf-generator?label=Download%20Latest&style=for-the-badge&logo=github)](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
+
+> **Quick Download**: [Get the latest release →](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
+
+A command-line tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files.
+
 ## Table of Contents
 
 - [Installation Options](#installation-options)
 - [Quick Start](#quick-start)
 - [Command Line Options](#command-line-options)
 - [Logging](#persistent-session-logging)
-- [Source Code Structure](#source-code-structure)
 - [Development](#development)
 - [Building Standalone Executables](#building-standalone-executables)
-- [Size Optimization](#size-optimization)
+- [Automated Releases & Distribution](#automated-releases--distribution)
 - [Backend Integration](#backend-integration)
 - [Testing Your Installation](#testing-your-installation)
 - [Troubleshooting](#troubleshooting)
-- [Requirements](#requirements)
-- [References](#references)
 
 ---
 
@@ -26,7 +29,21 @@ The standalone executable includes Node.js runtime and all dependencies bundled 
 
 Uses **Node.js Single Executable Applications (SEA)** - the official built-in feature for creating standalone executables.
 
-1. Download `bin/ksef-pdf-generator.exe`
+#### Download from GitHub Releases (Recommended)
+
+1. Go to [Releases](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
+2. Download `ksef-pdf-generator-ver-X.X.X.exe` from the latest release
+3. Use it directly (no installation required):
+
+```batch
+ksef-pdf-generator-ver-0.0.38.exe -i invoice.xml -o invoice.pdf -t invoice
+```
+
+#### Or Build from Source
+
+If you cloned this repository:
+
+1. Download `bin/ksef-pdf-generator.exe` from the repository
 2. Use it directly:
 
 ```batch
@@ -182,86 +199,69 @@ Run the build script:
 scripts\build-standalone-win.bat
 ```
 
-This will:
-
-1. Install dependencies (if not already installed)
-2. Bundle all code with esbuild (with minification and tree-shaking)
-3. Create SEA configuration
-4. Generate the SEA blob
-5. Copy Node.js binary
-6. Inject the blob into `bin/ksef-pdf-generator.exe`
-7. Prompt to compress with UPX (if installed)
-8. Clean up temporary files
-
-**File Size:** The executable will be ~90 MB (or ~30-40 MB if compressed with UPX). See [Size Optimization](#size-optimization) for details.
-
-### Manual Build Steps (Windows)
-
-If you want to build manually:
-
-```batch
-# Install dependencies
-npm install
-
-# Bundle the application
-npm run bundle
-
-# Create sea-config.json
-echo {
-  "main": "dist/cli.cjs",
-  "output": "build/sea-prep.blob",
-  "disableExperimentalSEAWarning": true,
-  "useSnapshot": false,
-  "useCodeCache": true
-} > build\sea-config.json
-
-# Generate the blob
-node --experimental-sea-config build\sea-config.json
-
-# Copy node binary
-node -e "require('fs').copyFileSync(process.execPath, 'bin/ksef-pdf-generator.exe')"
-
-# Inject the blob
-npx postject bin\ksef-pdf-generator.exe NODE_SEA_BLOB build\sea-prep.blob ^
-  --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
-```
-
 ---
 
-## Size Optimization
+## Automated Releases & Distribution
 
-The standalone executable is approximately **90 MB** because it includes:
+This project uses **GitHub Actions** to automatically build and distribute releases.
 
-- Node.js runtime (~50-70 MB)
-- Dependencies (jsdom, pdfmake, xml-js)
-- Application code
+### Creating a New Release
 
-### Quick Solution: Reduce to ~30-40 MB (70% reduction)
-
-**Use UPX compression** (recommended for distribution):
-
-```batch
-# Install UPX
-winget install upx.upx
-
-# Compress the executable
-scripts\compress-exe.bat
-```
-
-This compresses the executable from ~90 MB to ~30-40 MB with minimal trade-offs:
-
-- ✅ Massive size reduction (60-70%)
-- ✅ No runtime performance impact
-- ⚠️ First launch ~0.5s slower (one-time decompression)
-
-### Analyze Bundle Size
-
-To see what's taking up space:
+#### Method 1: Using npm version (Recommended)
 
 ```bash
-npm run analyze-bundle
+# Make your changes and commit them
+git add .
+git commit -m "Add new feature"
+git push
+
+# Bump version and create tag
+npm version patch  # 0.0.37 → 0.0.38 (for bug fixes)
+npm version minor  # 0.0.37 → 0.1.0 (for new features)
+npm version major  # 0.0.37 → 1.0.0 (for breaking changes)
+
+# Push the tag (this triggers the release workflow)
+git push --follow-tags
+
+# Done! Check GitHub Actions for build progress
 ```
 
+#### Method 2: Manual Tag Creation
+
+```bash
+# Create and push a tag
+git tag -a v0.0.38 -m "Release version 0.0.38"
+git push origin v0.0.38
+```
+
+#### Method 3: Manual Trigger from GitHub
+
+1. Go to your repository on GitHub
+2. Click **"Actions"** tab
+3. Select **"Build and Release"** workflow
+4. Click **"Run workflow"** button
+5. Select branch and click **"Run workflow"**
+
+### Downloading Releases
+
+#### For End Users
+
+```
+https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest
+```
+
+### What's Included in Each Release
+
+Every GitHub Release contains:
+
+- **Executable File**: `ksef-pdf-generator-ver-X.X.X.exe`
+- **Release Notes**: Automatically generated with:
+  - Version number
+  - Installation instructions
+  - Usage examples
+  - Supported document types
+  - Build information
+  - Link to commit history
 ---
 
 ## Backend Integration
@@ -469,17 +469,19 @@ bin\ksef-pdf-generator.exe -i input.xml -o output.pdf -t invoice --verbose
 
 ### Persistent Session Logging
 
-The application automatically logs all operations to monthly log files. This feature is **enabled by default** and helps with auditing, debugging, and compliance.
+The application automatically logs all operations to daily log files. This feature is **enabled by default**
 
 **Log Location:**
 
 Logs are created in a `logs/` folder:
+
 - **Standalone exe**: Next to the `.exe` file → `logs/ksef-generator-2025-12.log`
 - **Development**: In the project directory → `logs/ksef-generator-2025-12.log`
 
 **What Gets Logged:**
 
 Each session records:
+
 - Session ID, start/end times, duration, status (SUCCESS/FAILED)
 - Document type, input/output files
 - All parameters (nrKSeF, QR codes, etc.)
@@ -502,32 +504,16 @@ export KSEF_LOG_DIR=/var/log/ksef
 **Example Log:**
 
 ```
-────────────────────────────────────────────────────────────────────────────────
-SESSION START
-Session ID: 1765377040039-abc123def
+{
+    Nr: 1
+    Status: SUCCESS
+    Operation Time: 15:17:28 - 15:17:28 (0.53s)
 
-Status: SUCCESS
-Start Time: 2025-12-10 14:30:40
-End Time: 2025-12-10 14:30:40
-Duration: 0.13s
+    Parameters: {"input": "assets/303_inv.xml", "output": "303_inv.pdf", "type": "invoice", "nrKSeF": null, "qrCode1": null, "qrCode2": null}
 
-Type: invoice
-Input File: assets/invoice.xml
-Output File: outputs/invoice.pdf
-Parameters: {
-  "input": "assets/invoice.xml",
-  "output": "outputs/invoice.pdf",
-  "type": "invoice",
-  "nrKSeF": "5265877635-20251210-ABC123"
+    Full command: ksef-pdf-generator --input assets/303_inv.xml --output 303_inv.pdf --type invoice
 }
-
-Full command: ksef-pdf-generator --input assets/invoice.xml --output outputs/invoice.pdf --type invoice --nrKSeF 5265877635-20251210-ABC123
-
-SESSION END
-────────────────────────────────────────────────────────────────────────────────
 ```
-
-**For complete documentation**, see [docs/Logging.md](docs/Logging.md)
 
 ---
 
@@ -758,9 +744,9 @@ During standalone build, you may see these warnings:
 
 **Impact:**
 
-- ✅ The executable **works perfectly fine**
-- ⚠️ May trigger Windows SmartScreen warnings
-- ⚠️ Some antivirus software may be more suspicious
+- The executable **works perfectly fine**
+- May trigger Windows SmartScreen warnings
+- Some antivirus software may be more suspicious
 
 **Solutions:**
 
@@ -796,27 +782,3 @@ For system administrators deploying to production servers:
 - [ ] Network access for npm (if building from source)
 
 ---
-
-## Quick Reference Commands
-
-```batch
-# Check Node.js (if using development version)
-node --version
-npm --version
-
-# Run diagnostics
-scripts\diagnose.bat
-
-# Setup from source
-scripts\setup.bat
-
-# Generate invoice PDF
-bin\ksef-pdf-generator.exe -i invoice.xml -o output.pdf -t invoice
-
-# Generate with verbose output
-set KSEF_VERBOSE=1
-bin\ksef-pdf-generator.exe -i invoice.xml -o output.pdf -t invoice --verbose
-
-# Get help
-bin\ksef-pdf-generator.exe --help
-```

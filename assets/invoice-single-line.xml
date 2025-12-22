@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Faktura
+        xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+    <Naglowek>
+        <KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+        <WariantFormularza>3</WariantFormularza>
+        <DataWytworzeniaFa>2026-03-22T03:27:54.0792168Z</DataWytworzeniaFa>
+        <SystemInfo>Generator danych - Single Line Test</SystemInfo>
+    </Naglowek>
+    <Podmiot1>
+        <DaneIdentyfikacyjne>
+            <NIP>5265877635</NIP>
+            <Nazwa>Bartkowiak, Dróżdż and Górecki</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>ul. Kępa 332</AdresL1>
+            <AdresL2>20-892 Tyszowce</AdresL2>
+        </Adres>
+        <DaneKontaktowe>
+            <Email>Prokop77@example.com</Email>
+            <Telefon>17-756-90-14</Telefon>
+        </DaneKontaktowe>
+    </Podmiot1>
+    <Podmiot2>
+        <DaneIdentyfikacyjne>
+            <NIP>6808208874</NIP>
+            <Nazwa>Strzelczyk LLC</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>ul. Wójcik 7255</AdresL1>
+            <AdresL2>28-068 Pobiedziska</AdresL2>
+        </Adres>
+        <DaneKontaktowe>
+            <Email>Lidia.Olszewski77@yahoo.com</Email>
+            <Telefon>76-113-42-55</Telefon>
+        </DaneKontaktowe>
+        <NrKlienta>KL-7615</NrKlienta>
+        <JST>2</JST>
+        <GV>2</GV>
+    </Podmiot2>
+    <Fa>
+        <KodWaluty>PLN</KodWaluty>
+        <P_1>2025-10-31</P_1>
+        <P_1M>Czarnków</P_1M>
+        <P_2>FA/SINGLE-LINE-TEST/12/2025</P_2>
+        <P_6>2025-10-03</P_6>
+        <P_13_1>20.41</P_13_1>
+        <P_14_1>4.69</P_14_1>
+        <P_15>25.10</P_15>
+        <Adnotacje>
+            <P_16>2</P_16>
+            <P_17>2</P_17>
+            <P_18>2</P_18>
+            <P_18A>2</P_18A>
+            <Zwolnienie>
+                <P_19N>1</P_19N>
+            </Zwolnienie>
+            <NoweSrodkiTransportu>
+                <P_22N>1</P_22N>
+            </NoweSrodkiTransportu>
+            <P_23>2</P_23>
+            <PMarzy>
+                <P_PMarzyN>1</P_PMarzyN>
+            </PMarzy>
+        </Adnotacje>
+        <RodzajFaktury>VAT</RodzajFaktury>
+        <FaWiersz>
+            <NrWierszaFa>1</NrWierszaFa>
+            <P_7>Test Product - Single Line Item</P_7>
+            <P_8A>szt.</P_8A>
+            <P_8B>1</P_8B>
+            <P_9A>20.41</P_9A>
+            <P_11>20.41</P_11>
+            <P_12>23</P_12>
+        </FaWiersz>
+        <Platnosc>
+            <Zaplacono>1</Zaplacono>
+            <DataZaplaty>2025-10-31</DataZaplaty>
+            <FormaPlatnosci>7</FormaPlatnosci>
+        </Platnosc>
+    </Fa>
+    <Zalacznik>
+        <BlokDanych>
+            <ZNaglowek>Test Attachment - Single Row Table</ZNaglowek>
+            <Tabela>
+                <TNaglowek>
+                    <Kol>
+                        <NKom>Column 1</NKom>
+                    </Kol>
+                    <Kol>
+                        <NKom>Column 2</NKom>
+                    </Kol>
+                    <Kol>
+                        <NKom>Column 3</NKom>
+                    </Kol>
+                </TNaglowek>
+                <Wiersz>
+                    <WKom>Data 1</WKom>
+                    <WKom>Data 2</WKom>
+                    <WKom>Data 3</WKom>
+                </Wiersz>
+            </Tabela>
+        </BlokDanych>
+    </Zalacznik>
+</Faktura>
+
