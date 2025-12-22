@@ -1,22 +1,21 @@
 #!/usr/bin/env node
 // Test: Version command should display version information
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Version Command';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 try {
-  execSync(`${EXECUTABLE} --version`, { stdio: 'pipe' });
+  execSync(`${command} --version`, { stdio: 'pipe' });
   console.log(`PASS: ${TEST_NAME}`);
   process.exit(0);
 } catch (error) {

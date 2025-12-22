@@ -2,20 +2,20 @@
 // Test: Error handling for malformed XML
 import { execSync } from 'child_process';
 import { existsSync, writeFileSync, unlinkSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Error: Malformed XML';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const MALFORMED_XML_FILE = 'tests/malformed-test.xml';
 const OUTPUT_FILE = 'tests/test-malformed-output.pdf';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 // Create a malformed XML file
 const malformedXML = `<?xml version="1.0" encoding="UTF-8"?>
@@ -34,7 +34,7 @@ try {
 }
 
 try {
-  execSync(`${EXECUTABLE} -i "${MALFORMED_XML_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
+  execSync(`${command} -i "${MALFORMED_XML_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
   console.log(`FAIL: ${TEST_NAME} - Command should have failed but succeeded`);
   
   // Clean up

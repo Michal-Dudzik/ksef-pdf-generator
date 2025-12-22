@@ -23,9 +23,15 @@ console.log(`Testing: ${testName}`);
 console.log('='.repeat(60));
 
 try {
-  // Get the expected log file location
-  const logDir = join(homedir(), '.ksef-pdf-generator', 'logs');
-  const logFile = join(logDir, 'ksef-generator.log');
+  // Get the expected log file location (project root logs directory)
+  // The logger writes to logs/ksef-generator-YYYY-MM-DD.log
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const logFileName = `ksef-generator-${year}-${month}-${day}.log`;
+  const logDir = join(process.cwd(), 'logs');
+  const logFile = join(logDir, logFileName);
   
   console.log(`Expected log file: ${logFile}`);
   
@@ -53,19 +59,16 @@ try {
   const logContent = readFileSync(logFile, 'utf-8');
   
   const checks = [
-    { name: 'Date separator', pattern: /={80}/ },
-    { name: 'Session start marker', pattern: /SESSION START/ },
-    { name: 'Session end marker', pattern: /SESSION END/ },
-    { name: 'Start time', pattern: /Start Time: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/ },
-    { name: 'End time', pattern: /End Time: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/ },
-    { name: 'Duration', pattern: /Duration: \d+\.\d+s/ },
-    { name: 'Status', pattern: /Status: SUCCESS/ },
-    { name: 'Input file', pattern: /Input File:.*invoice\.xml/ },
-    { name: 'Output file', pattern: /Output File:.*test-logging\.pdf/ },
-    { name: 'Generated file', pattern: /Generated File:.*test-logging\.pdf/ },
-    { name: 'Parameters', pattern: /Parameters:/ },
-    { name: 'Type field', pattern: /type.*invoice/ },
-    { name: 'nrKSeF parameter', pattern: /nrKSeF.*TEST-123/ },
+    { name: 'Session entry', pattern: /\{[\s\S]*?\}/ },
+    { name: 'Nr field', pattern: /Nr:\s*\d+/ },
+    { name: 'Status field', pattern: /Status: SUCCESS/ },
+    { name: 'Operation Time', pattern: /Operation Time: \d{2}:\d{2}:\d{2} - \d{2}:\d{2}:\d{2} \(\d+\.\d+s\)/ },
+    { name: 'Parameters field', pattern: /Parameters:/ },
+    { name: 'Full command', pattern: /Full command:/ },
+    { name: 'Input in parameters', pattern: /"input".*invoice\.xml/ },
+    { name: 'Output in parameters', pattern: /"output".*test-logging\.pdf/ },
+    { name: 'Type in parameters', pattern: /"type".*invoice/ },
+    { name: 'nrKSeF in parameters', pattern: /"nrKSeF".*TEST-123/ },
   ];
   
   let allPassed = true;
@@ -108,11 +111,14 @@ try {
   
   // Display sample log output
   console.log('\n--- Sample log output (last session) ---');
-  const sessions = updatedLogContent.split('─'.repeat(80));
-  const lastSession = sessions[sessions.length - 2] || sessions[sessions.length - 1];
-  console.log('─'.repeat(80));
-  console.log(lastSession.trim());
-  console.log('─'.repeat(80));
+  // Find the last session entry (format: {...})
+  const sessionMatches = updatedLogContent.match(/\{[\s\S]*?\}/g);
+  if (sessionMatches && sessionMatches.length > 0) {
+    const lastSession = sessionMatches[sessionMatches.length - 1];
+    console.log(lastSession);
+  } else {
+    console.log('No session entries found');
+  }
   
   console.log(`\n${'='.repeat(60)}`);
   console.log(`✅ ${testName}: PASSED`);

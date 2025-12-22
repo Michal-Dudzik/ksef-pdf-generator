@@ -2,11 +2,9 @@
 // Test: Invoice PDF generation with KSeF and certificate QR code
 import { execSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Invoice PDF with Certificate QR Code';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-invoice-cert-output.pdf';
 const NR_KSEF = 'offline';
@@ -15,10 +13,12 @@ const CERT = 'certificate-qr-code-data';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 if (!existsSync(INPUT_FILE)) {
   console.log(`SKIP: Input file not found at ${INPUT_FILE}`);
@@ -34,7 +34,7 @@ try {
 
 try {
   // Generate PDF with KSeF, QR code, and certificate
-  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice --nrKSeF "${NR_KSEF}" --qrCode1 "${QR_CODE}" --qrCode2 "${CERT}"`, { stdio: 'pipe' });
+  execSync(`${command} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice --nrKSeF "${NR_KSEF}" --qrCode1 "${QR_CODE}" --qrCode2 "${CERT}"`, { stdio: 'pipe' });
   
   if (!existsSync(OUTPUT_FILE)) {
     console.log(`FAIL: ${TEST_NAME} - PDF file not created`);

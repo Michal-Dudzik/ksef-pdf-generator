@@ -2,20 +2,20 @@
 // Test: Verify proper exit codes for success and failure
 import { execSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Exit Codes';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-exit-code-output.pdf';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 let testsPassed = 0;
 let testsFailed = 0;
@@ -30,7 +30,7 @@ if (existsSync(INPUT_FILE)) {
   }
 
   try {
-    execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
+    execSync(`${command} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
     console.log(`  Sub-test PASS: Success returns exit code 0`);
     testsPassed++;
     
@@ -46,7 +46,7 @@ if (existsSync(INPUT_FILE)) {
 
 // Test 2: Missing file should return non-zero exit code
 try {
-  execSync(`${EXECUTABLE} -i "non-existent.xml" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
+  execSync(`${command} -i "non-existent.xml" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
   console.log(`  Sub-test FAIL: Missing file should return non-zero exit code`);
   testsFailed++;
 } catch (error) {
@@ -61,7 +61,7 @@ try {
 
 // Test 3: Invalid arguments should return non-zero exit code
 try {
-  execSync(`${EXECUTABLE} --invalid-flag`, { stdio: 'pipe' });
+  execSync(`${command} --invalid-flag`, { stdio: 'pipe' });
   console.log(`  Sub-test FAIL: Invalid arguments should return non-zero exit code`);
   testsFailed++;
 } catch (error) {

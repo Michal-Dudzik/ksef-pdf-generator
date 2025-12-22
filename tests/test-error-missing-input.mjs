@@ -1,24 +1,23 @@
 #!/usr/bin/env node
 // Test: Error handling for missing input file
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Error: Missing Input File';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const NON_EXISTENT_FILE = 'tests/non-existent-file.xml';
 const OUTPUT_FILE = 'tests/test-error-output.pdf';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 try {
-  execSync(`${EXECUTABLE} -i "${NON_EXISTENT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
+  execSync(`${command} -i "${NON_EXISTENT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
   console.log(`FAIL: ${TEST_NAME} - Command should have failed but succeeded`);
   process.exit(1);
 } catch (error) {

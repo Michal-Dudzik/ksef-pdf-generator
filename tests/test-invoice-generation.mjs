@@ -2,20 +2,20 @@
 // Test: Invoice PDF generation from XML
 import { execSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Invoice PDF Generation';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-invoice-output.pdf';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 if (!existsSync(INPUT_FILE)) {
   console.log(`SKIP: Input file not found at ${INPUT_FILE}`);
@@ -30,7 +30,7 @@ try {
 }
 
 try {
-  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
+  execSync(`${command} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice`, { stdio: 'pipe' });
   
   if (existsSync(OUTPUT_FILE)) {
     console.log(`PASS: ${TEST_NAME}`);

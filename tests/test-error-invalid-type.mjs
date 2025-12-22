@@ -2,21 +2,21 @@
 // Test: Error handling for invalid document type
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
+import { getCommand } from './test-helper.mjs';
 
 const TEST_NAME = 'Error: Invalid Document Type';
-const EXECUTABLE = process.platform === 'win32' 
-  ? 'bin\\ksef-pdf-generator.exe' 
-  : 'bin/ksef-pdf-generator.sh';
 const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-invalid-type-output.pdf';
 const INVALID_TYPE = 'invalid_document_type';
 
 console.log(`Running test: ${TEST_NAME}`);
 
-if (!existsSync(EXECUTABLE)) {
-  console.log(`FAIL: Executable not found at ${EXECUTABLE}`);
+const { command, exists, type } = getCommand();
+if (!exists) {
+  console.log(`FAIL: Executable not found (tried bin/ksef-pdf-generator.exe and node dist/cli.cjs)`);
   process.exit(1);
 }
+console.log(`Using ${type} mode: ${command}`);
 
 if (!existsSync(INPUT_FILE)) {
   console.log(`SKIP: Input file not found at ${INPUT_FILE}`);
@@ -24,7 +24,7 @@ if (!existsSync(INPUT_FILE)) {
 }
 
 try {
-  execSync(`${EXECUTABLE} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t ${INVALID_TYPE}`, { stdio: 'pipe' });
+  execSync(`${command} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t ${INVALID_TYPE}`, { stdio: 'pipe' });
   console.log(`FAIL: ${TEST_NAME} - Command should have failed but succeeded`);
   process.exit(1);
 } catch (error) {
