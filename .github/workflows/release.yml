@@ -5,10 +5,6 @@ on:
     tags:
       - "v*.*.*" # Triggers on version tags like v0.0.37
   workflow_dispatch: # Allows manual trigger from GitHub UI
-    inputs:
-      version:
-        description: "Version tag (e.g., v0.0.38)"
-        required: false
 
 jobs:
   build:
