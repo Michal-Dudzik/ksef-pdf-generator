@@ -162,17 +162,53 @@ function generateFakturaZaliczkowa(fakturaZaliczkowaData: ObjectKeysOfFP[] | und
   const fakturaZaliczkowa = getTable(fakturaZaliczkowaData) as unknown as FA3FakturaZaliczkowaData[];
   const table: Content[] = [];
 
+  // Transform data to create a unified invoice number field that shows either KSeF or non-KSeF number
+  const transformedData = fakturaZaliczkowa
+    .map((item) => {
+      // Helper function to get the text value from a field
+      const getTextValue = (field: any): string | undefined => {
+        if (!field) return undefined;
+        if (typeof field === 'object') {
+          // Handle empty objects {} from XML parser
+          if (!field._text) return undefined;
+          return field._text;
+        }
+        return field;
+      };
+
+      // Check if it's a KSeF invoice or non-KSeF invoice and use the appropriate field
+      // Priority: NrKSeFFaZaliczkowej (if has value) > NrFaZaliczkowej (if has value)
+      const itemAny = item as any;
+      const nrKSeFValue = getTextValue('NrKSeFFaZaliczkowej' in item ? itemAny.NrKSeFFaZaliczkowej : undefined);
+      const nrFaZalValue = getTextValue('NrFaZaliczkowej' in item ? itemAny.NrFaZaliczkowej : undefined);
+      
+      const nrFaktury = (nrKSeFValue && nrKSeFValue.trim() !== '')
+        ? itemAny.NrKSeFFaZaliczkowej
+        : (nrFaZalValue && nrFaZalValue.trim() !== '')
+          ? itemAny.NrFaZaliczkowej
+          : undefined;
+      
+      return {
+        NrFaktury: nrFaktury,
+      };
+    })
+    .filter((item) => {
+      // Filter out items with empty or undefined invoice numbers
+      const value = typeof item.NrFaktury === 'object' ? item.NrFaktury?._text : item.NrFaktury;
+      return value && value.trim() !== '';
+    });
+
   const fakturaZaliczkowaHeader: HeaderDefine[] = [
     {
-      name: 'NrKSeFFaZaliczkowej',
+      name: 'NrFaktury',
       title: 'Numery wcześniejszych faktur zaliczkowych',
       format: FormatTyp.Default,
     },
   ];
 
-  const tableFakturaZaliczkowa = getContentTable<(typeof fakturaZaliczkowa)[0]>(
+  const tableFakturaZaliczkowa = getContentTable<(typeof transformedData)[0]>(
     fakturaZaliczkowaHeader,
-    fakturaZaliczkowa,
+    transformedData,
     'auto',
     [0, 4, 0, 0]
   );

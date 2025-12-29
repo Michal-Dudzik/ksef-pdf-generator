@@ -512,7 +512,7 @@ describe(generateSzczegoly.name, () => {
   });
 
   describe('faktura zaliczkowa', () => {
-    it('should generate faktura zaliczkowa table when data exists', () => {
+    it('should generate faktura zaliczkowa table when data exists with KSeF number', () => {
       const data = {
         ...mockFaVat,
         FakturaZaliczkowa: [
@@ -538,7 +538,7 @@ describe(generateSzczegoly.name, () => {
       });
       vi.mocked(PDFFunctions.getContentTable).mockReturnValueOnce({
         content: { table: 'faktura' } as any,
-        fieldsWithValue: ['NrKSeFFaZaliczkowej'],
+        fieldsWithValue: ['NrFaktury'],
       });
 
       generateSzczegoly(data);
@@ -546,11 +546,63 @@ describe(generateSzczegoly.name, () => {
       expect(PDFFunctions.getContentTable).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
-            name: 'NrKSeFFaZaliczkowej',
+            name: 'NrFaktury',
             title: 'Numery wcześniejszych faktur zaliczkowych',
           }),
         ]),
-        expect.any(Array),
+        expect.arrayContaining([
+          expect.objectContaining({
+            NrFaktury: { _text: 'FA001' },
+          }),
+        ]),
+        'auto',
+        [0, 4, 0, 0]
+      );
+    });
+
+    it('should generate faktura zaliczkowa table when data exists with non-KSeF number', () => {
+      const data = {
+        ...mockFaVat,
+        FakturaZaliczkowa: [
+          {
+            NrFaZaliczkowej: { _text: 'INV-2023-001' },
+          },
+        ],
+      } as any;
+
+      vi.mocked(PDFFunctions.getTable).mockImplementation((field: any) => {
+        if (field === data.FakturaZaliczkowa)
+          return [
+            {
+              NrFaZaliczkowej: { _text: 'INV-2023-001' },
+            },
+          ] as any;
+        return [];
+      });
+
+      vi.mocked(PDFFunctions.getContentTable).mockReturnValueOnce({
+        content: null,
+        fieldsWithValue: [],
+      });
+      vi.mocked(PDFFunctions.getContentTable).mockReturnValueOnce({
+        content: { table: 'faktura' } as any,
+        fieldsWithValue: ['NrFaktury'],
+      });
+
+      generateSzczegoly(data);
+
+      expect(PDFFunctions.getContentTable).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'NrFaktury',
+            title: 'Numery wcześniejszych faktur zaliczkowych',
+          }),
+        ]),
+        expect.arrayContaining([
+          expect.objectContaining({
+            NrFaktury: { _text: 'INV-2023-001' },
+          }),
+        ]),
         'auto',
         [0, 4, 0, 0]
       );
