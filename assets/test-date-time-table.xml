@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Faktura xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+    <Naglowek>
+        <KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+        <WariantFormularza>3</WariantFormularza>
+        <DataWytworzeniaFa>2025-12-29T14:30:45Z</DataWytworzeniaFa>
+        <SystemInfo>Test Date/Time Formatting</SystemInfo>
+    </Naglowek>
+    <Podmiot1>
+        <DaneIdentyfikacyjne>
+            <NIP>1234567890</NIP>
+            <Nazwa>Test Company Sp. z o.o.</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>ul. Testowa 123</AdresL1>
+            <AdresL2>00-001 Warszawa</AdresL2>
+        </Adres>
+    </Podmiot1>
+    <Podmiot2>
+        <DaneIdentyfikacyjne>
+            <NIP>9876543210</NIP>
+            <Nazwa>Customer Company Ltd.</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>ul. Kliencka 456</AdresL1>
+            <AdresL2>00-002 Warszawa</AdresL2>
+        </Adres>
+    </Podmiot2>
+    <Fa>
+        <KodWaluty>PLN</KodWaluty>
+        <P_1>2025-12-29</P_1>
+        <P_1M>Warszawa</P_1M>
+        <P_2>TEST/001/2025</P_2>
+        <P_6>2025-12-29</P_6>
+        <P_13_1>1000.00</P_13_1>
+        <P_14_1>230.00</P_14_1>
+        <P_15>1230.00</P_15>
+        <Zamowienie>
+            <WartoscZamowienia>1230.00</WartoscZamowienia>
+        </Zamowienie>
+        <RodzajFaktury>VAT</RodzajFaktury>
+        <FaWiersz>
+            <NrWierszaFa>1</NrWierszaFa>
+            <P_7>Test Product</P_7>
+            <P_8A>szt</P_8A>
+            <P_8B>10</P_8B>
+            <P_9A>100.00</P_9A>
+            <P_11>1000.00</P_11>
+            <P_11Vat>230.00</P_11Vat>
+            <P_12>23</P_12>
+        </FaWiersz>
+        <Adnotacje>
+            <P_16>2</P_16>
+            <P_17>2</P_17>
+            <P_18>2</P_18>
+            <P_18A>2</P_18A>
+            <Zwolnienie>
+                <P_19N>1</P_19N>
+            </Zwolnienie>
+            <NoweSrodkiTransportu>
+                <P_22N>1</P_22N>
+            </NoweSrodkiTransportu>
+            <P_23>2</P_23>
+            <PMarzy>
+                <P_PMarzyN>1</P_PMarzyN>
+            </PMarzy>
+        </Adnotacje>
+    </Fa>
+    <Stopka>
+        <Informacje>
+            <StopkaFaktury>Test invoice for date/time formatting verification</StopkaFaktury>
+        </Informacje>
+        <Rejestry>
+            <Rejestry>KRS: 0000123456</Rejestry>
+        </Rejestry>
+    </Stopka>
+    <Zalacznik>
+        <BlokDanych>
+            <ZNaglowek>Rozliczenie - usługa dystrybucji energii</ZNaglowek>
+            <Tabela>
+                <Opis>Tabela demonstracyjna - formatowanie dat i czasu</Opis>
+                <TNaglowek>
+                    <Kol Typ="txt">
+                        <NKom>Opis/Strefa</NKom>
+                    </Kol>
+                    <Kol Typ="date">
+                        <NKom>Data</NKom>
+                    </Kol>
+                    <Kol Typ="time">
+                        <NKom>Godzina</NKom>
+                    </Kol>
+                    <Kol Typ="datetime">
+                        <NKom>Data i czas</NKom>
+                    </Kol>
+                    <Kol Typ="dec">
+                        <NKom>Wartość (zł)</NKom>
+                    </Kol>
+                </TNaglowek>
+                <Wiersz>
+                    <WKom>Strefa I - dzienna</WKom>
+                    <WKom>2025-12-29T00:00:00Z</WKom>
+                    <WKom>2025-12-29T08:30:15Z</WKom>
+                    <WKom>2025-12-29T08:30:15Z</WKom>
+                    <WKom>250.50</WKom>
+                </Wiersz>
+                <Wiersz>
+                    <WKom>Strefa II - nocna</WKom>
+                    <WKom>2025-12-30T00:00:00Z</WKom>
+                    <WKom>2025-12-29T22:45:30Z</WKom>
+                    <WKom>2025-12-29T22:45:30Z</WKom>
+                    <WKom>180.75</WKom>
+                </Wiersz>
+                <Wiersz>
+                    <WKom>Strefa III - weekendowa</WKom>
+                    <WKom>2025-12-31T00:00:00Z</WKom>
+                    <WKom>2025-12-29T14:15:00Z</WKom>
+                    <WKom>2025-12-29T14:15:00Z</WKom>
+                    <WKom>120.25</WKom>
+                </Wiersz>
+            </Tabela>
+        </BlokDanych>
+    </Zalacznik>
+</Faktura>
+

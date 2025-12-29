@@ -11,7 +11,7 @@ import {
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
 import { DEFAULT_TABLE_LAYOUT, Kraj } from './consts/const';
-import { formatDateTime, getFormaPlatnosciString } from './generators/common/functions';
+import { formatDateTime, formatTime, getFormaPlatnosciString } from './generators/common/functions';
 import { HeaderDefine, PdfFP, PdfOptionField } from './types/pdf-types';
 import { FP } from '../lib-public/types/fa3.types';
 import { DifferentValues, FilteredKeysOfValues, TypesOfValues } from './types/universal.types';
@@ -104,6 +104,9 @@ function formatValue(
       break;
     case FormatTyp.Date:
       result.text = formatDateTime(value as string, false, true);
+      break;
+    case FormatTyp.Time:
+      result.text = formatTime(value as string);
       break;
     case FormatTyp.FormOfPayment:
       result.text = getFormaPlatnosciString({ _text: value as string });

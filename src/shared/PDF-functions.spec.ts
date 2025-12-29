@@ -32,6 +32,50 @@ describe('formatText', () => {
       })
     );
   });
+
+  it('formats datetime correctly', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const content = formatText(date, FormatTyp.DateTime);
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+    const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: `2025-10-03 ${expectedHour}:${expectedMinute}:${expectedSecond}`,
+        style: FormatTyp.DateTime,
+      })
+    );
+  });
+
+  it('formats date (without time) correctly', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const content = formatText(date, FormatTyp.Date);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '2025-10-03',
+        style: FormatTyp.Date,
+      })
+    );
+  });
+
+  it('formats time (without date) correctly', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const content = formatText(date, FormatTyp.Time);
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+    const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: `${expectedHour}:${expectedMinute}:${expectedSecond}`,
+        style: FormatTyp.Time,
+      })
+    );
+  });
 });
 
 describe('hasValue', () => {

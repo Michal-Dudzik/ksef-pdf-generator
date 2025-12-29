@@ -99,3 +99,23 @@ export function getDateTimeWithoutSeconds(isoDate?: FP2): string {
   }
   return formatDateTime(isoDate._text, true);
 }
+
+export function formatTime(data?: string, withoutSeconds?: boolean): string {
+  if (!data) {
+    return '';
+  }
+  const dateTime: Date = new Date(data);
+
+  if (isNaN(dateTime.getTime())) {
+    return data;
+  }
+
+  const hours: string = dateTime.getHours().toString().padStart(2, '0');
+  const minutes: string = dateTime.getMinutes().toString().padStart(2, '0');
+  const seconds: string = dateTime.getSeconds().toString().padStart(2, '0');
+
+  if (withoutSeconds) {
+    return `${hours}:${minutes}`;
+  }
+  return `${hours}:${minutes}:${seconds}`;
+}

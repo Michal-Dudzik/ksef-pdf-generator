@@ -362,11 +362,11 @@ export const Procedura: Record<string, string> = {
 };
 
 export const TableDataType: Record<string, FormatTyp> = {
-  date: FormatTyp.DateTime,
+  date: FormatTyp.Date,
   datetime: FormatTyp.DateTime,
   dec: FormatTyp.Currency,
   int: FormatTyp.Currency,
-  time: FormatTyp.DateTime,
+  time: FormatTyp.Time,
   txt: FormatTyp.Value,
 };
 

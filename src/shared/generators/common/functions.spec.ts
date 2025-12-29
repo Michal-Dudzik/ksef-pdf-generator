@@ -13,6 +13,7 @@ import {
 } from '../../consts/const';
 import {
   formatDateTime,
+  formatTime,
   getDateTimeWithoutSeconds,
   getFormaPlatnosciString,
   getRodzajTransportuString,
@@ -159,6 +160,57 @@ describe('formatDateTime', () => {
     const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
 
     expect(result).toBe(`2025-10-03 ${expectedHour}:${expectedMinute}`);
+  });
+
+  it('formats date only if withoutTime true', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const result = formatDateTime(date, false, true);
+
+    // Should match format YYYY-MM-DD only
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(result).toBe('2025-10-03');
+  });
+});
+
+describe('formatTime', () => {
+  it('returns empty string for empty input', () => {
+    expect(formatTime('')).toBe('');
+    expect(formatTime(null as any)).toBe('');
+  });
+
+  it('returns input string for invalid date', () => {
+    const invalid = 'not-a-date';
+
+    expect(formatTime(invalid)).toBe(invalid);
+  });
+
+  it('formats time with seconds by default', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const result = formatTime(date);
+
+    // Should match format HH:MM:SS
+    expect(result).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+    // Verify the time is parsed correctly (local time conversion applied)
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+    const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
+
+    expect(result).toBe(`${expectedHour}:${expectedMinute}:${expectedSecond}`);
+  });
+
+  it('formats time without seconds if withoutSeconds true', () => {
+    const date = '2025-10-03T12:15:30Z';
+    const result = formatTime(date, true);
+
+    // Should match format HH:MM
+    expect(result).toMatch(/^\d{2}:\d{2}$/);
+    // Verify the time is parsed correctly (local time conversion applied)
+    const parsedDate = new Date(date);
+    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
+    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
+
+    expect(result).toBe(`${expectedHour}:${expectedMinute}`);
   });
 });
 
