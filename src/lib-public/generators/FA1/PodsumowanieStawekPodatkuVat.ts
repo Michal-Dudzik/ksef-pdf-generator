@@ -153,7 +153,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: (getNumberRounded(fa.P_13_4) + getNumberRounded(fa.P_14_4)).toFixed(2),
       tax: getNumberRounded(fa.P_14_4).toFixed(2),
       taxPLN: getNumberRounded(fa.P_14_4W).toFixed(2),
-      taxRateString: '4% lub 3% lub oo',
+      taxRateString: '4% lub 3%',
     });
     no++;
   }

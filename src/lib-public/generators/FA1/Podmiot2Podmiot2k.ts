@@ -33,8 +33,10 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot2, podmiot2K: Podmiot
   if (firstColumn.length) {
     result.push(generateColumns([firstColumn, []]));
   }
-  firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
-  secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  if (podmiot2K.Adres?.AdresPol || podmiot2K.Adres?.AdresZagr) {
+    firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
+    secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  }
   if (podmiot2.AdresKoresp) {
     secondColumn.push(
       generatePodmiotAdres(podmiot2.AdresKoresp, 'Adres do korespondencji', true, [0, 12, 0, 1.3])

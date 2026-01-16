@@ -41,6 +41,7 @@ export enum FormatTyp {
   Time = 'Time',
   FormOfPayment = 'FormOfPayment',
   Percentage = 'Percentage',
+  Number = 'Number',
 }
 
 export default FormatTyp;

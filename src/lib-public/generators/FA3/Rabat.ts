@@ -16,7 +16,7 @@ export function generateRabat(invoice: Fa): Content[] {
   const faRows = getTable(invoice!.FaWiersz);
   const result: Content[] = [];
   const definedHeader: HeaderDefine[] = [
-    { name: 'NrWierszaFay', title: 'Lp.', format: FormatTyp.Default },
+    { name: 'NrWierszaFa', title: 'Lp.', format: FormatTyp.Default },
     { name: 'P_7', title: 'Nazwa towaru lub usługi', format: FormatTyp.Default },
     { name: 'P_8B', title: 'Ilość', format: FormatTyp.Default },
     { name: 'P_8A', title: 'Miara', format: FormatTyp.Default },

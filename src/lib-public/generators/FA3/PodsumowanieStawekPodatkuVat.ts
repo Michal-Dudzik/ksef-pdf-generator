@@ -177,7 +177,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: (getNumberRounded(fa.P_13_4) + getNumberRounded(fa.P_14_4)).toFixed(2),
       tax: getNumberRounded(fa.P_14_4).toFixed(2),
       taxPLN: getNumberRounded(fa.P_14_4W).toFixed(2),
-      taxRateString: '4% lub 3% lub oo',
+      taxRateString: '4% lub 3%',
     });
     no++;
   }
@@ -201,7 +201,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: getNumberRounded(fa.P_13_6_1).toFixed(2),
       tax: '0.00',
       taxPLN: '',
-      taxRateString: '0% - krajowe',
+      taxRateString: '0% w przypadku sprzedaży towarów i świadczenia usług na terytorium kraju (z wyłączeniem WDT i eksportu)',
     });
     no++;
   }
@@ -213,7 +213,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: getNumberRounded(fa.P_13_6_2).toFixed(2),
       tax: '0.00',
       taxPLN: '',
-      taxRateString: '0% - wdt',
+      taxRateString: '0% w przypadku wewnątrzwspólnotowej dostawy towarów (WDT)',
     });
     no++;
   }
@@ -225,7 +225,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: getNumberRounded(fa.P_13_6_3).toFixed(2),
       tax: '0.00',
       taxPLN: '',
-      taxRateString: '0% - eksport',
+      taxRateString: '0% w przypadku eksportu towarów',
     });
     no++;
   }
@@ -237,7 +237,7 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: getNumberRounded(fa.P_13_7).toFixed(2),
       tax: '0.00',
       taxPLN: '',
-      taxRateString: 'zwolnione z opodatkowania',
+      taxRateString: 'zwolnione od podatku',
     });
     no++;
   }

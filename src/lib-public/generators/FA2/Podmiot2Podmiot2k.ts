@@ -34,8 +34,10 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot2, podmiot2K: Podmiot
     result.push(generateColumns([firstColumn, []]));
   }
 
-  firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
-  secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  if (podmiot2K.Adres?.AdresL1?._text) {
+    firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
+    secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  }
 
   if (podmiot2.AdresKoresp) {
     secondColumn.push(

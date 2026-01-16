@@ -5,6 +5,7 @@ import {
   formatText,
   generateColumns,
   getTable,
+  hasValue,
   verticalSpacing,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
@@ -35,8 +36,12 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot2, podmiot2K: Podmiot
   if (firstColumn.length) {
     result.push(generateColumns([firstColumn, []]));
   }
-  firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
-  secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  firstColumn = [];
+  secondColumn = [];
+  if (podmiot2K.Adres?.AdresL1?._text || hasValue(podmiot2K.IDNabywcy) || podmiot2K.DaneIdentyfikacyjne) {
+    firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
+    secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  }
 
   if (podmiot2.AdresKoresp) {
     secondColumn.push(

@@ -10,6 +10,8 @@ import {
   getNumberRounded,
   getValue,
   hasValue,
+  normalizeCurrencySeparator,
+  replaceDotWithCommaIfNeeded,
   verticalSpacing,
 } from './PDF-functions';
 import FormatTyp, { Position } from './enums/common.enum';
@@ -43,7 +45,7 @@ describe('formatText', () => {
 
     expect(content).toEqual(
       expect.objectContaining({
-        text: `2025-10-03 ${expectedHour}:${expectedMinute}:${expectedSecond}`,
+        text: `03.10.2025 ${expectedHour}:${expectedMinute}:${expectedSecond}`,
         style: FormatTyp.DateTime,
       })
     );
@@ -55,7 +57,7 @@ describe('formatText', () => {
 
     expect(content).toEqual(
       expect.objectContaining({
-        text: '2025-10-03',
+        text: '03.10.2025',
         style: FormatTyp.Date,
       })
     );
@@ -168,5 +170,39 @@ describe('generateLine', () => {
 
     expect(lineContent).toHaveProperty('table');
     expect(lineContent).toHaveProperty('layout');
+  });
+});
+
+describe('normalized currency separator', () => {
+  it('should correctly add zeros ', () => {
+    const normalized = normalizeCurrencySeparator(43);
+
+    expect(normalized).toBe('43,00');
+  });
+
+  it('should correctyl add zero', () => {
+    const normalized = normalizeCurrencySeparator(43.7);
+
+    expect(normalized).toBe('43,70');
+  });
+
+  it('should correctly displa value', () => {
+    const normalized = normalizeCurrencySeparator('444,9999');
+
+    expect(normalized).toBe('444,9999');
+  });
+});
+
+describe('replaceDotWithCommaIfNeeded', () => {
+  it('should change dot to comma if needed', () => {
+    const dotToComma = replaceDotWithCommaIfNeeded(44.5);
+
+    expect(dotToComma).toBe('44,5');
+  });
+
+  it('should do nothing if no dot is found', () => {
+    const dotToComma = replaceDotWithCommaIfNeeded(3);
+
+    expect(dotToComma).toBe('3');
   });
 });

@@ -10,7 +10,7 @@ import {
   TableCell,
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
-import { DEFAULT_TABLE_LAYOUT, Kraj } from './consts/const';
+import { DEFAULT_TABLE_LAYOUT, Kraj, TStawkaPodatku_FA1, TStawkaPodatku_FA2, TStawkaPodatku_FA3 } from './consts/const';
 import { formatDateTime, formatTime, getFormaPlatnosciString } from './generators/common/functions';
 import { HeaderDefine, PdfFP, PdfOptionField } from './types/pdf-types';
 import { FP } from '../lib-public/types/fa3.types';
@@ -76,9 +76,8 @@ function formatValue(
   switch (item) {
     case FormatTyp.Currency:
       result.text = isNaN(Number(value))
-      ? (value as string)
-      : `${dotToComma(Number(value).toFixed(2))} ${currency}`;
-
+        ? (value as string)
+        : `${normalizeCurrencySeparator(value)} ${currency}`;
       result.alignment = Position.RIGHT;
       break;
     case FormatTyp.CurrencyAbs:
@@ -117,7 +116,41 @@ function formatValue(
     case FormatTyp.Percentage:
       result.text = `${value}%`;
       break;
+    case FormatTyp.Number:
+      result.text = replaceDotWithCommaIfNeeded(value);
+      result.alignment = Position.RIGHT;
+      break;
   }
+}
+
+export function normalizeCurrencySeparator(value: string | number | undefined): string {
+  if (value === undefined || value === null || value === '') {
+    return '';
+  }
+
+  const numberWithComma = dotToComma(typeof value === 'string' ? value : value.toString());
+
+  if (numberWithComma.includes(',')) {
+    const parts = numberWithComma.split(',');
+
+    return parts[1].length > 1 ? numberWithComma : numberWithComma + '0';
+  }
+
+  return numberWithComma + ',00';
+}
+
+export function replaceDotWithCommaIfNeeded(value: string | number | undefined): string {
+  let copyValue = '';
+
+  if (typeof value === 'number') {
+    copyValue = value.toString();
+  }
+
+  if (typeof value === 'string') {
+    copyValue = value;
+  }
+
+  return copyValue.includes('.') ? dotToComma(copyValue) : copyValue;
 }
 
 function dotToComma(value: string): string {
@@ -509,6 +542,27 @@ export function getKraj(kod: string): string {
     return Kraj[kod];
   }
   return kod;
+}
+
+export function getTStawkaPodatku(code: string, version: 1 | 2 | 3): string {
+  let TStawkaPodatkuVersioned: Record<string, string> = {};
+
+  switch (version) {
+    case 1:
+      TStawkaPodatkuVersioned = TStawkaPodatku_FA1;
+      break;
+    case 2:
+      TStawkaPodatkuVersioned = TStawkaPodatku_FA2;
+      break;
+    case 3:
+      TStawkaPodatkuVersioned = TStawkaPodatku_FA3;
+      break;
+  }
+
+  if (TStawkaPodatkuVersioned[code]) {
+    return TStawkaPodatkuVersioned[code];
+  }
+  return code;
 }
 
 export function generateLine(): Content {

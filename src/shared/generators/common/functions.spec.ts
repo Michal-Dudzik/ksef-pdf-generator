@@ -30,21 +30,21 @@ describe('getRolaString', () => {
 
   it('returns correct string for FA=1', () => {
     const key = Object.keys(FA1RolaPodmiotu3)[0];
-    const expected = FA1RolaPodmiotu3[key as keyof typeof FA1RolaPodmiotu3].split('-')[0];
+    const expected = FA1RolaPodmiotu3[key as keyof typeof FA1RolaPodmiotu3];
 
     expect(getRolaString({ _text: key } as any, 1)).toBe(expected);
   });
 
   it('returns correct string for FA=2', () => {
     const key = Object.keys(FA2RolaPodmiotu3)[0];
-    const expected = FA2RolaPodmiotu3[key as keyof typeof FA2RolaPodmiotu3].split('-')[0];
+    const expected = FA2RolaPodmiotu3[key as keyof typeof FA2RolaPodmiotu3];
 
     expect(getRolaString({ _text: key } as any, 2)).toBe(expected);
   });
 
   it('returns correct string for FA=3', () => {
     const key = Object.keys(FA3RolaPodmiotu3)[0];
-    const expected = FA3RolaPodmiotu3[key as keyof typeof FA3RolaPodmiotu3].split('-')[0];
+    const expected = FA3RolaPodmiotu3[key as keyof typeof FA3RolaPodmiotu3];
 
     expect(getRolaString({ _text: key } as any, 3)).toBe(expected);
   });
@@ -133,42 +133,42 @@ describe('formatDateTime', () => {
     const date = '2025-10-03T12:15:30Z';
     const result = formatDateTime(date);
 
-    // Should match format YYYY-MM-DD HH:MM:SS
-    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+    // Should match format DD.MM.YYYY HH:MM:SS
+    expect(result).toMatch(/^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$/);
     // Should contain the correct date part
-    expect(result).toContain('2025-10-03');
+    expect(result).toContain('03.10.2025');
     // Verify the date is parsed correctly (local time conversion applied)
     const parsedDate = new Date(date);
     const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
     const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
     const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
 
-    expect(result).toBe(`2025-10-03 ${expectedHour}:${expectedMinute}:${expectedSecond}`);
+    expect(result).toBe(`03.10.2025 ${expectedHour}:${expectedMinute}:${expectedSecond}`);
   });
 
   it('formats date without seconds if withoutSeconds true', () => {
     const date = '2025-10-03T12:15:30Z';
     const result = formatDateTime(date, true);
 
-    // Should match format YYYY-MM-DD HH:MM
-    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    // Should match format DD.MM.YYYY HH:MM
+    expect(result).toMatch(/^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$/);
     // Should contain the correct date part
-    expect(result).toContain('2025-10-03');
+    expect(result).toContain('03.10.2025');
     // Verify the date is parsed correctly (local time conversion applied)
     const parsedDate = new Date(date);
     const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
     const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
 
-    expect(result).toBe(`2025-10-03 ${expectedHour}:${expectedMinute}`);
+    expect(result).toBe(`03.10.2025 ${expectedHour}:${expectedMinute}`);
   });
 
   it('formats date only if withoutTime true', () => {
     const date = '2025-10-03T12:15:30Z';
     const result = formatDateTime(date, false, true);
 
-    // Should match format YYYY-MM-DD only
-    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(result).toBe('2025-10-03');
+    // Should match format DD.MM.YYYY only
+    expect(result).toMatch(/^\d{2}\.\d{2}\.\d{4}$/);
+    expect(result).toBe('03.10.2025');
   });
 });
 
@@ -224,10 +224,10 @@ describe('getDateTimeWithoutSeconds', () => {
     const isoDate = { _text: '2025-10-03T12:15:30Z' } as any;
     const result = getDateTimeWithoutSeconds(isoDate);
 
-    // Should match format YYYY-MM-DD HH:MM
-    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    // Should match format DD.MM.YYYY HH:MM
+    expect(result).toMatch(/^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$/);
     // Should contain the correct date part
-    expect(result).toContain('2025-10-03');
+    expect(result).toContain('03.10.2025');
     // Verify it matches formatDateTime output
     expect(result).toBe(formatDateTime(isoDate._text, true));
   });

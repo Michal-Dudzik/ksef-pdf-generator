@@ -2,10 +2,10 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import { Upo } from './types/upo-v4_3.types';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { generateStyle } from '../shared/PDF-functions';
-import { generateNaglowekUPO } from './generators/UPO4_3/Naglowek';
-import { generateDokumentUPO } from './generators/UPO4_3/Dokumenty';
 import { parseXML } from '../shared/XML-parser';
 import { Position } from '../shared/enums/common.enum';
+import { generateDokumentUPO } from './generators/UPO4_3/Dokumenty';
+import { generateNaglowekUPO } from './generators/UPO4_3/Naglowek';
 
 export async function generatePDFUPO(file: File): Promise<Blob> {
   const upo = (await parseXML(file)) as Upo;

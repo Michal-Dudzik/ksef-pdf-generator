@@ -49,7 +49,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   //  TODO: Add to FA2 and FA1? (KSEF20-15289)
   if (getValue(platnosc.Zaplacono) === '1') {
     table.push(createLabelText('Informacja o płatności: ', 'Zapłacono'));
-    table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty));
+    table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty, FormatTyp.Date));
   } else if (
     getValue(platnosc.ZnacznikZaplatyCzesciowej) === '1' ||
     getValue(platnosc.ZnacznikZaplatyCzesciowej) === '2'

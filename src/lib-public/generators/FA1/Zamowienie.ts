@@ -5,6 +5,8 @@ import {
   formatText,
   getContentTable,
   getTable,
+  getTStawkaPodatku,
+  getValue,
 } from '../../../shared/PDF-functions';
 import { HeaderDefine } from '../../../shared/types/pdf-types';
 import { Procedura, TRodzajFaktury } from '../../../shared/consts/const';
@@ -28,6 +30,9 @@ export function generateZamowienie(
   const orderTable: Record<string, FP>[] = getTable(orderData?.ZamowienieWiersz).map((el, index) => {
     if (!el.NrWierszaZam._text) {
       el.NrWierszaZam._text = (index + 1).toString();
+    }
+    if (getValue(el.P_12)) {
+      el.P_12._text = getTStawkaPodatku(getValue(el.P_12) as string, 1);
     }
     return el;
   });

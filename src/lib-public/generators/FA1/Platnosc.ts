@@ -52,7 +52,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
 
   if (platnosc.Zaplacono?._text === '1') {
     table.push(createLabelText('Informacja o płatności: ', 'Zapłacono'));
-    table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty));
+    table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty, FormatTyp.Date));
   } else if (platnosc.ZaplataCzesciowa?._text === '1') {
     table.push(createLabelText('Informacja o płatności: ', 'Zapłata częściowa'));
   } else {
