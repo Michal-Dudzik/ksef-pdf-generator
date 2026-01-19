@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "jsdom": "^26.1.0",
+    "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.20",
     "xml-js": "^1.6.11"
   }

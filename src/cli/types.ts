@@ -6,6 +6,7 @@ export interface CliOptions {
   qrCode1?: string;
   qrCode2?: string;
   simplifiedMode?: boolean;
+  mergePdf?: string;
 }
 
 export interface GeneratorFunctions {

@@ -31,6 +31,7 @@ Optional Arguments (for invoice type):
   --qrCode1      QR code data for the first QR code
   --qrCode2      QR code data for the second QR code (shown below the first with label "certyfikat")
   --simplified   Generate simplified invoice PDF (header + QR only)
+  --mergePdf     Merge simplified PDF with an existing PDF
 Other Options:
   --help, -h     Show this help message
   --version      Show version information
@@ -70,6 +71,13 @@ Examples:
     --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
     --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..." \\
     --simplified
+
+  # Generate simplified invoice PDF and merge with an existing PDF
+  ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
+    --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
+    --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..." \\
+    --simplified \\
+    --mergePdf "existing.pdf"
 
   # Generate UPO PDF
   ksef-pdf-generator --input upo.xml --output upo.pdf --type upo

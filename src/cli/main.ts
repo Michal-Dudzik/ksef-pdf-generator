@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { PDFDocument } from 'pdf-lib';
 import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
-import type { CliOptions, GeneratorFunctions } from './types';
 import { parseArguments } from './args';
 import { initializeApp } from './init';
 
@@ -35,7 +35,8 @@ export async function main(): Promise<void> {
       nrKSeF: options.nrKSeF || null,
       qrCode1: options.qrCode1 || null,
       qrCode2: options.qrCode2 || null,
-      simplifiedMode: options.simplifiedMode || null
+      simplifiedMode: options.simplifiedMode || null,
+      mergePdf: options.mergePdf || null
     },
     options.type,
     options.input,
@@ -54,6 +55,31 @@ export async function main(): Promise<void> {
     }
     
     log(`Input file exists: ${options.input}`, 'debug');
+
+    if (options.mergePdf) {
+      if (!options.simplifiedMode) {
+        logError('Merge requires simplified mode');
+        console.error('Error: --mergePdf requires --simplified');
+        endSession(false, options.output, new Error('Merge requires simplified mode'));
+        process.exit(1);
+      }
+
+      if (options.type !== 'invoice') {
+        logError('Merge is only supported for invoice type');
+        console.error('Error: --mergePdf is only supported with --type invoice');
+        endSession(false, options.output, new Error('Merge only supported for invoice type'));
+        process.exit(1);
+      }
+
+      if (!fs.existsSync(options.mergePdf)) {
+        logError(`Merge PDF file not found: ${options.mergePdf}`);
+        console.error(`Error: Merge PDF file not found: ${options.mergePdf}`);
+        endSession(false, options.output, new Error(`Merge PDF file not found: ${options.mergePdf}`));
+        process.exit(1);
+      }
+
+      log(`Merge PDF file exists: ${options.mergePdf}`, 'debug');
+    }
 
     // Ensure output directory exists
     const outputDir = path.dirname(options.output);
@@ -109,12 +135,23 @@ export async function main(): Promise<void> {
     // Convert blob to buffer and save
     const buffer = await convertBlobToBuffer(pdfBlob);
     
-    log(`Writing PDF to file: ${options.output} (${buffer.length} bytes)`, 'debug');
-    fs.writeFileSync(options.output, buffer);
+    if (options.mergePdf) {
+      log(`Merging PDFs into: ${options.output}`, 'info');
+      const mergeBuffer = fs.readFileSync(options.mergePdf);
+      const mergedBuffer = await mergePdfBuffers(mergeBuffer, buffer);
+      fs.writeFileSync(options.output, mergedBuffer);
 
-    console.log(`✓ PDF generated successfully: ${options.output}`);
-    log(`Success! Output file size: ${buffer.length} bytes`, 'info');
-    
+      log(`Merged PDF written to file: ${options.output} (${mergedBuffer.length} bytes)`, 'debug');
+      console.log(`✓ PDF generated successfully: ${options.output}`);
+      log(`Success! Output file size: ${mergedBuffer.length} bytes`, 'info');
+    } else {
+      log(`Writing PDF to file: ${options.output} (${buffer.length} bytes)`, 'debug');
+      fs.writeFileSync(options.output, buffer);
+
+      console.log(`✓ PDF generated successfully: ${options.output}`);
+      log(`Success! Output file size: ${buffer.length} bytes`, 'info');
+    }
+
     // End session with success
     endSession(true, options.output);
     
@@ -151,6 +188,27 @@ export async function main(): Promise<void> {
     
     process.exit(1);
   }
+}
+
+async function mergePdfBuffers(first: Buffer, second: Buffer): Promise<Buffer> {
+  const mergedPdf = await PDFDocument.create();
+  const [firstDoc, secondDoc] = await Promise.all([
+    PDFDocument.load(first),
+    PDFDocument.load(second)
+  ]);
+
+  const firstPages = await mergedPdf.copyPages(firstDoc, firstDoc.getPageIndices());
+  for (const page of firstPages) {
+    mergedPdf.addPage(page);
+  }
+
+  const secondPages = await mergedPdf.copyPages(secondDoc, secondDoc.getPageIndices());
+  for (const page of secondPages) {
+    mergedPdf.addPage(page);
+  }
+
+  const mergedBytes = await mergedPdf.save();
+  return Buffer.from(mergedBytes);
 }
 
 async function convertBlobToBuffer(pdfBlob: any): Promise<Buffer> {

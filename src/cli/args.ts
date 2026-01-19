@@ -64,6 +64,15 @@ export async function parseArguments(): Promise<CliOptions | null> {
       case '--simplified':
         options.simplifiedMode = true;
         break;
+      case '--mergePdf':
+      case '--merge-pdf':
+        if (!nextArg) {
+          console.error('Error: --mergePdf requires a value');
+          return null;
+        }
+        options.mergePdf = nextArg;
+        i++;
+        break;
       case '--help':
       case '-h':
         printHelp();
