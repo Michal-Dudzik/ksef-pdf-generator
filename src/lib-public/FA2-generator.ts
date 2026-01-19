@@ -27,7 +27,6 @@ pdfMake.vfs = pdfFonts.vfs;
 export function generateFA2(invoice: Faktura, additionalData: AdditionalDataTypes): TCreatedPdf {
   const isKOR_RABAT: boolean =
     invoice.Fa?.RodzajFaktury?._text == TRodzajFaktury.KOR && hasValue(invoice.Fa?.OkresFaKorygowanej);
-  const rabatOrRowsInvoice: Content = isKOR_RABAT ? generateRabat(invoice.Fa!) : generateWiersze(invoice.Fa!);
   const content: Content[] = additionalData?.simplifiedMode
     ? [...generateNaglowek(invoice.Fa, additionalData), ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ)]
     : [
@@ -35,7 +34,7 @@ export function generateFA2(invoice: Faktura, additionalData: AdditionalDataType
       generateDaneFaKorygowanej(invoice.Fa),
       ...generatePodmioty(invoice),
       generateSzczegoly(invoice.Fa!),
-      rabatOrRowsInvoice,
+      isKOR_RABAT ? generateRabat(invoice.Fa!) : generateWiersze(invoice.Fa!),
       generateZamowienie(
         invoice.Fa?.Zamowienie,
         ZamowienieKorekta.Order,
