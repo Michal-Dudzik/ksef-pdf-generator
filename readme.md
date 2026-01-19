@@ -101,6 +101,12 @@ bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
   --qrCode1 "offline-qr-code-data" ^
   --qrCode2 "certificate-qr-code-data"
 
+# Generate Simplified Invoice PDF (header + QR only)
+bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
+  --nrKSeF "5265877635-20250808-9231003CA67B-BE" ^
+  --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..." ^
+  --simplified
+
 # Generate UPO PDF
 bin\ksef-pdf-generator.exe -i assets\upo.xml -o upo.pdf -t upo
 ```
@@ -131,6 +137,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 - `--nrKSeF` - KSeF number for the invoice (use "OFFLINE" for offline invoices)
 - `--qrCode1` - QR code data for the first QR code
 - `--qrCode2` - QR code data for the second QR code (shown below the first with label "certyfikat")
+- `--simplified` - Generate simplified invoice PDF (header + QR only)
 
 ### Utility Commands
 
@@ -287,6 +294,9 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
   if (options.qrCode) {
     command += ` --qrCode "${options.qrCode}"`;
   }
+  if (options.simplifiedMode) {
+    command += ' --simplified';
+  }
 
   try {
     const { stdout, stderr } = await execPromise(command);
@@ -302,6 +312,7 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
 await generatePDF("assets/invoice.xml", "output/invoice.pdf", "invoice", {
   nrKSeF: "5265877635-20250808-9231003CA67B-BE",
   qrCode: "https://ksef-test.mf.gov.pl/...",
+  simplifiedMode: true,
 });
 ```
 
@@ -324,7 +335,8 @@ public class KSefPdfGenerator
         string outputPath,
         string type,
         string? nrKSeF = null,
-        string? qrCode = null)
+        string? qrCode = null,
+        bool simplifiedMode = false)
     {
         var arguments = $"--input \"{inputPath}\" --output \"{outputPath}\" --type {type}";
 
@@ -336,6 +348,11 @@ public class KSefPdfGenerator
         if (!string.IsNullOrEmpty(qrCode))
         {
             arguments += $" --qrCode \"{qrCode}\"";
+        }
+        
+        if (simplifiedMode)
+        {
+            arguments += " --simplified";
         }
 
         var processStartInfo = new ProcessStartInfo

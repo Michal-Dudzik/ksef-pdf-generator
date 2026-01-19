@@ -3,6 +3,14 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import { Faktura } from './types/fa2.types';
 import { generateFA2 } from './FA2-generator';
 import { AdditionalDataTypes } from './types/common.types';
+import { generateNaglowek } from './generators/common/Naglowek';
+import { generateStopka } from './generators/common/Stopka';
+import { generateDaneFaKorygowanej } from './generators/common/DaneFaKorygowanej';
+import { generatePodmioty } from './generators/FA2/Podmioty';
+import { generateSzczegoly } from './generators/FA2/Szczegoly';
+import { generateWiersze } from './generators/FA2/Wiersze';
+import { generateRabat } from './generators/FA2/Rabat';
+import { generatePodsumowanieStawekPodatkuVat } from './generators/FA2/PodsumowanieStawekPodatkuVat';
 
 vi.mock('./generators/FA2/Adnotacje', () => ({ generateAdnotacje: vi.fn(() => ({ example: 'adnotacje' })) }));
 vi.mock('./generators/FA2/DodatkoweInformacje', () => ({
@@ -89,5 +97,35 @@ describe('generateFA2', () => {
 
     expect(createPdfSpy).toHaveBeenCalled();
     expect(result).toBe(mockCreatePdfReturn);
+  });
+
+  it('generates simplified invoice with only header and QR section', () => {
+    const invoice: Faktura = {
+      Fa: {
+        RodzajFaktury: { _text: 'VAT' },
+        Zamowienie: {},
+        P_15: { _text: '15' },
+        KodWaluty: { _text: 'PLN' },
+      },
+      Stopka: {},
+      Naglowek: {},
+    } as any;
+
+    const additionalData: AdditionalDataTypes = { nrKSeF: 'nrKSeF', simplifiedMode: true };
+
+    const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+
+    const result = generateFA2(invoice, additionalData);
+
+    expect(createPdfSpy).toHaveBeenCalled();
+    expect(result).toBe(mockCreatePdfReturn);
+    expect(generateNaglowek).toHaveBeenCalled();
+    expect(generateStopka).toHaveBeenCalled();
+    expect(generateDaneFaKorygowanej).not.toHaveBeenCalled();
+    expect(generatePodmioty).not.toHaveBeenCalled();
+    expect(generateSzczegoly).not.toHaveBeenCalled();
+    expect(generateWiersze).not.toHaveBeenCalled();
+    expect(generateRabat).not.toHaveBeenCalled();
+    expect(generatePodsumowanieStawekPodatkuVat).not.toHaveBeenCalled();
   });
 });

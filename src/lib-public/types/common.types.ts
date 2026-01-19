@@ -27,4 +27,5 @@ export interface AdditionalDataTypes {
   qrCode1?: string;
   qrCode2?: string;
   isMobile?: boolean;
+  simplifiedMode?: boolean;
 }

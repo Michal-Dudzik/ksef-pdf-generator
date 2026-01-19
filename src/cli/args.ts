@@ -61,6 +61,9 @@ export async function parseArguments(): Promise<CliOptions | null> {
         options.qrCode2 = nextArg;
         i++;
         break;
+      case '--simplified':
+        options.simplifiedMode = true;
+        break;
       case '--help':
       case '-h':
         printHelp();

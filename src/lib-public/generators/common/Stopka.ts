@@ -1,4 +1,4 @@
-import { Content, ContentQr, ContentStack } from 'pdfmake/interfaces';
+import { Column, Content, ContentQr, ContentStack, ContentText, Margins } from 'pdfmake/interfaces';
 import {
   createHeader,
   createLabelText,
@@ -28,6 +28,10 @@ export function generateStopka(
   wz?: FP[],
   zalacznik?: Zalacznik
 ): Content[] {
+  if (additionalData?.simplifiedMode) {
+    return generateQRCodeData(additionalData);
+  }
+
   const wzty: Content[] = generateWZ(wz);
   const rejestry: Content[] = generateRejestry(stopka);
   const informacje: Content[] = generateInformacje(stopka);
@@ -119,74 +123,119 @@ function generateInformacje(stopka?: Stopka): Content[] {
 function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
   const result: Content = [];
 
+  const qrColumns: Column[] = [];
+  let qrCode1Stack: Content[] | undefined;
+  let qrCode2Stack: Content[] | undefined;
+  const qrCodeSize = 170;
+
   if (additionalData?.qrCode1 && additionalData.nrKSeF) {
-    const qrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode1);
+    const qrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode1, qrCodeSize);
 
     result.push(createHeader('Sprawdź, czy Twoja faktura znajduje się w KSeF!'));
     if (qrCode) {
-      result.push({
-        columns: [
+      qrCode1Stack = [
+        qrCode,
+        {
+          stack: [formatText(additionalData.nrKSeF, FormatTyp.Default)],
+          width: 'auto',
+          alignment: 'center',
+          marginLeft: 10,
+          marginRight: 10,
+          marginTop: 10,
+        } as ContentStack,
+      ];
+      const qrCode1Column: Column = {
+        stack: [
+          qrCode,
           {
-            stack: [
-              qrCode,
-
-              {
-                stack: [formatText(additionalData.nrKSeF, FormatTyp.Default)],
-                width: 'auto',
-                alignment: 'center',
-                marginLeft: 10,
-                marginRight: 10,
-                marginTop: 10,
-              } as ContentStack,
-            ],
-            width: 150,
-          } as ContentStack,
-          {
-            stack: [
-              formatText(
-                'Nie możesz zeskanować kodu z obrazka? Kliknij w link weryfikacyjny i przejdź do weryfikacji faktury!',
-                FormatTyp.Value
-              ),
-              {
-                stack: [formatText(additionalData.qrCode1, FormatTyp.Link)],
-                marginTop: 5,
-                link: additionalData.qrCode1,
-              },
-            ],
-            margin: [10, (qrCode.fit ?? 120) / 2 - 30, 0, 0],
+            stack: [formatText(additionalData.nrKSeF, FormatTyp.Default)],
             width: 'auto',
+            alignment: 'center',
+            marginLeft: 10,
+            marginRight: 10,
+            marginTop: 10,
           } as ContentStack,
         ],
-      });
+        width: qrCodeSize,
+      } as Column;
+      qrColumns.push(qrCode1Column);
     }
   }
 
   // second QR code for certificate if provided
   if (additionalData?.qrCode2) {
-   
-    const qrCodeSize = 170;
     const certQrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode2, qrCodeSize);
 
     if (certQrCode) {
-      result.push({
-        columns: [
+      qrCode2Stack = [
+        certQrCode,
+        {
+          text: 'CERTYFIKAT',
+          alignment: 'center',
+          fontSize: 10,
+          margin: [0, 10, 0, 0],
+        },
+      ];
+      const qrCode2Column: Column = {
+        stack: [
+          certQrCode,
           {
-            stack: [
-              certQrCode,
-              {
-                text: 'CERTYFIKAT',
-                alignment: 'center',
-                fontSize: 10,
-                margin: [0, 10, 0, 0],
-              },
-            ],
-            width: qrCodeSize,
-          } as ContentStack,
+            text: 'CERTYFIKAT',
+            alignment: 'center',
+            fontSize: 10,
+            margin: [0, 10, 0, 0],
+          },
         ],
-        margin: [0, 10, 0, 0],
-      });
+        width: qrCodeSize,
+        alignment: 'center',
+      } as Column;
+      qrColumns.push(qrCode2Column);
     }
   }
 
-  return createSection(result, true);
+  if (qrColumns.length) {
+    const alignedColumns =
+      qrCode1Stack && qrCode2Stack
+        ? [
+            {
+              stack: qrCode1Stack,
+              width: qrCodeSize,
+              alignment: 'left',
+            } as Column,
+            { text: '', width: '*' } as Column,
+            {
+              stack: qrCode2Stack,
+              width: qrCodeSize,
+              alignment: 'center',
+            } as Column,
+          ]
+        : qrColumns;
+    result.push({
+      columns: alignedColumns,
+      columnGap: 10,
+      margin: [0, 10, 0, 0],
+    });
+  }
+
+  if (additionalData?.qrCode1 && additionalData.nrKSeF) {
+    const verificationLink = formatText(additionalData.qrCode1, FormatTyp.Link);
+    const verificationLinkText: ContentText =
+      typeof verificationLink === 'string' ? { text: verificationLink } : verificationLink;
+    verificationLinkText.link = additionalData.qrCode1;
+    verificationLinkText.marginTop = 5;
+    result.push({
+      stack: [
+        formatText(
+          'Nie możesz zeskanować kodu z obrazka? Kliknij w link weryfikacyjny i przejdź do weryfikacji faktury!',
+          FormatTyp.Value
+        ),
+        verificationLinkText,
+      ],
+      margin: [0, 8, 0, 0],
+      alignment: 'center',
+    });
+  }
+
+  const sectionMargin: Margins | undefined = additionalData?.simplifiedMode ? [0, 0, 0, 0] : undefined;
+  return createSection(result, true, sectionMargin);
 }

@@ -20,6 +20,7 @@ import { generateStopka } from './generators/common/Stopka';
 import { Faktura } from './types/fa3.types';
 import { ZamowienieKorekta } from './enums/invoice.enums';
 import { AdditionalDataTypes } from './types/common.types';
+import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplified-page-size';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -27,8 +28,12 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
   const isKOR_RABAT: boolean =
     invoice.Fa?.RodzajFaktury?._text == TRodzajFaktury.KOR && hasValue(invoice.Fa?.OkresFaKorygowanej);
   const rabatOrRowsInvoice: Content = isKOR_RABAT ? generateRabat(invoice.Fa!) : generateWiersze(invoice.Fa!);
-  const docDefinition: TDocumentDefinitions = {
-    content: [
+  const content: Content[] = additionalData?.simplifiedMode
+    ? [
+      ...generateNaglowek(invoice.Fa, additionalData, invoice.Zalacznik),
+      ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ, invoice.Zalacznik),
+    ]
+    : [
       ...generateNaglowek(invoice.Fa, additionalData, invoice.Zalacznik),
       generateDaneFaKorygowanej(invoice.Fa),
       ...generatePodmioty(invoice),
@@ -48,7 +53,15 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
       generatePlatnosc(invoice.Fa?.Platnosc),
       generateWarunkiTransakcji(invoice.Fa?.WarunkiTransakcji),
       ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ, invoice.Zalacznik),
-    ],
+    ];
+  const docDefinition: TDocumentDefinitions = {
+    content,
+    ...(additionalData?.simplifiedMode
+      ? {
+        pageSize: getSimplifiedPageSize(additionalData),
+        pageMargins: SIMPLIFIED_PAGE_MARGINS,
+      }
+      : {}),
     ...generateStyle(),
   };
 

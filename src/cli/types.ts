@@ -5,6 +5,7 @@ export interface CliOptions {
   nrKSeF?: string;
   qrCode1?: string;
   qrCode2?: string;
+  simplifiedMode?: boolean;
 }
 
 export interface GeneratorFunctions {

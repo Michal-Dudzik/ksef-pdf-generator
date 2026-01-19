@@ -34,7 +34,8 @@ export async function main(): Promise<void> {
       type: options.type,
       nrKSeF: options.nrKSeF || null,
       qrCode1: options.qrCode1 || null,
-      qrCode2: options.qrCode2 || null
+      qrCode2: options.qrCode2 || null,
+      simplifiedMode: options.simplifiedMode || null
     },
     options.type,
     options.input,
@@ -90,6 +91,10 @@ export async function main(): Promise<void> {
       if (options.qrCode2) {
         additionalData.qrCode2 = options.qrCode2;
         log(`Using qrCode2: ${options.qrCode2}`, 'debug');
+      }
+      if (options.simplifiedMode) {
+        additionalData.simplifiedMode = true;
+        log('Using simplifiedMode: true', 'debug');
       }
 
       log('Generating invoice PDF...', 'info');
