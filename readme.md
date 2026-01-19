@@ -107,6 +107,13 @@ bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
   --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..." ^
   --simplified
 
+# Generate Simplified PDF and Merge with an Existing PDF
+bin\ksef-pdf-generator.exe -i invoice.xml -o invoice-merged.pdf -t invoice ^
+  --nrKSeF "5265877635-20250808-9231003CA67B-BE" ^
+  --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..." ^
+  --simplified ^
+  --mergePdf "outputs\\invoice-basic.pdf"
+
 # Generate UPO PDF
 bin\ksef-pdf-generator.exe -i assets\upo.xml -o upo.pdf -t upo
 ```
@@ -138,6 +145,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 - `--qrCode1` - QR code data for the first QR code
 - `--qrCode2` - QR code data for the second QR code (shown below the first with label "certyfikat")
 - `--simplified` - Generate simplified invoice PDF (header + QR only)
+- `--mergePdf` - Merge the simplified PDF with an existing PDF (existing PDF first, simplified appended)
 
 ### Utility Commands
 
