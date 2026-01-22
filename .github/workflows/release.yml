@@ -65,7 +65,7 @@ jobs:
           if (-not (Test-Path "bin")) { New-Item -ItemType Directory -Path "bin" }
 
           # Copy Node.js binary
-          $exePath = "bin/ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe"
+          $exePath = "bin/ksef-pdf-generator.exe"
           Copy-Item (Get-Command node).Source $exePath
 
           # Inject application
@@ -89,7 +89,7 @@ jobs:
       - name: Compress executable with UPX
         shell: pwsh
         run: |
-          $exePath = "bin/ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe"
+          $exePath = "bin/ksef-pdf-generator.exe"
           $sizeBefore = (Get-Item $exePath).Length
 
           Write-Host "Compressing with UPX..."
@@ -108,18 +108,18 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            bin/ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe
+            bin/ksef-pdf-generator.exe
           tag_name: ${{ github.ref_name }}
           name: Release ${{ steps.package-version.outputs.VERSION }}
           body: |
             ## KSeF PDF Generator v${{ steps.package-version.outputs.VERSION }}
 
             ### Installation
-            Download `ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe`
+            Download `ksef-pdf-generator.exe` and use it directly - no installation required!
 
             ### Usage
             ```bash
-            ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe -i input.xml -o output.pdf -t invoice
+            ksef-pdf-generator.exe -i input.xml -o output.pdf -t invoice
             ```
 
             ### Build Information
@@ -137,7 +137,7 @@ jobs:
       - name: Summary
         shell: pwsh
         run: |
-          $exePath = "bin/ksef-pdf-generator-ver-${{ steps.package-version.outputs.VERSION }}.exe"
+          $exePath = "bin/ksef-pdf-generator.exe"
           $size = (Get-Item $exePath).Length / 1MB
 
           Write-Host ""

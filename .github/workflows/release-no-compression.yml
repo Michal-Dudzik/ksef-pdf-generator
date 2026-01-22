@@ -88,9 +88,9 @@ jobs:
           files: |
             bin/ksef-pdf-generator.exe
           tag_name: ${{ github.ref_name }}
-          name: Release ${{ steps.package-version.outputs.VERSION }}
+          name: Release ${{ steps.package-version.outputs.VERSION }} (Uncompressed)
           body: |
-            ## KSeF PDF Generator v${{ steps.package-version.outputs.VERSION }}
+            ## KSeF PDF Generator v${{ steps.package-version.outputs.VERSION }} (Uncompressed)
 
             ### Installation
             Download `ksef-pdf-generator.exe` and use it directly - no installation required!
