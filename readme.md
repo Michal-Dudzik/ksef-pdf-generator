@@ -30,11 +30,11 @@ Uses **Node.js Single Executable Applications (SEA)** - the official built-in fe
 #### Download from GitHub Releases (Recommended)
 
 1. Go to [Releases](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
-2. Download `ksef-pdf-generator-ver-X.X.X.exe` from the latest release
+2. Download `ksef-pdf-generator.exe` from the latest release
 3. Use it directly (no installation required):
 
 ```batch
-ksef-pdf-generator-ver-0.0.38.exe -i invoice.xml -o invoice.pdf -t invoice
+ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice
 ```
 
 #### Or Build from Source
@@ -267,7 +267,7 @@ https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest
 
 Every GitHub Release contains:
 
-- **Executable File**: `ksef-pdf-generator-ver-X.X.X.exe`
+- **Executable File**: `ksef-pdf-generator.exe`
 - **Release Notes**: Automatically generated with:
   - Version number
   - Installation instructions

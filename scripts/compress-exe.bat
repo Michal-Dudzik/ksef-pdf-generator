@@ -9,28 +9,13 @@ echo Compressing ksef-pdf-generator with UPX
 echo ========================================
 echo.
 
-REM Determine which executable to compress (prefer versioned filename from package.json)
+REM Determine which executable to compress
 setlocal enabledelayedexpansion
-set "APP_VERSION="
-for /f "usebackq tokens=*" %%i in (`node -p "require('./package.json').version" 2^>nul`) do set "APP_VERSION=%%i"
+set "EXE_TARGET=bin\ksef-pdf-generator.exe"
 
-set "EXE_VERSIONED="
-if defined APP_VERSION (
-    set "EXE_VERSIONED=bin\ksef-pdf-generator-ver-!APP_VERSION!.exe"
-)
-set "EXE_LATEST=bin\ksef-pdf-generator.exe"
-set "EXE_TARGET="
-
-if defined EXE_VERSIONED if exist "!EXE_VERSIONED!" (
-    set "EXE_TARGET=!EXE_VERSIONED!"
-) else if exist "!EXE_LATEST!" (
-    set "EXE_TARGET=!EXE_LATEST!"
-)
-
-if not defined EXE_TARGET (
+if not exist "!EXE_TARGET!" (
     echo ERROR: No executable found to compress.
-    if defined EXE_VERSIONED echo Tried: !EXE_VERSIONED!
-    echo Tried: !EXE_LATEST!
+    echo Tried: !EXE_TARGET!
     echo Please run scripts\build-standalone-win.bat first.
     echo.
     pause

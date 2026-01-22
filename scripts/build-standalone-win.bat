@@ -19,12 +19,10 @@ if not defined APP_VERSION (
     set "APP_VERSION=unknown"
 )
 
-set "EXE_VERSIONED=bin\ksef-pdf-generator-ver-!APP_VERSION!.exe"
-set "EXE_LATEST=bin\ksef-pdf-generator.exe"
+set "EXE_TARGET=bin\ksef-pdf-generator.exe"
 
 echo App version: !APP_VERSION!
-echo Output (versioned): !EXE_VERSIONED!
-echo Output (latest): !EXE_LATEST!
+echo Output: !EXE_TARGET!
 echo.
 
 REM Check if node_modules exists
@@ -80,7 +78,7 @@ if %ERRORLEVEL% neq 0 (
 echo.
 echo Step 4: Copying Node.js binary...
 if not exist "bin\" mkdir bin
-node -e "require('fs').copyFileSync(process.execPath, process.argv[1])" "!EXE_VERSIONED!"
+node -e "require('fs').copyFileSync(process.execPath, process.argv[1])" "!EXE_TARGET!"
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to copy Node.js binary
     pause
@@ -114,7 +112,7 @@ if %ERRORLEVEL% equ 0 (
 
 if defined SIGNTOOL (
     echo Found signtool, removing original Node.js signature...
-    "%SIGNTOOL%" remove /s "!EXE_VERSIONED!" >nul 2>nul
+    "%SIGNTOOL%" remove /s "!EXE_TARGET!" >nul 2>nul
     if %ERRORLEVEL% equ 0 (
         echo Successfully removed signature
     ) else (
@@ -133,7 +131,7 @@ if defined SIGNTOOL (
 )
 
 REM Inject the blob using postject (via npx)
-npx --yes postject "!EXE_VERSIONED!" NODE_SEA_BLOB build\sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+npx --yes postject "!EXE_TARGET!" NODE_SEA_BLOB build\sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to inject blob into executable
     pause
@@ -146,25 +144,15 @@ del build\sea-config.json 2>nul
 del build\sea-prep.blob 2>nul
 
 echo.
-echo Step 6b: Creating/Updating latest executable copy...
-copy /Y "!EXE_VERSIONED!" "!EXE_LATEST!" >nul
-if %ERRORLEVEL% neq 0 (
-    echo WARNING: Failed to copy to !EXE_LATEST!
-) else (
-    echo Latest copy updated: !EXE_LATEST!
-)
-
-echo.
 echo ========================================
 echo Build completed successfully!
 echo ========================================
 echo.
-echo Standalone executable created: !EXE_VERSIONED!
-echo Stable copy created: !EXE_LATEST!
+echo Standalone executable created: !EXE_TARGET!
 echo.
 
 REM Get file size
-for %%A in ("!EXE_VERSIONED!") do set SIZE=%%~zA
+for %%A in ("!EXE_TARGET!") do set SIZE=%%~zA
 set /a SIZE_MB=!SIZE! / 1048576
 echo File size: !SIZE_MB! MB (!SIZE! bytes)
 echo.
@@ -190,11 +178,11 @@ if %ERRORLEVEL% equ 0 (
     if !ERRORLEVEL! equ 1 (
         echo.
         echo Compressing with UPX...
-        upx --best --lzma "!EXE_VERSIONED!"
+        upx --best --lzma "!EXE_TARGET!"
         if !ERRORLEVEL! equ 0 (
             echo.
             echo Compression successful!
-            for %%A in ("!EXE_VERSIONED!") do set NEW_SIZE=%%~zA
+            for %%A in ("!EXE_TARGET!") do set NEW_SIZE=%%~zA
             set /a NEW_SIZE_MB=!NEW_SIZE! / 1048576
             set /a SAVED=!SIZE! - !NEW_SIZE!
             set /a SAVED_MB=!SAVED! / 1048576
@@ -222,11 +210,10 @@ if %ERRORLEVEL% equ 0 (
 )
 
 echo.
-echo You can now copy !EXE_VERSIONED! to any Windows machine
+echo You can now copy !EXE_TARGET! to any Windows machine
 echo without requiring Node.js installation!
 echo.
 echo Usage:
-echo   !EXE_VERSIONED! -i input.xml -o output.pdf -t invoice
-echo   (or) !EXE_LATEST! -i input.xml -o output.pdf -t invoice
+echo   !EXE_TARGET! -i input.xml -o output.pdf -t invoice
 echo.
 pause
