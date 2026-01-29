@@ -37,19 +37,28 @@ export function generatePodmiot2(podmiot2: Podmiot2): Content[] {
       ...generateDaneKontaktowe(podmiot2.DaneKontaktowe ?? []),
       createLabelText('Numer klienta: ', podmiot2.NrKlienta)
     );
+  }
 
-    const daneKontaktowe = getTable(podmiot2.DaneKontaktowe);
+  // Check for JST and GV tags - can be directly in Podmiot2 or in DaneKontaktowe
+  const daneKontaktowe = getTable(podmiot2.DaneKontaktowe);
+  const jst = podmiot2.JST || (daneKontaktowe.length > 0 ? daneKontaktowe[0].JST : undefined);
+  const gv = podmiot2.GV || (daneKontaktowe.length > 0 ? daneKontaktowe[0].GV : undefined);
 
-    if (daneKontaktowe.length) {
+  if (jst) {
+    result.push(
       createLabelText(
         'Faktura dotyczy jednostki podrzędnej JST: ',
-        daneKontaktowe[0].JST?._text === '1' ? 'TAK' : 'NIE'
-      );
+        jst._text === '1' ? 'TAK' : 'NIE'
+      )
+    );
+  }
+  if (gv) {
+    result.push(
       createLabelText(
         'Faktura dotyczy członka grupy GV: ',
-        daneKontaktowe[0].GV?._text === '1' ? 'TAK' : 'NIE'
-      );
-    }
+        gv._text === '1' ? 'TAK' : 'NIE'
+      )
+    );
   }
   return result;
 }
