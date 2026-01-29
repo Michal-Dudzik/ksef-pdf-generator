@@ -1,0 +1,98 @@
+<Faktura xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+    <Naglowek>
+        <KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+        <WariantFormularza>3</WariantFormularza>
+        <DataWytworzeniaFa>2026-01-28T17:04:51</DataWytworzeniaFa>
+        <SystemInfo>Maconomy</SystemInfo>
+    </Naglowek>
+    <Podmiot1>
+        <DaneIdentyfikacyjne>
+            <NIP>9590207556</NIP>
+            <Nazwa>FIRMA 1</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>KANIOSKA</AdresL1>
+        </Adres>
+    </Podmiot1>
+    <Podmiot2>
+        <DaneIdentyfikacyjne>
+            <NIP>5262881116</NIP>
+            <Nazwa>FIRMA 2</Nazwa>
+        </DaneIdentyfikacyjne>
+        <Adres>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>SMOKA WAWELSKIEGO 1</AdresL1>
+        </Adres>
+        <NrKlienta>5001</NrKlienta>
+        <JST>1</JST>
+        <GV>1</GV>
+    </Podmiot2>
+    <Fa>
+        <KodWaluty>PLN</KodWaluty>
+        <P_1>2026-01-28</P_1>
+        <P_1M>DOM</P_1M>
+        <P_2>FA56</P_2>
+        <OkresFa>
+            <P_6_Od>2025-11-01</P_6_Od>
+            <P_6_Do>2025-11-22</P_6_Do>
+        </OkresFa>
+        <P_13_1>200.00</P_13_1>
+        <P_14_1>46.00</P_14_1>
+        <P_13_6_1>200.00</P_13_6_1>
+        <P_15>246.00</P_15>
+        <KursWalutyZ>1.000000</KursWalutyZ>
+        <Adnotacje>
+            <P_16>2</P_16>
+            <P_17>2</P_17>
+            <P_18>2</P_18>
+            <P_18A>2</P_18A>
+            <Zwolnienie>
+                <P_19N>1</P_19N>
+            </Zwolnienie>
+            <NoweSrodkiTransportu>
+                <P_22N>1</P_22N>
+            </NoweSrodkiTransportu>
+            <P_23>2</P_23>
+            <PMarzy>
+                <P_PMarzyN>1</P_PMarzyN>
+            </PMarzy>
+        </Adnotacje>
+        <RodzajFaktury>VAT</RodzajFaktury>
+        <FaWiersz>
+            <NrWierszaFa>1</NrWierszaFa>
+            <P_7>TOWAR 1</P_7>
+            <P_8A>SZT</P_8A>
+            <P_8B>2.000000</P_8B>
+            <P_9A>100.00</P_9A>
+            <P_11>200.00</P_11>
+            <P_11Vat>46.00</P_11Vat>
+            <P_12>23</P_12>
+        </FaWiersz>
+        <Platnosc>
+            <FormaPlatnosci>4</FormaPlatnosci>
+            <Skonto>
+                <WarunkiSkonta>ZAPŁATA DWA TYGODNIE PRZED TERMINEM</WarunkiSkonta>
+                <WysokoscSkonta>100 AAA</WysokoscSkonta>
+            </Skonto>
+        </Platnosc>
+        <WarunkiTransakcji>
+            <WarunkiDostawy>WARUNKI DOSTAWY: FOB</WarunkiDostawy>
+            <KursUmowny>1.000000</KursUmowny>
+            <WalutaUmowna>PLN</WalutaUmowna>
+            <PodmiotPosredniczacy>1</PodmiotPosredniczacy>
+        </WarunkiTransakcji>
+    </Fa>
+    <Stopka>
+        <Informacje>
+            <StopkaFaktury>TEKST STOPKA 1</StopkaFaktury>
+        </Informacje>
+        <Informacje>
+            <StopkaFaktury>TEKST STOPKA 2</StopkaFaktury>
+        </Informacje>
+        <Informacje>
+            <StopkaFaktury>TEKST STOPKA 3</StopkaFaktury>
+        </Informacje>
+    </Stopka>
+</Faktura>
