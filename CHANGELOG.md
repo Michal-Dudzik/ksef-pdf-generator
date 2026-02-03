@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - Phone numbers now render actual values instead of `[object Object]`
 - Attachment table splitting keeps the first column visible across subtables
 - VAT summary totals now include `P_14_5` where applicable
+- Taxpayer status descriptions now accept numeric codes without type errors
+- VAT summary table rows no longer emit undefined cells in FA2/FA3
 
 ## [0.0.48] - 2026-01-29
 

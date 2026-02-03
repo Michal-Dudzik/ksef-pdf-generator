@@ -496,12 +496,12 @@ const LEGACY_TAXPAYER_STATUS_MAP: Record<string, string> = {
  * normalizeTaxpayerStatus('invalid') // returns undefined
  * normalizeTaxpayerStatus(null) // returns undefined
  */
-export function normalizeTaxpayerStatus(statusCode: string | null | undefined): string | undefined {
-  if (!statusCode) {
+export function normalizeTaxpayerStatus(statusCode: string | number | null | undefined): string | undefined {
+  if (statusCode === null || statusCode === undefined) {
     return undefined;
   }
 
-  const trimmedCode = statusCode.trim();
+  const trimmedCode = statusCode.toString().trim();
 
   // If already a valid numeric code, return it
   if (TAXPAYER_STATUS[trimmedCode]) {
@@ -533,7 +533,7 @@ export function normalizeTaxpayerStatus(statusCode: string | null | undefined): 
  * getTaxpayerStatusDescription('SAMO') // returns 'Stan likwidacji'
  * getTaxpayerStatusDescription('invalid') // returns undefined
  */
-export function getTaxpayerStatusDescription(statusCode: string | null | undefined): string | undefined {
+export function getTaxpayerStatusDescription(statusCode: string | number | null | undefined): string | undefined {
   const normalizedCode = normalizeTaxpayerStatus(statusCode);
   return normalizedCode ? TAXPAYER_STATUS[normalizedCode] : undefined;
 }
