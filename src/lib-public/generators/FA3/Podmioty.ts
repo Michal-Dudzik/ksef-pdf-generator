@@ -48,19 +48,21 @@ export function generatePodmioty(invoice: Faktura): Content[] {
 
   if (podmiot3.length > 0) {
     const podmiot3Podmiot2KDto = getPodmiot3Podmiot2KDto(podmiot2KTable, podmiot3);
+    const podmiot2Id = getValue(invoice.Podmiot2?.IDNabywcy);
+    const filteredPodmiot3Podmiot2KDto = podmiot2Id
+      ? podmiot3Podmiot2KDto.filter(
+          (podmiot3Podmiot2) => getValue(podmiot3Podmiot2.fakturaPodmiotNDto.IDNabywcy) === podmiot2Id
+        )
+      : podmiot3Podmiot2KDto;
 
-    podmiot3Podmiot2KDto.filter(
-      (podmiot3Podmiot2) => podmiot3Podmiot2.fakturaPodmiotNDto.IDNabywcy === invoice.Podmiot2?.IDNabywcy
-    );
-
-    if (podmiot3Podmiot2KDto.length > 0) {
-      podmiot3Podmiot2KDto.forEach((pdm2KDto, i) => {
+    if (filteredPodmiot3Podmiot2KDto.length > 0) {
+      filteredPodmiot3Podmiot2KDto.forEach((pdm2KDto, i) => {
         if (pdm2KDto.podmiot2KDto) {
           result.push(generateDaneIdentyfikacyjneTPodmiot3Dto(pdm2KDto, i));
         } else {
           result.push(generatePodmiot3(pdm2KDto.fakturaPodmiotNDto, i));
         }
-        if (i < podmiot3Podmiot2KDto.length - 1) {
+        if (i < filteredPodmiot3Podmiot2KDto.length - 1) {
           result.push({ margin: [0, 8, 0, 0], text: '' });
         }
       });

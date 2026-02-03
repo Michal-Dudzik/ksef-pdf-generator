@@ -562,10 +562,6 @@ export function getTStawkaPodatku(code: string, version: 1 | 2 | 3, P_PMarzy?: s
     return 'marża';
   }
 
-  if (!code && P_PMarzy === '1') {
-    return 'marża';
-  }
-
   if (TStawkaPodatkuVersioned[code]) {
     return TStawkaPodatkuVersioned[code];
   }
