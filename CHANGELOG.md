@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.49] - 2026-02-03
+
+### Added
+
+- OSS handling in VAT summaries and OSS tax rate display in rows/orders (FA1/FA2/FA3)
+- Margin scheme (`P_PMarzy`) support in tax rate mapping
+- Multiple bank account rendering in payment sections (row-wise pairs)
+
+### Changed
+
+- `KursWaluty` column is now conditional when values differ; OSS tax rate fields formatted as percentage
+- Podmiot section layout updates: separator lines before "Nabywca"/"Podmiot inny", udział formatted as percentage, and "Imię i nazwisko" label added
+- FA3 Podmiot2K/Podmiot3 mapping now matches by `IDNabywcy` with fallback to `Podmiot2`
+
+### Fixed
+
+- Phone numbers now render actual values instead of `[object Object]`
+- Attachment table splitting keeps the first column visible across subtables
+- VAT summary totals now include `P_14_5` where applicable
+- Taxpayer status descriptions now accept numeric codes without type errors
+- VAT summary table rows no longer emit undefined cells in FA2/FA3
+
 ## [0.0.48] - 2026-01-29
 
 ### Fixed

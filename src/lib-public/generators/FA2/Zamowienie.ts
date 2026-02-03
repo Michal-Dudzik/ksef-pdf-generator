@@ -20,7 +20,8 @@ export function generateZamowienie(
   zamowienieKorekta: ZamowienieKorekta,
   p_15: string,
   rodzajFaktury: string,
-  KodWaluty: string
+  KodWaluty: string,
+  P_PMarzy?: string
 ): Content[] {
   if (!orderData) {
     return [];
@@ -31,9 +32,7 @@ export function generateZamowienie(
     if (!el.NrWierszaZam._text) {
       el.NrWierszaZam._text = (index + 1).toString();
     }
-    if (getValue(el.P_12)) {
-      el.P_12._text = getTStawkaPodatku(getValue(el.P_12) as string, 2);
-    }
+    el.P_12Z = { _text: getTStawkaPodatku(getValue(el.P_12Z) as string, 2, P_PMarzy) };
     return el;
   });
   const definedHeaderLp: HeaderDefine[] = [
@@ -51,7 +50,7 @@ export function generateZamowienie(
     { name: 'P_8BZ', title: 'Ilość', format: FormatTyp.Right, width: 'auto' },
     { name: 'P_8AZ', title: 'Miara', format: FormatTyp.Default, width: 'auto' },
     { name: 'P_12Z', title: 'Stawka podatku', format: FormatTyp.Default, width: 'auto' },
-    { name: 'P_12Z_XII', title: 'Stawka podatku OSS', format: FormatTyp.Default, width: 'auto' },
+    { name: 'P_12Z_XII', title: 'Stawka podatku OSS', format: FormatTyp.Percentage, width: 'auto' },
     {
       name: 'P_12Z_Zal_15',
       title: 'Znacznik dla towaru lub usługi z zał. nr 15 do ustawy',

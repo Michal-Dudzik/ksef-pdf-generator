@@ -14,6 +14,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn(),
   getValue: vi.fn(),
   getTStawkaPodatku: vi.fn(),
+  getDifferentColumnsValue: vi.fn(),
 }));
 
 describe(generateWiersze.name, () => {
@@ -61,6 +62,7 @@ describe(generateWiersze.name, () => {
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['Header'] as any);
     vi.mocked(PDFFunctions.createSection).mockReturnValue({ section: 'content' } as any);
     vi.mocked(PDFFunctions.createLabelTextArray).mockReturnValue(['Label', 'Value'] as any);
+    vi.mocked(PDFFunctions.getDifferentColumnsValue).mockReturnValue([]);
   };
 
   describe('when no invoice lines exist', () => {
@@ -71,6 +73,7 @@ describe(generateWiersze.name, () => {
         fieldsWithValue: [],
       });
       vi.mocked(PDFFunctions.getValue).mockReturnValue('0');
+      vi.mocked(PDFFunctions.getDifferentColumnsValue).mockReturnValue([]);
 
       const result = generateWiersze(mockFaVat);
 

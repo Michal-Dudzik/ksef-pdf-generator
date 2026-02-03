@@ -5,6 +5,7 @@ import {
   createSection,
   formatText,
   getContentTable,
+  getDifferentColumnsValue,
   getTable,
   getTStawkaPodatku,
   getValue,
@@ -41,7 +42,7 @@ export function generateWiersze(faVat: Fa): Content {
     { name: 'P_8A', title: 'Miara', format: FormatTyp.Default, width: 'auto' },
     { name: 'P_10', title: 'Rabat', format: FormatTyp.Currency, width: 'auto' },
     { name: 'P_12', title: 'Stawka podatku', format: FormatTyp.Default, width: 'auto' },
-    { name: 'P_12_XII', title: 'Stawka podatku OSS', format: FormatTyp.Default, width: 'auto' },
+    { name: 'P_12_XII', title: 'Stawka podatku OSS', format: FormatTyp.Percentage, width: 'auto' },
     {
       name: 'P_12_Zal_15',
       title: 'Znacznik dla towaru lub usługi z zał. nr 15 do ustawy',
@@ -51,9 +52,17 @@ export function generateWiersze(faVat: Fa): Content {
     { name: 'P_11', title: 'Wartość sprzedaży netto', format: FormatTyp.Currency, width: 'auto' },
     { name: 'P_11A', title: 'Wartość sprzedaży brutto', format: FormatTyp.Currency, width: 'auto' },
     { name: 'P_11Vat', title: 'Wartość sprzedaży vat', format: FormatTyp.Currency, width: 'auto' },
-    { name: 'KursWaluty', title: 'Kurs waluty', format: FormatTyp.Currency6, width: 'auto' },
-    { name: 'StanPrzed', title: 'Stan przed', format: FormatTyp.Boolean, width: 'auto' },
   ];
+
+  if (getDifferentColumnsValue('KursWaluty', faWiersze).length !== 1) {
+    definedHeader1.push({
+      name: 'KursWaluty',
+      title: 'Kurs waluty',
+      format: FormatTyp.Currency6,
+      width: 'auto',
+    });
+  }
+  definedHeader1.push({ name: 'StanPrzed', title: 'Stan przed', format: FormatTyp.Boolean, width: 'auto' });
   const definedHeader2: HeaderDefine[] = [
     { name: 'GTIN', title: 'GTIN', format: FormatTyp.Default, width: 'auto' },
     { name: 'PKWiU', title: 'PKWiU', format: FormatTyp.Default, width: 'auto' },

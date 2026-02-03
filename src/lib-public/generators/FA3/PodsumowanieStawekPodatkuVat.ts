@@ -46,7 +46,7 @@ export function generatePodsumowanieStawekPodatkuVat(faktura: Faktura): Content[
     hasValue(faktura.Fa?.P_14_3W) ||
     hasValue(faktura.Fa?.P_14_4W);
 
-  let tableBody: TableCell[] = [];
+  let tableBody: TableCell[][] = [];
   const table: ContentTable = {
     table: {
       headerRows: 1,
@@ -63,18 +63,32 @@ export function generatePodsumowanieStawekPodatkuVat(faktura: Faktura): Content[
 
   const definedHeader: Content[] = [
     ...[{ text: 'Lp.', style: FormatTyp.GrayBoldTitle }],
-    ...(AnyP13P14_5Diff0 ? [{ text: 'Stawka podatku', style: FormatTyp.GrayBoldTitle }] : []),
+    ...(AnyP13P14_5Diff0 || hasValue(faktura.Fa?.P_14_5)
+      ? [
+          {
+            text: 'Stawka podatku',
+            style: FormatTyp.GrayBoldTitle,
+          },
+        ]
+      : []),
     ...(AnyP13 ? [{ text: 'Kwota netto', style: FormatTyp.GrayBoldTitle }] : []),
-    ...(AnyP13P14_5Diff0 ? [{ text: 'Kwota podatku', style: FormatTyp.GrayBoldTitle }] : []),
+    ...(AnyP13P14_5Diff0 || hasValue(faktura.Fa?.P_14_5)
+      ? [
+          {
+            text: 'Kwota podatku',
+            style: FormatTyp.GrayBoldTitle,
+          },
+        ]
+      : []),
     ...(AnyP13 ? [{ text: 'Kwota brutto', style: FormatTyp.GrayBoldTitle }] : []),
     ...(AnyP_14xW ? [{ text: 'Kwota podatku PLN', style: FormatTyp.GrayBoldTitle }] : []),
   ];
 
   const widths: Content[] = [
     ...['auto'],
-    ...(AnyP13P14_5Diff0 ? ['*'] : []),
+    ...(AnyP13P14_5Diff0 || hasValue(faktura.Fa?.P_14_5) ? ['*'] : []),
     ...(AnyP13 ? ['*'] : []),
-    ...(AnyP13P14_5Diff0 ? ['*'] : []),
+    ...(AnyP13P14_5Diff0 || hasValue(faktura.Fa?.P_14_5) ? ['*'] : []),
     ...(AnyP13 ? ['*'] : []),
     ...(AnyP_14xW ? ['*'] : []),
   ];
@@ -83,17 +97,27 @@ export function generatePodsumowanieStawekPodatkuVat(faktura: Faktura): Content[
     const summary = getSummaryTaxRate(faktura.Fa);
 
     tableBody = summary.map((item) => {
-      const data = [];
+      const data: TableCell[] = [];
 
       data.push(item.no);
       if (AnyP13P14_5Diff0) {
-        data.push(item.taxRateString);
+        if (item.taxRateString) {
+          data.push(item.taxRateString);
+        } else if (getValue(faktura.Fa?.P_13_5)) {
+          data.push('OSS');
+        } else {
+          data.push('');
+        }
+      } else if (hasValue(faktura.Fa?.P_14_5)) {
+        data.push('OSS');
       }
       if (AnyP13) {
         data.push(formatText(item.net, FormatTyp.Currency));
       }
       if (AnyP13P14_5Diff0) {
         data.push(formatText(item.tax, FormatTyp.Currency));
+      } else if (hasValue(faktura.Fa?.P_14_5)) {
+        data.push(getValue(faktura.Fa?.P_14_5) ?? '');
       }
       if (AnyP13) {
         data.push(formatText(item.gross, FormatTyp.Currency));
@@ -186,10 +210,10 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
     summary.push({
       no,
       net: getNumberRounded(fa.P_13_5).toFixed(2),
-      gross: getNumberRounded(fa.P_13_5).toFixed(2),
+      gross: (getNumberRounded(fa.P_13_5) + getNumberRounded(fa.P_14_5)).toFixed(2),
       tax: getNumberRounded(fa.P_14_5).toFixed(2),
       taxPLN: '',
-      taxRateString: getValue(fa.P_14_5) != 0 ? 'niepodlegające opodatkowaniu' : '',
+      taxRateString: getValue(fa.P_14_5) != 0 ? 'OSS' : '',
     });
     no++;
   }
@@ -201,7 +225,8 @@ export function getSummaryTaxRate(fa: Fa): TaxSummaryTypes[] {
       gross: getNumberRounded(fa.P_13_6_1).toFixed(2),
       tax: '0.00',
       taxPLN: '',
-      taxRateString: '0% w przypadku sprzedaży towarów i świadczenia usług na terytorium kraju (z wyłączeniem WDT i eksportu)',
+      taxRateString:
+        '0% w przypadku sprzedaży towarów i świadczenia usług na terytorium kraju (z wyłączeniem WDT i eksportu)',
     });
     no++;
   }

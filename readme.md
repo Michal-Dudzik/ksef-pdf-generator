@@ -453,6 +453,9 @@ Using the example files:
 # For invoice
 bin\ksef-pdf-generator.exe -i assets\invoice.xml -o test_invoice.pdf -t invoice
 
+# For advanced invoice test (max coverage)
+node dist/cli.cjs --input assets/invoice-max-coverage.xml --output outputs/test_max_cov.pdf --type invoice -nrKSeF "4342534586-20251103-s0cOP4pbUBZPye4" --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/4342534586/03-11-2025/s0cOP4pbUBZPye4NePFHq8AiEEbxz_JttFipc16seCU%22"
+
 # For UPO
 bin\ksef-pdf-generator.exe -i assets\upo.xml -o test_upo.pdf -t upo
 ```
