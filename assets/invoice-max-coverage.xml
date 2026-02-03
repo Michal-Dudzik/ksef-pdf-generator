@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Faktura xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+  <Naglowek>
+    <KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+    <WariantFormularza>3</WariantFormularza>
+    <DataWytworzeniaFa>2026-02-03T12:34:56Z</DataWytworzeniaFa>
+    <SystemInfo>Max Coverage Test</SystemInfo>
+  </Naglowek>
+
+  <Podmiot1>
+    <PrefiksPodatnika>PL</PrefiksPodatnika>
+    <NrEORI>PL123456789000001</NrEORI>
+    <DaneIdentyfikacyjne>
+      <NIP>1111111111</NIP>
+      <Nazwa>Seller Company A</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Main Street 1</AdresL1>
+      <AdresL2>00-001 Warsaw</AdresL2>
+      <GLN>5900000000001</GLN>
+    </Adres>
+    <AdresKoresp>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Correspondence St 10</AdresL1>
+      <AdresL2>00-010 Warsaw</AdresL2>
+      <GLN>5900000000002</GLN>
+    </AdresKoresp>
+    <DaneKontaktowe>
+      <Email>seller@example.com</Email>
+      <Telefon>+48-500-100-100</Telefon>
+      <JST>1</JST>
+      <GV>2</GV>
+    </DaneKontaktowe>
+    <DaneKontaktowe>
+      <Email>billing@example.com</Email>
+      <Telefon>+48-500-200-200</Telefon>
+      <JST>2</JST>
+      <GV>1</GV>
+    </DaneKontaktowe>
+    <StatusInfoPodatnika>3</StatusInfoPodatnika>
+  </Podmiot1>
+
+  <Podmiot2>
+    <NrEORI>PL222222222000002</NrEORI>
+    <IDNabywcy>NAB-01</IDNabywcy>
+    <DaneIdentyfikacyjne>
+      <NIP>2222222222</NIP>
+      <Nazwa>Buyer Company B</Nazwa>
+      <NrVatUE>123456789</NrVatUE>
+      <KodUE>PL</KodUE>
+      <KodKraju>DE</KodKraju>
+      <NrID>DE123456789</NrID>
+      <BrakID>0</BrakID>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>DE</KodKraju>
+      <AdresL1>Buyer Strasse 5</AdresL1>
+      <AdresL2>10115 Berlin</AdresL2>
+      <GLN>4000000000003</GLN>
+    </Adres>
+    <AdresKoresp>
+      <KodKraju>DE</KodKraju>
+      <AdresL1>Buyer Correspondence 7</AdresL1>
+      <AdresL2>10117 Berlin</AdresL2>
+      <GLN>4000000000004</GLN>
+    </AdresKoresp>
+    <DaneKontaktowe>
+      <Email>buyer@example.com</Email>
+      <Telefon>+49-30-111-111</Telefon>
+    </DaneKontaktowe>
+    <DaneKontaktowe>
+      <Email>accounts@example.com</Email>
+      <Telefon>+49-30-222-222</Telefon>
+    </DaneKontaktowe>
+    <NrKlienta>CUST-9001</NrKlienta>
+    <JST>2</JST>
+    <GV>2</GV>
+  </Podmiot2>
+
+  <Podmiot3>
+    <IDNabywcy>NAB-01</IDNabywcy>
+    <NrEORI>PL333333333000003</NrEORI>
+    <DaneIdentyfikacyjne>
+      <NIP>3333333333</NIP>
+      <Nazwa>Additional Buyer C</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Other Buyer 1</AdresL1>
+      <AdresL2>00-100 Warsaw</AdresL2>
+      <GLN>5900000000003</GLN>
+    </Adres>
+    <DaneKontaktowe>
+      <Email>otherbuyer@example.com</Email>
+      <Telefon>+48-600-100-100</Telefon>
+    </DaneKontaktowe>
+    <Rola>4</Rola>
+    <OpisRoli>Dodatkowy nabywca</OpisRoli>
+    <Udzial>50</Udzial>
+    <NrKlienta>EXT-001</NrKlienta>
+  </Podmiot3>
+
+  <Podmiot3>
+    <IDNabywcy>NAB-01</IDNabywcy>
+    <NrEORI>PL444444444000004</NrEORI>
+    <DaneIdentyfikacyjne>
+      <NIP>4444444444</NIP>
+      <Nazwa>Other Party D</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Other Party 2</AdresL1>
+      <AdresL2>00-200 Warsaw</AdresL2>
+      <GLN>5900000000004</GLN>
+    </Adres>
+    <DaneKontaktowe>
+      <Email>otherparty@example.com</Email>
+      <Telefon>+48-600-200-200</Telefon>
+    </DaneKontaktowe>
+    <Rola>3</Rola>
+    <RolaInna>INNA</RolaInna>
+    <OpisRoli>Podmiot pierwotny</OpisRoli>
+    <Udzial>25</Udzial>
+    <NrKlienta>EXT-002</NrKlienta>
+  </Podmiot3>
+
+  <PodmiotUpowazniony>
+    <NrEORI>PL555555555000005</NrEORI>
+    <DaneIdentyfikacyjne>
+      <NIP>5555555555</NIP>
+      <Nazwa>Authorized Entity E</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Authorized St 9</AdresL1>
+      <AdresL2>00-300 Warsaw</AdresL2>
+      <GLN>5900000000005</GLN>
+    </Adres>
+    <AdresKoresp>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>Authorized Correspondence 11</AdresL1>
+      <AdresL2>00-301 Warsaw</AdresL2>
+      <GLN>5900000000006</GLN>
+    </AdresKoresp>
+    <DaneKontaktowe>
+      <EmailPU>authorized@example.com</EmailPU>
+      <TelefonPU>+48-700-100-100</TelefonPU>
+    </DaneKontaktowe>
+    <RolaPU>3</RolaPU>
+  </PodmiotUpowazniony>
+
+  <Fa>
+    <KodWaluty>EUR</KodWaluty>
+    <P_1>2026-02-03</P_1>
+    <P_1M>Warsaw</P_1M>
+    <P_2>FA/MAX-COVERAGE/02/2026</P_2>
+    <WZ>WZ/01/2026</WZ>
+    <WZ>WZ/02/2026</WZ>
+    <P_6>2026-01-31</P_6>
+    <OkresFa>
+      <P_6_Od>2026-01-01</P_6_Od>
+      <P_6_Do>2026-01-31</P_6_Do>
+    </OkresFa>
+
+    <P_13_1>1000.00</P_13_1>
+    <P_14_1>230.00</P_14_1>
+    <P_14_1W>230.00</P_14_1W>
+    <P_13_2>800.00</P_13_2>
+    <P_14_2>64.00</P_14_2>
+    <P_14_2W>64.00</P_14_2W>
+    <P_13_3>500.00</P_13_3>
+    <P_14_3>25.00</P_14_3>
+    <P_14_3W>25.00</P_14_3W>
+    <P_13_4>200.00</P_13_4>
+    <P_14_4>8.00</P_14_4>
+    <P_14_4W>8.00</P_14_4W>
+    <P_13_5>300.00</P_13_5>
+    <P_14_5>21.00</P_14_5>
+    <P_13_6_1>150.00</P_13_6_1>
+    <P_13_6_2>120.00</P_13_6_2>
+    <P_13_6_3>110.00</P_13_6_3>
+    <P_13_7>90.00</P_13_7>
+    <P_13_8>80.00</P_13_8>
+    <P_13_9>70.00</P_13_9>
+    <P_13_10>60.00</P_13_10>
+    <P_13_11>50.00</P_13_11>
+    <P_15>3588.00</P_15>
+    <KursWalutyZ>4.123456</KursWalutyZ>
+
+    <Adnotacje>
+      <P_16>1</P_16>
+      <P_17>1</P_17>
+      <P_18>1</P_18>
+      <P_18A>1</P_18A>
+      <Zwolnienie>
+        <P_19>1</P_19>
+        <P_19A>Art. 43 ust. 1 pkt 10</P_19A>
+        <P_19B>Art. 132 Dyrektywy 2006/112/WE</P_19B>
+        <P_19C>Inna podstawa prawna</P_19C>
+      </Zwolnienie>
+      <NoweSrodkiTransportu>
+        <P_42_5>1</P_42_5>
+        <NowySrodekTransportu>
+          <P_NrWierszaNST>1</P_NrWierszaNST>
+          <P_22A>2026-01-15</P_22A>
+          <P_22B>Nowy pojazd ladowy</P_22B>
+          <P_22B1>VIN1234567890</P_22B1>
+          <P_22B2>BODY123</P_22B2>
+          <P_22B3>CHASSIS123</P_22B3>
+          <P_22B4>FRAME123</P_22B4>
+          <P_22BT>Przebieg 1000 km</P_22BT>
+          <P_22BMK>1000km</P_22BMK>
+          <P_22BMD>2026-01-10</P_22BMD>
+          <P_22BK>1500</P_22BK>
+          <P_22BNR>NR-001</P_22BNR>
+          <P_22BRP>2026-01-12</P_22BRP>
+        </NowySrodekTransportu>
+      </NoweSrodkiTransportu>
+      <P_23>1</P_23>
+      <PMarzy>
+        <P_PMarzy>1</P_PMarzy>
+        <P_PMarzy_3_1>1</P_PMarzy_3_1>
+        <P_PMarzyN>1</P_PMarzyN>
+      </PMarzy>
+    </Adnotacje>
+
+    <RodzajFaktury>VAT</RodzajFaktury>
+    <PrzyczynaKorekty>Test correction reason</PrzyczynaKorekty>
+    <TypKorekty>1</TypKorekty>
+    <DaneFaKorygowanej>
+      <DataWystFaKorygowanej>2025-12-20</DataWystFaKorygowanej>
+      <NrFaKorygowanej>FA/OLD/12/2025/001</NrFaKorygowanej>
+      <NrKSeFFaKorygowanej>KSEF-OLD-001</NrKSeFFaKorygowanej>
+    </DaneFaKorygowanej>
+    <DaneFaKorygowanej>
+      <DataWystFaKorygowanej>2025-12-21</DataWystFaKorygowanej>
+      <NrFaKorygowanej>FA/OLD/12/2025/002</NrFaKorygowanej>
+      <NrKSeFFaKorygowanej>KSEF-OLD-002</NrKSeFFaKorygowanej>
+    </DaneFaKorygowanej>
+    <OkresFaKorygowanej>2025-12</OkresFaKorygowanej>
+    <NrFaKorygowany>FA/OLD/12/2025/003</NrFaKorygowany>
+
+    <Podmiot1K>
+      <PrefiksPodatnika>PL</PrefiksPodatnika>
+      <DaneIdentyfikacyjne>
+        <NIP>1111111111</NIP>
+        <Nazwa>Seller Company A (Corrected)</Nazwa>
+      </DaneIdentyfikacyjne>
+      <Adres>
+        <KodKraju>PL</KodKraju>
+        <AdresL1>Corrected Seller St 2</AdresL1>
+        <AdresL2>00-002 Warsaw</AdresL2>
+        <GLN>5900000000007</GLN>
+      </Adres>
+    </Podmiot1K>
+
+    <Podmiot2K>
+      <IDNabywcy>NAB-01</IDNabywcy>
+      <DaneIdentyfikacyjne>
+        <NIP>2222222222</NIP>
+        <Nazwa>Buyer Company B (Corrected)</Nazwa>
+        <NrVatUE>987654321</NrVatUE>
+        <KodUE>PL</KodUE>
+        <KodKraju>FR</KodKraju>
+        <NrID>FR123456789</NrID>
+        <BrakID>0</BrakID>
+      </DaneIdentyfikacyjne>
+      <Adres>
+        <KodKraju>FR</KodKraju>
+        <AdresL1>Rue Corrected 10</AdresL1>
+        <AdresL2>75001 Paris</AdresL2>
+        <GLN>3000000000001</GLN>
+      </Adres>
+    </Podmiot2K>
+    <Podmiot2K>
+      <IDNabywcy>NAB-02</IDNabywcy>
+      <DaneIdentyfikacyjne>
+        <NIP>2222222223</NIP>
+        <Nazwa>Buyer Company X</Nazwa>
+      </DaneIdentyfikacyjne>
+      <Adres>
+        <KodKraju>PL</KodKraju>
+        <AdresL1>Backup Buyer 3</AdresL1>
+        <AdresL2>00-900 Warsaw</AdresL2>
+        <GLN>5900000000008</GLN>
+      </Adres>
+    </Podmiot2K>
+
+    <P_15ZK>50.00</P_15ZK>
+    <KursWalutyZK>4.100000</KursWalutyZK>
+
+    <ZaliczkaCzesciowa>
+      <P_6Z>2026-01-10</P_6Z>
+      <P_15Z>100.00</P_15Z>
+      <KursWalutyZW>4.120000</KursWalutyZW>
+    </ZaliczkaCzesciowa>
+    <ZaliczkaCzesciowa>
+      <P_6Z>2026-01-20</P_6Z>
+      <P_15Z>200.00</P_15Z>
+      <KursWalutyZW>4.130000</KursWalutyZW>
+    </ZaliczkaCzesciowa>
+
+    <FP>1</FP>
+    <TP>1</TP>
+    <DodatkowyOpis>
+      <NrWiersza>1</NrWiersza>
+      <Klucz>INFO_A</Klucz>
+      <Wartosc>Additional info A</Wartosc>
+    </DodatkowyOpis>
+    <DodatkowyOpis>
+      <NrWiersza>2</NrWiersza>
+      <Klucz>INFO_B</Klucz>
+      <Wartosc>Additional info B</Wartosc>
+    </DodatkowyOpis>
+
+    <FakturaZaliczkowa>
+      <NrKSeFFaZaliczkowej>KSEF-ZAL-001</NrKSeFFaZaliczkowej>
+    </FakturaZaliczkowa>
+    <FakturaZaliczkowa>
+      <NrFaZaliczkowej>ZAL/02/2026</NrFaZaliczkowej>
+    </FakturaZaliczkowa>
+
+    <ZwrotAkcyzy>1</ZwrotAkcyzy>
+
+    <FaWiersz>
+      <NrWierszaFa>1</NrWierszaFa>
+      <UU_ID>LINE-001</UU_ID>
+      <P_7>Product A with full fields</P_7>
+      <P_8A>pcs</P_8A>
+      <P_8B>2</P_8B>
+      <P_9A>100.00</P_9A>
+      <P_9B>123.00</P_9B>
+      <P_10>5.00</P_10>
+      <P_11>200.00</P_11>
+      <P_11A>246.00</P_11A>
+      <P_11Vat>46.00</P_11Vat>
+      <P_12>23</P_12>
+      <P_12_XII>0</P_12_XII>
+      <P_12_Zal_15>1</P_12_Zal_15>
+      <KursWaluty>4.100000</KursWaluty>
+      <StanPrzed>1</StanPrzed>
+      <GTIN>5901234123457</GTIN>
+      <PKWiU>62.01.11.0</PKWiU>
+      <CN>010121</CN>
+      <PKOB>1234</PKOB>
+      <KwotaAkcyzy>10.00</KwotaAkcyzy>
+      <GTU>GTU_01</GTU>
+      <Procedura>7</Procedura>
+      <P_6A>2026-01-15</P_6A>
+      <Indeks>IDX-001</Indeks>
+    </FaWiersz>
+
+    <FaWiersz>
+      <NrWierszaFa>2</NrWierszaFa>
+      <UU_ID>LINE-002</UU_ID>
+      <P_7>Product B with OSS</P_7>
+      <P_8A>kg</P_8A>
+      <P_8B>5</P_8B>
+      <P_9A>50.00</P_9A>
+      <P_11>250.00</P_11>
+      <P_11Vat>17.50</P_11Vat>
+      <P_12_XII>7</P_12_XII>
+      <KursWaluty>4.200000</KursWaluty>
+      <GTIN>5901234123464</GTIN>
+      <Procedura>4</Procedura>
+      <P_6A>2026-01-20</P_6A>
+      <Indeks>IDX-002</Indeks>
+    </FaWiersz>
+
+    <FaWiersz>
+      <NrWierszaFa>3</NrWierszaFa>
+      <UU_ID>LINE-003</UU_ID>
+      <P_7>Product C (marza test)</P_7>
+      <P_8A>service</P_8A>
+      <P_8B>1</P_8B>
+      <P_9A>300.00</P_9A>
+      <P_11>300.00</P_11>
+      <P_11Vat>0.00</P_11Vat>
+      <KursWaluty>4.100000</KursWaluty>
+      <P_6A>2026-01-25</P_6A>
+      <Indeks>IDX-003</Indeks>
+    </FaWiersz>
+
+    <Rozliczenie>
+      <Obciazenia>
+        <Powod>Obciazenie A</Powod>
+        <Kwota>15.00</Kwota>
+      </Obciazenia>
+      <Obciazenia>
+        <Powod>Obciazenie B</Powod>
+        <Kwota>20.00</Kwota>
+      </Obciazenia>
+      <Odliczenia>
+        <Powod>Odliczenie A</Powod>
+        <Kwota>5.00</Kwota>
+      </Odliczenia>
+      <SumaObciazen>35.00</SumaObciazen>
+      <SumaOdliczen>5.00</SumaOdliczen>
+      <DoZaplaty>30.00</DoZaplaty>
+    </Rozliczenie>
+
+    <Platnosc>
+      <ZnacznikZaplatyCzesciowej>2</ZnacznikZaplatyCzesciowej>
+      <FormaPlatnosci>6</FormaPlatnosci>
+      <OpisPlatnosci>Split payment</OpisPlatnosci>
+      <TerminPlatnosci>
+        <Termin>2026-02-10</Termin>
+        <TerminOpis>
+          <Ilosc>14</Ilosc>
+          <Jednostka>DNI</Jednostka>
+          <ZdarzeniePoczatkowe>DATA WYSTAWIENIA</ZdarzeniePoczatkowe>
+        </TerminOpis>
+      </TerminPlatnosci>
+      <TerminPlatnosci>
+        <Termin>2026-02-20</Termin>
+      </TerminPlatnosci>
+      <ZaplataCzesciowa>
+        <DataZaplatyCzesciowej>2026-02-05</DataZaplatyCzesciowej>
+        <KwotaZaplatyCzesciowej>100.00</KwotaZaplatyCzesciowej>
+        <FormaPlatnosci>2</FormaPlatnosci>
+      </ZaplataCzesciowa>
+      <ZaplataCzesciowa>
+        <DataZaplatyCzesciowej>2026-02-08</DataZaplatyCzesciowej>
+        <KwotaZaplatyCzesciowej>150.00</KwotaZaplatyCzesciowej>
+        <FormaPlatnosci>1</FormaPlatnosci>
+      </ZaplataCzesciowa>
+      <LinkDoPlatnosci>https://payments.example.com/txn/123</LinkDoPlatnosci>
+      <IPKSeF>IPKSEF-123456</IPKSeF>
+      <RachunekBankowy>
+        <NrRB>PL61160014621832808080000001</NrRB>
+        <SWIFT>BNPAFRPP</SWIFT>
+        <RachunekWlasnyBanku>1</RachunekWlasnyBanku>
+        <NazwaBanku>Bank One</NazwaBanku>
+        <OpisRachunku>Primary account</OpisRachunku>
+      </RachunekBankowy>
+      <RachunekBankowy>
+        <NrRB>PL61160014621832808080000002</NrRB>
+        <SWIFT>BNPAFRPP</SWIFT>
+        <RachunekWlasnyBanku>2</RachunekWlasnyBanku>
+        <NazwaBanku>Bank Two</NazwaBanku>
+        <OpisRachunku>Secondary account</OpisRachunku>
+      </RachunekBankowy>
+      <RachunekBankowyFaktora>
+        <NrRB>PL61160014621832808080000003</NrRB>
+        <SWIFT>FACTPLPP</SWIFT>
+        <RachunekWlasnyBanku>3</RachunekWlasnyBanku>
+        <NazwaBanku>Factor Bank</NazwaBanku>
+        <OpisRachunku>Factor account</OpisRachunku>
+      </RachunekBankowyFaktora>
+      <Skonto>
+        <WarunkiSkonta>Payment 10 days early</WarunkiSkonta>
+        <WysokoscSkonta>2%</WysokoscSkonta>
+      </Skonto>
+    </Platnosc>
+
+    <WarunkiTransakcji>
+      <Umowy>
+        <DataUmowy>2026-01-01</DataUmowy>
+        <NrUmowy>UM/2026/01</NrUmowy>
+      </Umowy>
+      <Zamowienia>
+        <DataZamowienia>2026-01-05</DataZamowienia>
+        <NrZamowienia>ZAM/2026/01</NrZamowienia>
+      </Zamowienia>
+      <NrPartiiTowaru>PART-001</NrPartiiTowaru>
+      <NrPartiiTowaru>PART-002</NrPartiiTowaru>
+      <WalutaUmowna>EUR</WalutaUmowna>
+      <KursUmowny>4.150000</KursUmowny>
+      <WarunkiDostawy>FOB</WarunkiDostawy>
+      <PodmiotPosredniczacy>1</PodmiotPosredniczacy>
+      <Transport>
+        <RodzajTransportu>3</RodzajTransportu>
+        <NrZleceniaTransportu>TR-001</NrZleceniaTransportu>
+        <OpisLadunku>4</OpisLadunku>
+        <JednostkaOpakowania>BOX</JednostkaOpakowania>
+        <DataGodzRozpTransportu>2026-01-20T08:00:00Z</DataGodzRozpTransportu>
+        <DataGodzZakTransportu>2026-01-20T16:30:00Z</DataGodzZakTransportu>
+        <Przewoznik>
+          <DaneIdentyfikacyjne>
+            <NIP>6666666666</NIP>
+            <Nazwa>Carrier Corp</Nazwa>
+            <NrVatUE>998877665</NrVatUE>
+            <KodUE>PL</KodUE>
+            <KodKraju>PL</KodKraju>
+            <NrID>PL998877665</NrID>
+            <BrakID>0</BrakID>
+          </DaneIdentyfikacyjne>
+          <AdresPrzewoznika>
+            <KodKraju>PL</KodKraju>
+            <AdresL1>Carrier Street 1</AdresL1>
+            <AdresL2>00-400 Warsaw</AdresL2>
+          </AdresPrzewoznika>
+        </Przewoznik>
+        <WysylkaZ>
+          <KodKraju>PL</KodKraju>
+          <AdresL1>Warehouse A</AdresL1>
+          <AdresL2>00-500 Warsaw</AdresL2>
+          <GLN>5900000000009</GLN>
+        </WysylkaZ>
+        <WysylkaDo>
+          <KodKraju>DE</KodKraju>
+          <AdresL1>Destination B</AdresL1>
+          <AdresL2>10118 Berlin</AdresL2>
+          <GLN>4000000000005</GLN>
+        </WysylkaDo>
+        <WysylkaPrzez>
+          <KodKraju>CZ</KodKraju>
+          <AdresL1>Transit 1</AdresL1>
+          <AdresL2>11000 Prague</AdresL2>
+          <GLN>8590000000001</GLN>
+        </WysylkaPrzez>
+        <WysylkaPrzez>
+          <KodKraju>AT</KodKraju>
+          <AdresL1>Transit 2</AdresL1>
+          <AdresL2>1010 Vienna</AdresL2>
+          <GLN>9000000000001</GLN>
+        </WysylkaPrzez>
+      </Transport>
+    </WarunkiTransakcji>
+
+    <Zamowienie>
+      <WartoscZamowienia>1000.00</WartoscZamowienia>
+      <ZamowienieWiersz>
+        <NrWierszaZam>1</NrWierszaZam>
+        <UU_ID>ORD-001</UU_ID>
+        <P_7Z>Order item A</P_7Z>
+        <P_9AZ>100.00</P_9AZ>
+        <P_8BZ>2</P_8BZ>
+        <P_8AZ>pcs</P_8AZ>
+        <P_12Z>23</P_12Z>
+        <P_12Z_XII>0</P_12Z_XII>
+        <P_12Z_Zal_15>1</P_12Z_Zal_15>
+        <P_11NettoZ>200.00</P_11NettoZ>
+        <P_11VatZ>46.00</P_11VatZ>
+        <UU_IDZ>UM/2026/01</UU_IDZ>
+        <GTINZ>5901234123457</GTINZ>
+        <PKWiUZ>62.01.11.0</PKWiUZ>
+        <CNZ>010121</CNZ>
+        <PKOBZ>1234</PKOBZ>
+        <KwotaAkcyzyZ>10.00</KwotaAkcyzyZ>
+        <GTUZ>GTU_01</GTUZ>
+        <ProceduraZ>7</ProceduraZ>
+        <IndeksZ>ORD-IDX-001</IndeksZ>
+        <StanPrzedZ>0</StanPrzedZ>
+      </ZamowienieWiersz>
+      <ZamowienieWiersz>
+        <NrWierszaZam>2</NrWierszaZam>
+        <UU_ID>ORD-002</UU_ID>
+        <P_7Z>Order item B (OSS)</P_7Z>
+        <P_9AZ>50.00</P_9AZ>
+        <P_8BZ>5</P_8BZ>
+        <P_8AZ>kg</P_8AZ>
+        <P_12Z_XII>7</P_12Z_XII>
+        <P_11NettoZ>250.00</P_11NettoZ>
+        <P_11VatZ>17.50</P_11VatZ>
+        <UU_IDZ>UM/2026/02</UU_IDZ>
+        <GTINZ>5901234123464</GTINZ>
+        <ProceduraZ>4</ProceduraZ>
+        <IndeksZ>ORD-IDX-002</IndeksZ>
+        <StanPrzedZ>1</StanPrzedZ>
+      </ZamowienieWiersz>
+      <ZamowienieWiersz>
+        <NrWierszaZam>3</NrWierszaZam>
+        <UU_ID>ORD-003</UU_ID>
+        <P_7Z>Order item C (marza)</P_7Z>
+        <P_9AZ>300.00</P_9AZ>
+        <P_8BZ>1</P_8BZ>
+        <P_8AZ>service</P_8AZ>
+        <P_11NettoZ>300.00</P_11NettoZ>
+        <P_11VatZ>0.00</P_11VatZ>
+        <UU_IDZ>UM/2026/03</UU_IDZ>
+        <GTUZ>GTU_02</GTUZ>
+        <ProceduraZ>1</ProceduraZ>
+        <IndeksZ>ORD-IDX-003</IndeksZ>
+        <StanPrzedZ>0</StanPrzedZ>
+      </ZamowienieWiersz>
+    </Zamowienie>
+  </Fa>
+
+  <Stopka>
+    <Rejestry>
+      <PelnaNazwa>Seller Company A Sp. z o.o.</PelnaNazwa>
+      <KRS>0000123456</KRS>
+      <REGON>123456789</REGON>
+      <BDO>BDO-0001</BDO>
+    </Rejestry>
+    <Informacje>
+      <StopkaFaktury>Footer line 1</StopkaFaktury>
+    </Informacje>
+    <Informacje>
+      <StopkaFaktury>Footer line 2</StopkaFaktury>
+    </Informacje>
+  </Stopka>
+
+  <Zalacznik>
+    <BlokDanych>
+      <ZNaglowek>Attachment Block A</ZNaglowek>
+      <MetaDane>
+        <ZKlucz>MetaKey1</ZKlucz>
+        <ZWartosc>MetaValue1</ZWartosc>
+      </MetaDane>
+      <MetaDane>
+        <ZKlucz>MetaKey2</ZKlucz>
+        <ZWartosc>MetaValue2</ZWartosc>
+      </MetaDane>
+      <Tekst>
+        <Akapit>Attachment paragraph 1.</Akapit>
+        <Akapit>Attachment paragraph 2.</Akapit>
+      </Tekst>
+      <Tabela>
+        <TMetaDane>
+          <TKlucz>TableKey</TKlucz>
+          <TWartosc>TableValue</TWartosc>
+        </TMetaDane>
+        <Opis>Large attachment table</Opis>
+        <TNaglowek>
+          <Kol><NKom>Col1</NKom></Kol>
+          <Kol><NKom>Col2</NKom></Kol>
+          <Kol><NKom>Col3</NKom></Kol>
+          <Kol><NKom>Col4</NKom></Kol>
+          <Kol><NKom>Col5</NKom></Kol>
+          <Kol><NKom>Col6</NKom></Kol>
+          <Kol><NKom>Col7</NKom></Kol>
+          <Kol><NKom>Col8</NKom></Kol>
+          <Kol><NKom>Col9</NKom></Kol>
+          <Kol><NKom>Col10</NKom></Kol>
+          <Kol><NKom>Col11</NKom></Kol>
+          <Kol><NKom>Col12</NKom></Kol>
+          <Kol><NKom>Col13</NKom></Kol>
+          <Kol><NKom>Col14</NKom></Kol>
+          <Kol><NKom>Col15</NKom></Kol>
+          <Kol><NKom>Col16</NKom></Kol>
+        </TNaglowek>
+        <Wiersz>
+          <WKom>R1C1</WKom><WKom>R1C2</WKom><WKom>R1C3</WKom><WKom>R1C4</WKom>
+          <WKom>R1C5</WKom><WKom>R1C6</WKom><WKom>R1C7</WKom><WKom>R1C8</WKom>
+          <WKom>R1C9</WKom><WKom>R1C10</WKom><WKom>R1C11</WKom><WKom>R1C12</WKom>
+          <WKom>R1C13</WKom><WKom>R1C14</WKom><WKom>R1C15</WKom><WKom>R1C16</WKom>
+        </Wiersz>
+        <Wiersz>
+          <WKom>R2C1</WKom><WKom>R2C2</WKom><WKom>R2C3</WKom><WKom>R2C4</WKom>
+          <WKom>R2C5</WKom><WKom>R2C6</WKom><WKom>R2C7</WKom><WKom>R2C8</WKom>
+          <WKom>R2C9</WKom><WKom>R2C10</WKom><WKom>R2C11</WKom><WKom>R2C12</WKom>
+          <WKom>R2C13</WKom><WKom>R2C14</WKom><WKom>R2C15</WKom><WKom>R2C16</WKom>
+        </Wiersz>
+        <Suma>
+          <SKom>Table summary line 1</SKom>
+          <SKom>Table summary line 2</SKom>
+        </Suma>
+      </Tabela>
+    </BlokDanych>
+  </Zalacznik>
+</Faktura>
