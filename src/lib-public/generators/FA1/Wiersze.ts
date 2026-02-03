@@ -5,6 +5,7 @@ import {
   createSection,
   formatText,
   getContentTable,
+  getDifferentColumnsValue,
   getTable,
   getTStawkaPodatku,
   getValue,
@@ -42,11 +43,19 @@ export function generateWiersze(faVat: Fa): Content {
     { name: 'P_8A', title: 'Miara', format: FormatTyp.Default, width: 'auto' },
     { name: 'P_10', title: 'Rabat', format: FormatTyp.Currency, width: 'auto' },
     { name: 'P_12', title: 'Stawka podatku', format: FormatTyp.Default, width: 'auto' },
-    { name: 'P_12_XII', title: 'Stawka podatku OSS', format: FormatTyp.Default, width: 'auto' },
+    { name: 'P_12_XII', title: 'Stawka podatku OSS', format: FormatTyp.Percentage, width: 'auto' },
     { name: 'P_11', title: 'Wartość sprzedaży netto', format: FormatTyp.Currency, width: 'auto' },
     { name: 'P_11A', title: 'Wartość sprzedaży brutto', format: FormatTyp.Currency, width: 'auto' },
-    { name: 'KursWaluty', title: 'Kurs waluty', format: FormatTyp.Currency6, width: 'auto' },
   ];
+
+  if (getDifferentColumnsValue('KursWaluty', faWiersze).length !== 1) {
+    definedHeader1.push({
+      name: 'KursWaluty',
+      title: 'Kurs waluty',
+      format: FormatTyp.Currency6,
+      width: 'auto',
+    });
+  }
   const definedHeader2: HeaderDefine[] = [
     { name: 'GTIN', title: 'GTIN', format: FormatTyp.Default, width: 'auto' },
     { name: 'PKWiU', title: 'PKWiU', format: FormatTyp.Default, width: 'auto' },

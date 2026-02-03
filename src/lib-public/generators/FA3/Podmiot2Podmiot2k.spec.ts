@@ -33,6 +33,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
       ...(style ? style : {}),
     };
   }),
+  generateLine: vi.fn((): Content[] => [{ line: true } as any]),
 }));
 
 vi.mock('./Adres', () => ({
@@ -62,20 +63,19 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     } as any;
     const podmiot2K: Podmiot2K = { IDNabywcy: 'ID123' } as any;
     const result = generatePodmiot2Podmiot2K(podmiot2, podmiot2K) as any;
-    expect(result[0]).toEqual({ text: 'Nabywca', style: 'header' });
+    expect(result[0]).toEqual([{ line: true }]);
 
-    expect(result[1]).toHaveProperty('columns');
-    expect(Array.isArray(result[1].columns[0])).toBe(true);
-    expect(Array.isArray(result[1].columns[1])).toBe(true);
-    expect(result[1].columns[0].length).toBeGreaterThan(0);
-    expect(result[1].columns[1].length).toBe(0);
+    expect(result[1][0]).toHaveProperty('text');
+    expect(result[1][0]).toHaveProperty('style');
+    expect(result[1][0]).toEqual({ text: 'Nabywca', style: 'header' });
 
     expect(result[2]).toHaveProperty('columns');
     expect(Array.isArray(result[2].columns[0].stack)).toBe(true);
     expect(Array.isArray(result[2].columns[1].stack)).toBe(true);
     expect(result[2].columns[0].stack.length).toBeGreaterThan(0);
+    expect(result[2].columns[1].stack.length).toBe(0);
 
-    expect(result[3]).toEqual({ margin: 1 });
+    expect(result[4]).toEqual({ margin: 1 });
   });
 
   it('calls generateAdres if AdresKoresp exists', () => {
@@ -91,8 +91,8 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     const podmiot2: Podmiot2 = { NrEORI: 'EORI123' } as any;
     const podmiot2K: Podmiot2K = { IDNabywcy: 'ID123' } as any;
     const result = generatePodmiot2Podmiot2K(podmiot2, podmiot2K) as any;
-    expect(Array.isArray(result[2].columns[0])).toBe(true);
-    expect(result[2].columns[0].length).toBeGreaterThanOrEqual(0);
+    expect(Array.isArray(result[3].columns[0].stack)).toBe(true);
+    expect(result[3].columns[0].stack.length).toBeGreaterThanOrEqual(0);
   });
 
   it('adds vertical spacing at the end', () => {
@@ -115,13 +115,12 @@ describe(generatePodmiot2Podmiot2K.name, () => {
     const result = generatePodmiot2Podmiot2K(podmiot2, podmiot2K) as any;
 
     expect(result.length).toBeGreaterThan(3);
-    expect(result[0]).toEqual({ text: 'Nabywca', style: 'header' });
+    expect(result[0]).toEqual([{ line: true }]);
 
     expect(result[2]).toHaveProperty('columns');
     expect(Array.isArray(result[2].columns[0].stack)).toBe(true);
     expect(Array.isArray(result[2].columns[1].stack)).toBe(true);
     expect(result[2].columns[0].stack.length).toBeGreaterThanOrEqual(0);
-
     expect(result[result.length - 1]).toHaveProperty('margin');
   });
 });

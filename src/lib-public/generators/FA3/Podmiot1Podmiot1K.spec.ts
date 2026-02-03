@@ -74,19 +74,11 @@ describe(generatePodmiot1Podmiot1K.name, () => {
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
 
     expect(result[0]).toEqual({ text: 'Sprzedawca', style: 'header' });
-
-    expect(result[1]).toHaveProperty('columns');
-    expect(Array.isArray(result[1].columns[0])).toBe(true);
-    expect(Array.isArray(result[1].columns[1])).toBe(true);
-    expect(result[1].columns[0].length).toBeGreaterThan(0);
-    expect(result[1].columns[1].length).toBe(0);
-
+    expect(Array.isArray(result[1])).toBe(true);
+    expect(result[1].length).toBeGreaterThan(0);
     expect(result[2]).toHaveProperty('columns');
     expect(Array.isArray(result[2].columns[0])).toBe(true);
-
     expect(result[2].columns[0].length).toBeGreaterThan(0);
-
-
     expect(result[3]).toEqual({ margin: 1 });
   });
 
@@ -110,10 +102,7 @@ describe(generatePodmiot1Podmiot1K.name, () => {
 
     expect(result.length).toBe(4);
     expect(result[0]).toEqual({ text: 'Sprzedawca', style: 'header' });
-
-    expect(result[1].columns[0]).toBeInstanceOf(Array);
-    expect(result[1].columns[1]).toBeInstanceOf(Array);
-
+    expect(result[1]).toBeInstanceOf(Array);
     expect(result[2].columns[0]).toBeInstanceOf(Array);
 
     expect(result[3]).toEqual({ margin: 1 });
@@ -125,13 +114,13 @@ describe(generatePodmiot1Podmiot1K.name, () => {
         NrEORI: '123',
         StatusInfoPodatnika: { _text: '3' },
       } as any;
-      const podmiot1K: Podmiot1K = {} as any;
-      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+    const podmiot1K: Podmiot1K = {} as any;
+    const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
 
-      const firstCol = result[1]?.columns[0];
-      // createLabelText returns array, so we need to check in nested arrays
-      const hasExpectedStatus = firstCol?.some((item: any) => 
-        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Stan upadłości')) :
+    const firstCol = result[1];
+    // createLabelText returns array, so we need to check in nested arrays
+    const hasExpectedStatus = firstCol?.some((item: any) => 
+      Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Stan upadłości')) :
         item?.text?.includes?.('Stan upadłości')
       );
       expect(hasExpectedStatus).toBeTruthy();
@@ -142,12 +131,12 @@ describe(generatePodmiot1Podmiot1K.name, () => {
         NrEORI: '123',
         StatusInfoPodatnika: { _text: 'SAMO' },
       } as any;
-      const podmiot1K: Podmiot1K = {} as any;
-      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+    const podmiot1K: Podmiot1K = {} as any;
+    const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
 
-      const firstCol = result[1]?.columns[0];
-      const hasExpectedStatus = firstCol?.some((item: any) => 
-        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Stan likwidacji')) :
+    const firstCol = result[1];
+    const hasExpectedStatus = firstCol?.some((item: any) => 
+      Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Stan likwidacji')) :
         item?.text?.includes?.('Stan likwidacji')
       );
       expect(hasExpectedStatus).toBeTruthy();
@@ -158,12 +147,12 @@ describe(generatePodmiot1Podmiot1K.name, () => {
         NrEORI: '123',
         StatusInfoPodatnika: { _text: 'xyz' },
       } as any;
-      const podmiot1K: Podmiot1K = {} as any;
-      const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
+    const podmiot1K: Podmiot1K = {} as any;
+    const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
 
-      const firstCol = result[1]?.columns[0];
-      const hasStatus = firstCol?.some((item: any) => 
-        Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Status podatnika')) :
+    const firstCol = result[1];
+    const hasStatus = firstCol?.some((item: any) => 
+      Array.isArray(item) ? item.some((i: any) => i?.text?.includes?.('Status podatnika')) :
         item?.text?.includes?.('Status podatnika')
       );
       expect(hasStatus).toBeFalsy();

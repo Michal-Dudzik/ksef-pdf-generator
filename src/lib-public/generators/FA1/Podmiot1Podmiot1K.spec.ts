@@ -56,9 +56,9 @@ describe('generatePodmiot1Podmiot1K', () => {
     };
     const podmiot1K: Podmiot1K = {};
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
-    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+    const firstRow: Content = result[1];
 
-    expect(firstCol).toEqual(
+    expect(firstRow).toEqual(
       expect.arrayContaining([
         { text: 'SUBHEADER:Dane identyfikacyjne' },
         { text: 'LABEL:Numer EORI: EORI' },
@@ -75,9 +75,9 @@ describe('generatePodmiot1Podmiot1K', () => {
     };
     const podmiot1K: Podmiot1K = {};
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
-    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+    const firstRow: Content = result[1];
 
-    expect(firstCol).toEqual(
+    expect(firstRow).toEqual(
       expect.arrayContaining([
         { text: 'LABEL:Status podatnika: Stan likwidacji' },
       ])
@@ -91,9 +91,9 @@ describe('generatePodmiot1Podmiot1K', () => {
     };
     const podmiot1K: Podmiot1K = {};
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
-    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+    const firstRow: Content = result[1];
 
-    expect(firstCol).not.toEqual(
+    expect(firstRow).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({ text: expect.stringContaining('Status podatnika') }),
       ])
@@ -107,9 +107,9 @@ describe('generatePodmiot1Podmiot1K', () => {
     };
     const podmiot1K: Podmiot1K = {};
     const result: any = generatePodmiot1Podmiot1K(podmiot1, podmiot1K);
-    const firstCol: Content = result.find((r: any) => r.columns)?.columns[0];
+    const firstRow: Content = result[1];
 
-    expect(firstCol).toEqual(expect.arrayContaining([{ contact: 'KONTAKT' }]));
+    expect(firstRow).toEqual(expect.arrayContaining([{ contact: 'KONTAKT' }]));
   });
 
   it('adds verticalSpacing at the end', () => {
