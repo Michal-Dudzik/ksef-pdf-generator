@@ -1,0 +1,116 @@
+name: Draft Release Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: Optional extra notes to append to the email body
+        required: false
+        type: string
+
+jobs:
+  release-mail:
+    name: Build Release Mail Draft
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate mail content from changelog
+        id: mail
+        shell: bash
+        env:
+          EXTRA_NOTES: ${{ inputs.notes }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+          const match = changelog.match(/^## \[(?<version>[^\]]+)\](?:\s*-\s*(?<date>\d{4}-\d{2}-\d{2}))?\s*\n+([\s\S]*?)(?=^## \[|\Z)/m);
+
+          if (!match) {
+            console.error('Unable to find the latest changelog entry (expected "## [x.y.z]" heading).');
+            process.exit(1);
+          }
+
+          const version = match[1].trim();
+          const releaseDate = match[2] ? match[2].trim() : '';
+          const entryBody = match[3].trim().replace(/\r/g, '');
+
+          const repo = process.env.GITHUB_REPOSITORY;
+          const releaseTag = version.startsWith('v') ? version : `v${version}`;
+          const releaseUrl = `https://github.com/${repo}/releases/tag/${releaseTag}`;
+          const changelogUrl = `https://github.com/${repo}/blob/main/CHANGELOG.md`;
+
+          const subject = `KSeF PDF Generator ${version} wydany`;
+          const intro = releaseDate
+            ? `Opublikowaliśmy KSeF PDF Generator ${version} w dniu ${releaseDate}.`
+            : `Opublikowaliśmy KSeF PDF Generator ${version}.`;
+
+          const parts = [
+            'Cześć,',
+            '',
+            intro,
+            '',
+            'Najważniejsze zmiany:',
+            '',
+            entryBody,
+          ];
+
+          const extraNotes = process.env.EXTRA_NOTES?.trim();
+          if (extraNotes) {
+            parts.push('');
+            parts.push('Dodatkowe informacje:');
+            parts.push('');
+            parts.push(extraNotes);
+          }
+
+          parts.push('');
+          parts.push('Linki:');
+          parts.push(`- Wydanie: ${releaseUrl}`);
+          parts.push(`- Pełny changelog: ${changelogUrl}`);
+
+          const body = parts.join('\n').replace(/\n{3,}/g, '\n\n');
+          const fileContent = `Subject: ${subject}\n\n${body}\n`;
+
+          fs.mkdirSync('outputs', { recursive: true });
+          fs.writeFileSync('outputs/release-mail.txt', fileContent, 'utf8');
+
+          const outputFile = process.env.GITHUB_OUTPUT;
+          if (outputFile) {
+            fs.appendFileSync(outputFile, `version=${version}\n`);
+            fs.appendFileSync(outputFile, `release_url=${releaseUrl}\n`);
+            fs.appendFileSync(outputFile, `subject=${subject}\n`);
+            const delimiter = 'MAIL_BODY_EOF';
+            fs.appendFileSync(outputFile, `body<<${delimiter}\n${body}\n${delimiter}\n`);
+          }
+          NODE
+
+      - name: Upload mail draft
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-mail-${{ steps.mail.outputs.version }}
+          path: outputs/release-mail.txt
+
+      - name: Add draft to summary
+        shell: bash
+        run: |
+          {
+            echo "### Release Mail Draft"
+            echo ""
+            echo "**Subject**"
+            echo "${{ steps.mail.outputs.subject }}"
+            echo ""
+            echo "**Body**"
+            echo '```text'
+            tail -n +3 outputs/release-mail.txt
+            echo '```'
+            echo ""
+            echo "- Release URL: ${{ steps.mail.outputs.release_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
