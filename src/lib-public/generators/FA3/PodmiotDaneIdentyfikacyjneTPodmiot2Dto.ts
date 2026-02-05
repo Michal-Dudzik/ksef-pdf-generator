@@ -8,7 +8,7 @@ export function generateDaneIdentyfikacyjneTPodmiot2Dto(
 ): Content[] {
   const result: Content[] = [];
 
-  result.push(createLabelText('NIP: ', daneIdentyfikacyjne.NIP));
+  result.push(...createLabelText('NIP: ', daneIdentyfikacyjne.NIP));
   if (daneIdentyfikacyjne.NrVatUE?._text) {
     result.push(
       createLabelTextArray([
@@ -32,6 +32,6 @@ export function generateDaneIdentyfikacyjneTPodmiot2Dto(
   if (daneIdentyfikacyjne.BrakID?._text === '1') {
     result.push(formatText('Brak identyfikatora', FormatTyp.Label));
   }
-  result.push(createLabelText('Nazwa: ', daneIdentyfikacyjne.Nazwa));
+  result.push(...createLabelText('Nazwa: ', daneIdentyfikacyjne.Nazwa));
   return result;
 }

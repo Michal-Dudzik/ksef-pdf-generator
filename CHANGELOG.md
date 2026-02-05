@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.50] - 2026-02-05
+
+### Fixed
+
+- Fixed "Brak identyfikatora" text not displaying when `BrakID = 1` in Podmiot2 and Podmiot2K elements (buyers without tax identification numbers)
+
 ## [0.0.49] - 2026-02-03
 
 ### Added

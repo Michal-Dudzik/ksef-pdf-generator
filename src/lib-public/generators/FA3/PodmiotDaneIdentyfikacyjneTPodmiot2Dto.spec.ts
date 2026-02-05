@@ -5,7 +5,11 @@ import { generateDaneIdentyfikacyjneTPodmiot2Dto } from './PodmiotDaneIdentyfika
 import { DaneIdentyfikacyjneTPodmiot2Dto } from '../../types/fa2-additional-types';
 
 vi.mock('../../../shared/PDF-functions', () => ({
-  createLabelText: vi.fn((label: string, value: any) => ({ text: `${label}${value?._text ?? value}` })),
+  createLabelText: vi.fn((label: string, value: any) => 
+    value && (typeof value !== 'object' || value._text) 
+      ? [{ text: `${label}${value?._text ?? value}` }]
+      : []
+  ),
   createLabelTextArray: vi.fn((arr: any[]) => ({ text: arr.map((a) => a.value?._text ?? a.value).join('') })),
   formatText: vi.fn((text: string, type: FormatTyp) => ({ text, type })),
 }));
