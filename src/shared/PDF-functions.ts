@@ -117,7 +117,8 @@ function formatValue(
       result.text = `${value}%`;
       break;
     case FormatTyp.Number:
-      result.text = replaceDotWithCommaIfNeeded(value);
+      // result.text = replaceDotWithCommaIfNeeded(value);
+      result.text = dotToComma(Number(value).toFixed(2))
       result.alignment = Position.RIGHT;
       break;
   }
