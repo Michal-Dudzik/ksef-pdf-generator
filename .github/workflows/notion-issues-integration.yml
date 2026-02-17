@@ -1,0 +1,37 @@
+name: Sync upstream issues to Notion
+
+on:
+  schedule:
+    - cron: "17 */6 * * *" # every 6 hours
+  workflow_dispatch:
+    inputs:
+      closed_days:
+        description: "Sync issues closed in the last N days"
+        required: false
+        default: "14"
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      UPSTREAM_REPO: "CIRFMF/ksef-pdf-generator"
+      CLOSED_DAYS: ${{ inputs.closed_days || '14' }}
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        run: npm i @notionhq/client
+
+      - name: Run sync
+        run: node sync-notion.js
