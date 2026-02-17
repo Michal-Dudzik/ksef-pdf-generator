@@ -5,7 +5,7 @@
  * Does NOT overwrite: Status, Priority, Did I do it in my fork?
  */
 
-const { Client } = require("@notionhq/client");
+import { Client } from "@notionhq/client";
 
 const UPSTREAM_REPO = process.env.UPSTREAM_REPO; // "owner/repo"
 const CLOSED_DAYS = parseInt(process.env.CLOSED_DAYS || "14", 10);
