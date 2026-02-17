@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.51] - 2026-02-17
+
+### Fixed
+
+- the '%' character was not showing up for the values of `Stawka podatku`
+
 ## [0.0.50] - 2026-02-05
 
 ### Fixed

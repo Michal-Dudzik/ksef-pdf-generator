@@ -547,6 +547,7 @@ export function getKraj(kod: string): string {
 
 export function getTStawkaPodatku(code: string, version: 1 | 2 | 3, P_PMarzy?: string): string {
   let TStawkaPodatkuVersioned: Record<string, string> = {};
+  const normalizedCode: string = (code ?? '').trim();
 
   switch (version) {
     case 1:
@@ -559,14 +560,14 @@ export function getTStawkaPodatku(code: string, version: 1 | 2 | 3, P_PMarzy?: s
       TStawkaPodatkuVersioned = TStawkaPodatku_FA3;
       break;
   }
-  if (!code && P_PMarzy === '1') {
+  if (!normalizedCode && P_PMarzy === '1') {
     return 'marża';
   }
 
-  if (TStawkaPodatkuVersioned[code]) {
-    return TStawkaPodatkuVersioned[code];
+  if (TStawkaPodatkuVersioned[normalizedCode]) {
+    return TStawkaPodatkuVersioned[normalizedCode];
   }
-  return code;
+  return normalizedCode || code;
 }
 
 export function generateLine(): Content {
