@@ -9,6 +9,7 @@ import {
   getTable,
   getTStawkaPodatku,
   getValue,
+  hasValue,
 } from '../../../shared/PDF-functions';
 import { HeaderDefine } from '../../../shared/types/pdf-types';
 import { TRodzajFaktury } from '../../../shared/consts/const';
@@ -84,10 +85,11 @@ export function generateWiersze(faVat: Fa): Content {
     [FormatTyp.Label, FormatTyp.MarginBottom8]
   );
 
+  const hasP15 = hasValue(faVat.P_15);
   const p_15: string | number | undefined = getValue(faVat.P_15);
   let opis: Content = '';
 
-  if (rodzajFaktury == TRodzajFaktury.ROZ && Number(p_15) !== 0) {
+  if (rodzajFaktury == TRodzajFaktury.ROZ && hasP15) {
     opis = {
       stack: createLabelTextArray([
         { value: 'Kwota pozostała do zapłaty: ', formatTyp: FormatTyp.LabelGreater },
@@ -105,7 +107,7 @@ export function generateWiersze(faVat: Fa): Content {
       rodzajFaktury == TRodzajFaktury.KOR ||
       rodzajFaktury == TRodzajFaktury.KOR_ROZ ||
       rodzajFaktury == TRodzajFaktury.UPR) &&
-    Number(p_15) !== 0
+    hasP15
   ) {
     opis = {
       stack: createLabelTextArray([
