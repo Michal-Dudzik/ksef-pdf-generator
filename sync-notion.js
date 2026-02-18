@@ -1,26 +1,29 @@
 /* sync-notion.js
  * Sync upstream GitHub issues (open + closed within last N days) into a Notion database.
- * Upserts by "Upstream ID" (Number).
- * Only writes: Upstream ID, Name, Date added, Updates, Link.
- * Does NOT overwrite: Status, Priority, Did I do it in my fork?
+ *
+ * Upsert key: (repo + issue number) — stored in Number property "ID" + (optional) repo.
+ * Writes ONLY: ID, Name, Date added, Date updated, Updates, Link.
+ * Does NOT overwrite: Status, Priority, Did I do it in my fork.
+ *
+ * Also: if duplicates exist (multiple Notion pages with same ID), keeps the first and archives the rest.
  */
 
 import { Client } from "@notionhq/client";
 
 const UPSTREAM_REPO = process.env.UPSTREAM_REPO; // "owner/repo"
 const CLOSED_DAYS = parseInt(process.env.CLOSED_DAYS || "14", 10);
-const GH_TOKEN = process.env.GH_TOKEN; // can be undefined, but recommended
+const GH_TOKEN = process.env.GH_TOKEN;
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
-// Notion property names (must match exactly)
-const PROP_UPSTREAM_ID = "Upstream ID";
-const PROP_NAME = "Name";
-const PROP_DATE_ADDED = "Date added";
-const PROP_UPDATES = "Updates";
-const PROP_LINK = "Link";
+// === Notion property names (MUST match exactly) ===
+const PROP_ID = "ID";                 // Number (issue number)
+const PROP_NAME = "Name";             // Title
+const PROP_DATE_ADDED = "Date added"; // Date
+const PROP_DATE_UPDATED = "Date updated"; // Date
+const PROP_UPDATES = "Updates";       // Select: Yes/No
+const PROP_LINK = "Link";             // URL
 
-// Updates Select options (must exist in Notion)
 const UPDATES_YES = "Yes";
 const UPDATES_NO = "No";
 
@@ -39,10 +42,10 @@ function isoDaysAgo(days) {
 
 function ghHeaders() {
   const h = {
-    "Accept": "application/vnd.github+json",
+    Accept: "application/vnd.github+json",
     "User-Agent": "notion-issue-sync",
   };
-  if (GH_TOKEN) h["Authorization"] = `Bearer ${GH_TOKEN}`;
+  if (GH_TOKEN) h.Authorization = `Bearer ${GH_TOKEN}`;
   return h;
 }
 
@@ -55,13 +58,12 @@ async function ghFetch(url) {
   return res.json();
 }
 
-async function listIssues({ state, since /* ISO string or null */ }) {
-  // GitHub endpoint includes PRs, so we filter out items with "pull_request"
+async function listIssues({ state, since }) {
   const perPage = 100;
   let page = 1;
   const out = [];
 
-  while (page <= 10) { // safety cap; raise if repo is huge
+  while (page <= 20) { // a bit higher safety cap
     const params = new URLSearchParams({
       state,
       per_page: String(perPage),
@@ -86,103 +88,121 @@ async function listIssues({ state, since /* ISO string or null */ }) {
   return out;
 }
 
-function parseIso(s) {
-  return s ? new Date(s) : null;
-}
-
 function withinLastNDays(isoTimestamp, days) {
-  const dt = parseIso(isoTimestamp);
-  if (!dt) return false;
+  if (!isoTimestamp) return false;
+  const dt = new Date(isoTimestamp);
   const cutoff = new Date();
   cutoff.setUTCDate(cutoff.getUTCDate() - days);
   return dt >= cutoff;
 }
 
 function computeUpdatesSelect(issue) {
-  // Proxy for "new comments":
-  // "Yes" if comments exist AND issue updated recently (within CLOSED_DAYS window)
+  // Still a proxy: "Yes" if issue has comments and was updated recently.
   const comments = issue.comments || 0;
   const updatedRecently = withinLastNDays(issue.updated_at, CLOSED_DAYS);
-  return (comments > 0 && updatedRecently) ? UPDATES_YES : UPDATES_NO;
+  return comments > 0 && updatedRecently ? UPDATES_YES : UPDATES_NO;
 }
 
-async function findNotionPageIdByUpstreamId(upstreamId) {
+/**
+ * Query Notion for pages with ID == issueNumber.
+ * Returns array of page objects (could be multiple if duplicates already exist).
+ */
+async function findNotionPagesById(issueNumber) {
   const resp = await notion.databases.query({
     database_id: NOTION_DATABASE_ID,
     filter: {
-      property: PROP_UPSTREAM_ID,
-      number: { equals: upstreamId },
+      property: PROP_ID,
+      number: { equals: issueNumber },
     },
-    page_size: 1,
+    page_size: 100,
   });
 
-  if (resp.results && resp.results.length > 0) {
-    return resp.results[0].id;
-  }
-  return null;
+  return resp.results || [];
+}
+
+async function archivePage(pageId) {
+  await notion.pages.update({
+    page_id: pageId,
+    archived: true,
+  });
 }
 
 function buildNotionProps(issue) {
-  const upstreamId = issue.number;
-  const name = issue.title || `(no title)`;
+  const id = issue.number;                 // <-- GitHub issue number
+  const name = issue.title || "(no title)";
   const link = issue.html_url;
-  const createdAt = issue.created_at; // ISO
+  const createdAt = issue.created_at;      // ISO
+  const updatedAt = issue.updated_at;      // ISO
   const updates = computeUpdatesSelect(issue);
 
-  // Only set the properties you said should be automated
   return {
-    [PROP_UPSTREAM_ID]: { number: upstreamId },
-    [PROP_NAME]: { title: [{ text: { content: name } }] },   // "Name" must be the Title property
-    [PROP_DATE_ADDED]: { date: { start: createdAt } },       // Date property
-    [PROP_UPDATES]: { select: { name: updates } },           // Select Yes/No must exist
-    [PROP_LINK]: { url: link },                               // URL property
+    [PROP_ID]: { number: id },
+    [PROP_NAME]: { title: [{ text: { content: name } }] },
+    [PROP_DATE_ADDED]: { date: { start: createdAt } },
+    [PROP_DATE_UPDATED]: { date: { start: updatedAt } },
+    [PROP_UPDATES]: { select: { name: updates } },
+    [PROP_LINK]: { url: link },
   };
 }
 
 async function upsertIssue(issue) {
-  const upstreamId = issue.number;
-  const existingId = await findNotionPageIdByUpstreamId(upstreamId);
+  const id = issue.number;
   const props = buildNotionProps(issue);
 
-  if (existingId) {
-    await notion.pages.update({
-      page_id: existingId,
-      properties: props,
-    });
-    return "updated";
-  } else {
+  const pages = await findNotionPagesById(id);
+
+  if (pages.length === 0) {
     await notion.pages.create({
       parent: { database_id: NOTION_DATABASE_ID },
       properties: props,
     });
-    return "created";
+    return { action: "created", deduped: 0 };
   }
+
+  // If duplicates exist, keep the first and archive the rest.
+  const keep = pages[0];
+  const duplicates = pages.slice(1);
+
+  await notion.pages.update({
+    page_id: keep.id,
+    properties: props,
+  });
+
+  for (const dup of duplicates) {
+    await archivePage(dup.id);
+  }
+
+  return { action: "updated", deduped: duplicates.length };
 }
 
 async function main() {
   const since = isoDaysAgo(CLOSED_DAYS);
 
-  // 1) Open issues (all)
   const openIssues = await listIssues({ state: "open", since: null });
 
-  // 2) Closed issues: fetch issues updated since, then filter to those actually closed within window
   const closedRecentlyTouched = await listIssues({ state: "closed", since });
-  const closedRecent = closedRecentlyTouched.filter((it) =>
-    it.closed_at && withinLastNDays(it.closed_at, CLOSED_DAYS)
+  const closedRecent = closedRecentlyTouched.filter(
+    (it) => it.closed_at && withinLastNDays(it.closed_at, CLOSED_DAYS)
   );
 
-  const toSync = [...openIssues, ...closedRecent];
+  // De-dup within a single run by issue number (open + closedRecent could overlap in edge cases)
+  const map = new Map();
+  for (const it of [...openIssues, ...closedRecent]) {
+    map.set(it.number, it);
+  }
+  const toSync = [...map.values()];
 
-  let created = 0, updated = 0;
+  let created = 0, updated = 0, archived = 0;
 
   for (const issue of toSync) {
-    const result = await upsertIssue(issue);
-    if (result === "created") created += 1;
+    const res = await upsertIssue(issue);
+    if (res.action === "created") created += 1;
     else updated += 1;
+    archived += res.deduped;
   }
 
   console.log(
-    `Synced ${toSync.length} issues: open=${openIssues.length}, closed_recent=${closedRecent.length}, created=${created}, updated=${updated}`
+    `Synced ${toSync.length} issues: created=${created}, updated=${updated}, archived_duplicates=${archived}`
   );
 }
 
