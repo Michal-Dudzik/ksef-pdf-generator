@@ -1,8 +1,8 @@
 /* sync-notion.js
  * Sync upstream GitHub issues (open + closed within last N days) into a Notion database.
  *
- * Upsert key: (repo + issue number) — stored in Number property "ID" + (optional) repo.
- * Writes ONLY: ID, Name, Date added, Date updated, Updates, Link.
+ * Upsert key: GitHub issue number in property "Issue number" (when queryable) with fallback to "Link".
+ * Writes ONLY: Issue number (when writable), Name, Date added, Date updated, Updates, Link.
  * Does NOT overwrite: Status, Priority, Did I do it in my fork.
  *
  * Also: if duplicates exist (multiple Notion pages with same ID), keeps the first and archives the rest.
@@ -17,7 +17,7 @@ const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
 // === Notion property names (MUST match exactly) ===
-const PROP_ID = "ID";                 // Number (issue number)
+const PROP_ID = "Issue number";       // Number (issue number)
 const PROP_NAME = "Name";             // Title
 const PROP_DATE_ADDED = "Date added"; // Date
 const PROP_DATE_UPDATED = "Date updated"; // Date
@@ -108,16 +108,86 @@ function computeUpdatesSelect(issue) {
  * Returns array of page objects (could be multiple if duplicates already exist).
  */
 async function findNotionPagesById(issueNumber) {
+  const idConfig = await getIdPropertyConfig();
+  if (!idConfig.queryFilterBuilder) return [];
+
+  const resp = await notion.databases.query({
+    database_id: NOTION_DATABASE_ID,
+    filter: idConfig.queryFilterBuilder(issueNumber),
+    page_size: 100,
+  });
+
+  return resp.results || [];
+}
+
+async function findNotionPagesByLink(issueUrl) {
   const resp = await notion.databases.query({
     database_id: NOTION_DATABASE_ID,
     filter: {
-      property: PROP_ID,
-      number: { equals: issueNumber },
+      property: PROP_LINK,
+      url: { equals: issueUrl },
     },
     page_size: 100,
   });
 
   return resp.results || [];
+}
+
+let cachedIdPropertyConfig = null;
+async function getIdPropertyConfig() {
+  if (cachedIdPropertyConfig) return cachedIdPropertyConfig;
+
+  const db = await notion.databases.retrieve({ database_id: NOTION_DATABASE_ID });
+  const prop = db.properties?.[PROP_ID];
+
+  if (!prop) {
+    cachedIdPropertyConfig = {
+      type: "missing",
+      writableValueBuilder: null,
+      queryFilterBuilder: null,
+      note: `Property "${PROP_ID}" not found`,
+    };
+    return cachedIdPropertyConfig;
+  }
+
+  const byType = {
+    number: {
+      writableValueBuilder: (issueNumber) => ({ number: issueNumber }),
+      queryFilterBuilder: (issueNumber) => ({
+        property: PROP_ID,
+        number: { equals: issueNumber },
+      }),
+    },
+    rich_text: {
+      writableValueBuilder: (issueNumber) => ({
+        rich_text: [{ text: { content: String(issueNumber) } }],
+      }),
+      queryFilterBuilder: (issueNumber) => ({
+        property: PROP_ID,
+        rich_text: { equals: String(issueNumber) },
+      }),
+    },
+    unique_id: {
+      writableValueBuilder: null, // Notion controls this value; it cannot be set by API.
+      queryFilterBuilder: (issueNumber) => ({
+        property: PROP_ID,
+        unique_id: { equals: issueNumber },
+      }),
+    },
+  };
+
+  const conf = byType[prop.type] || {
+    writableValueBuilder: null,
+    queryFilterBuilder: null,
+  };
+
+  cachedIdPropertyConfig = {
+    type: prop.type,
+    writableValueBuilder: conf.writableValueBuilder,
+    queryFilterBuilder: conf.queryFilterBuilder,
+    note: null,
+  };
+  return cachedIdPropertyConfig;
 }
 
 async function archivePage(pageId) {
@@ -127,29 +197,52 @@ async function archivePage(pageId) {
   });
 }
 
-function buildNotionProps(issue) {
+function pickCanonicalPage(pages) {
+  return [...pages].sort((a, b) => {
+    const aTs = Date.parse(a.created_time || "");
+    const bTs = Date.parse(b.created_time || "");
+
+    if (!Number.isNaN(aTs) && !Number.isNaN(bTs) && aTs !== bTs) {
+      return aTs - bTs; // keep the oldest page
+    }
+    if (!Number.isNaN(aTs) && Number.isNaN(bTs)) return -1;
+    if (Number.isNaN(aTs) && !Number.isNaN(bTs)) return 1;
+
+    return String(a.id).localeCompare(String(b.id));
+  })[0];
+}
+
+async function buildNotionProps(issue) {
   const id = issue.number;                 // <-- GitHub issue number
   const name = issue.title || "(no title)";
   const link = issue.html_url;
   const createdAt = issue.created_at;      // ISO
   const updatedAt = issue.updated_at;      // ISO
   const updates = computeUpdatesSelect(issue);
+  const idConfig = await getIdPropertyConfig();
 
-  return {
-    [PROP_ID]: { number: id },
+  const props = {
     [PROP_NAME]: { title: [{ text: { content: name } }] },
     [PROP_DATE_ADDED]: { date: { start: createdAt } },
     [PROP_DATE_UPDATED]: { date: { start: updatedAt } },
     [PROP_UPDATES]: { select: { name: updates } },
     [PROP_LINK]: { url: link },
   };
+
+  if (idConfig.writableValueBuilder) {
+    props[PROP_ID] = idConfig.writableValueBuilder(id);
+  }
+
+  return props;
 }
 
 async function upsertIssue(issue) {
   const id = issue.number;
-  const props = buildNotionProps(issue);
+  const props = await buildNotionProps(issue);
 
-  const pages = await findNotionPagesById(id);
+  const pagesById = await findNotionPagesById(id);
+  const pagesByLink = await findNotionPagesByLink(issue.html_url);
+  const pages = [...new Map([...pagesById, ...pagesByLink].map((p) => [p.id, p])).values()];
 
   if (pages.length === 0) {
     await notion.pages.create({
@@ -159,9 +252,9 @@ async function upsertIssue(issue) {
     return { action: "created", deduped: 0 };
   }
 
-  // If duplicates exist, keep the first and archive the rest.
-  const keep = pages[0];
-  const duplicates = pages.slice(1);
+  // If duplicates exist, keep the oldest page and archive the rest.
+  const keep = pickCanonicalPage(pages);
+  const duplicates = pages.filter((p) => p.id !== keep.id);
 
   await notion.pages.update({
     page_id: keep.id,
@@ -176,6 +269,21 @@ async function upsertIssue(issue) {
 }
 
 async function main() {
+  const idConfig = await getIdPropertyConfig();
+  if (idConfig.note) {
+    console.warn(`[notion-sync] ${idConfig.note}. Will match records by "${PROP_LINK}" only.`);
+  } else if (!idConfig.queryFilterBuilder) {
+    console.warn(
+      `[notion-sync] Property "${PROP_ID}" is type "${idConfig.type}" (not queryable by this script). ` +
+      `Will match records by "${PROP_LINK}" only.`
+    );
+  } else if (!idConfig.writableValueBuilder) {
+    console.warn(
+      `[notion-sync] Property "${PROP_ID}" is type "${idConfig.type}" and is not writable by API. ` +
+      `Upsert will use "${PROP_ID}" query + "${PROP_LINK}" fallback.`
+    );
+  }
+
   const since = isoDaysAgo(CLOSED_DAYS);
 
   const openIssues = await listIssues({ state: "open", since: null });

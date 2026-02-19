@@ -74,11 +74,21 @@ jobs:
           # Verify the file was created
           if (Test-Path $exePath) {
             $size = (Get-Item $exePath).Length / 1MB
-            Write-Host "✓ Executable created: $exePath ($([math]::Round($size, 2)) MB)"
+            Write-Host "[OK] Executable created: $exePath ($([math]::Round($size, 2)) MB)"
           } else {
             Write-Error "Failed to create executable"
             exit 1
           }
+
+      - name: Prepare compressed executable copy
+        shell: pwsh
+        run: |
+          $uncompressedPath = "bin/ksef-pdf-generator.exe"
+          $compressedPath = "bin/ksef-pdf-generator-compressed.exe"
+          Copy-Item $uncompressedPath $compressedPath -Force
+
+          $size = (Get-Item $compressedPath).Length / 1MB
+          Write-Host "[OK] Compressed executable copy prepared: $compressedPath ($([math]::Round($size, 2)) MB)"
 
       - name: Install UPX
         shell: pwsh
@@ -89,18 +99,18 @@ jobs:
       - name: Compress executable with UPX
         shell: pwsh
         run: |
-          $exePath = "bin/ksef-pdf-generator.exe"
-          $sizeBefore = (Get-Item $exePath).Length
+          $compressedPath = "bin/ksef-pdf-generator-compressed.exe"
+          $sizeBefore = (Get-Item $compressedPath).Length
 
           Write-Host "Compressing with UPX..."
-          upx --best --lzma $exePath
+          upx --best --lzma $compressedPath
 
-          $sizeAfter = (Get-Item $exePath).Length
+          $sizeAfter = (Get-Item $compressedPath).Length
           $saved = $sizeBefore - $sizeAfter
           $percent = [math]::Round(($saved / $sizeBefore) * 100, 1)
 
-          Write-Host "✓ Compressed from $([math]::Round($sizeBefore/1MB, 2))MB to $([math]::Round($sizeAfter/1MB, 2))MB"
-          Write-Host "✓ Saved: $([math]::Round($saved/1MB, 2))MB ($percent%)"
+          Write-Host "[OK] Compressed from $([math]::Round($sizeBefore/1MB, 2))MB to $([math]::Round($sizeAfter/1MB, 2))MB"
+          Write-Host "[OK] Saved: $([math]::Round($saved/1MB, 2))MB ($percent%)"
         continue-on-error: true
 
       - name: Create Release
@@ -109,13 +119,17 @@ jobs:
         with:
           files: |
             bin/ksef-pdf-generator.exe
+            bin/ksef-pdf-generator-compressed.exe
           tag_name: ${{ github.ref_name }}
           name: Release ${{ steps.package-version.outputs.VERSION }}
           body: |
             ## KSeF PDF Generator v${{ steps.package-version.outputs.VERSION }}
 
             ### Installation
-            Download `ksef-pdf-generator.exe` and use it directly - no installation required!
+            Download one of the executables and use it directly - no installation required!
+
+            - `ksef-pdf-generator.exe` (uncompressed, better antivirus compatibility)
+            - `ksef-pdf-generator-compressed.exe` (UPX compressed, smaller file)
 
             ### Usage
             ```bash
@@ -124,7 +138,7 @@ jobs:
 
             ### Build Information
             - Built with Node.js ${{ steps.setup-node.outputs.node-version }}
-            - Compressed with UPX for smaller file size
+            - Includes both compressed and uncompressed executables
             - All dependencies bundled
 
             ### Changes
@@ -137,14 +151,18 @@ jobs:
       - name: Summary
         shell: pwsh
         run: |
-          $exePath = "bin/ksef-pdf-generator.exe"
-          $size = (Get-Item $exePath).Length / 1MB
+          $uncompressedPath = "bin/ksef-pdf-generator.exe"
+          $compressedPath = "bin/ksef-pdf-generator-compressed.exe"
+
+          $compressedSize = (Get-Item $compressedPath).Length / 1MB
+          $uncompressedSize = (Get-Item $uncompressedPath).Length / 1MB
 
           Write-Host ""
-          Write-Host "═══════════════════════════════════════════"
-          Write-Host "✓ Release Created Successfully!"
-          Write-Host "═══════════════════════════════════════════"
+          Write-Host "==========================================="
+          Write-Host "[OK] Release Created Successfully!"
+          Write-Host "==========================================="
           Write-Host "Version: ${{ steps.package-version.outputs.VERSION }}"
-          Write-Host "File Size: $([math]::Round($size, 2)) MB"
+          Write-Host "Compressed:   $([math]::Round($compressedSize, 2)) MB ($compressedPath)"
+          Write-Host "Uncompressed: $([math]::Round($uncompressedSize, 2)) MB ($uncompressedPath)"
           Write-Host "Release URL: ${{ steps.create_release.outputs.url }}"
-          Write-Host "═══════════════════════════════════════════"
+          Write-Host "==========================================="
