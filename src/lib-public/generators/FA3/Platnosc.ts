@@ -16,7 +16,17 @@ import { getFormaPlatnosciString } from '../../../shared/generators/common/funct
 import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
 
-export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
+function isZeroCurrencyValue(value: unknown): boolean {
+  const rawValue = getValue(value as any);
+  if (rawValue === undefined || rawValue === null || rawValue === '') {
+    return false;
+  }
+
+  const parsedValue = Number(String(rawValue).replace(',', '.'));
+  return Number.isFinite(parsedValue) && parsedValue === 0;
+}
+
+export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?: unknown): Content {
   if (!platnosc) {
     return [];
   }
@@ -45,6 +55,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   ];
 
   const table: Content[] = [generateLine(), ...createHeader('Płatność')];
+  const isP15EqualZero = isZeroCurrencyValue(kwotaOgolnaP15);
 
   //  TODO: Add to FA2 and FA1? (KSEF20-15289)
   if (getValue(platnosc.Zaplacono) === '1') {
@@ -63,7 +74,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
           : 'Zapłacono całość w częściach'
       )
     );
-  } else {
+  } else if (!isP15EqualZero) {
     table.push(createLabelText('Informacja o płatności: ', 'Brak zapłaty'));
   }
 

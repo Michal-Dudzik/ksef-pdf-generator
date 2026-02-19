@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.53] - 2026-02-19
+
+### Changed
+
+- Hidden text „Brak zapłaty” for invoices with P_15 = 0
+
 ## [0.0.52] - 2026-02-17
 
 ### Fixed

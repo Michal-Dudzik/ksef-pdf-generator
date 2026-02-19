@@ -51,7 +51,7 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
       generateAdnotacje(invoice.Fa?.Adnotacje),
       generateDodatkoweInformacje(invoice.Fa!),
       generateRozliczenie(invoice.Fa?.Rozliczenie, invoice.Fa?.KodWaluty?._text ?? ''),
-      generatePlatnosc(invoice.Fa?.Platnosc),
+      generatePlatnosc(invoice.Fa?.Platnosc, invoice.Fa?.P_15),
       generateWarunkiTransakcji(invoice.Fa?.WarunkiTransakcji),
       ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ, invoice.Zalacznik),
     ];

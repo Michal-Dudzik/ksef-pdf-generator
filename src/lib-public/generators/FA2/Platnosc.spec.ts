@@ -115,6 +115,17 @@ describe(generatePlatnosc.name, () => {
     expect(createLabelText).toHaveBeenCalledWith('Wysokość skonta: ', '2%');
   });
 
+  it('nie dodaje "Brak zapłaty" gdy P_15 = 0 i brak danych o płatności', () => {
+    const platnosc: Partial<Platnosc> = {};
+    generatePlatnosc(platnosc as Platnosc, { _text: '0.00' });
+
+    const brakZaplatyCall = mockedCreateLabelText.mock.calls.find(
+      ([label, value]) => label === 'Informacja o płatności: ' && value === 'Brak zapłaty'
+    );
+
+    expect(brakZaplatyCall).toBeUndefined();
+  });
+
   it('zwraca pustą tablicę jeśli platnosc undefined', () => {
     const result = generatePlatnosc(undefined);
 

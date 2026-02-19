@@ -23,7 +23,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getTable: vi.fn((data: any): any[] => data ?? []),
   getContentTable: vi.fn(() => ({ content: [{ text: 'mockTable' }] })),
   hasValue: vi.fn((v: any) => !!v),
-  getValue: vi.fn((v: any) => !!v),
+  getValue: vi.fn((obj: any) => obj?._text ?? obj ?? ''),
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
@@ -110,6 +110,17 @@ describe(generatePlatnosc.name, () => {
     expect(createHeader).toHaveBeenCalledWith('Płatność');
     expect(createLabelText).toHaveBeenCalledWith('Warunki skonta: ', '7 dni');
     expect(createLabelText).toHaveBeenCalledWith('Wysokość skonta: ', '2%');
+  });
+
+  it('nie dodaje "Brak zapłaty" gdy P_15 = 0 i brak danych o płatności', () => {
+    const platnosc: Partial<Platnosc> = {};
+    generatePlatnosc(platnosc as Platnosc, { _text: '0.00' });
+
+    const brakZaplatyCall = mockedCreateLabelText.mock.calls.find(
+      ([label, value]) => label === 'Informacja o płatności: ' && value === 'Brak zapłaty'
+    );
+
+    expect(brakZaplatyCall).toBeUndefined();
   });
 
   it('zwraca pustą tablicę jeśli platnosc undefined', () => {

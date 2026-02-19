@@ -12,6 +12,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   getContentTable: vi.fn((_header, data, _width) => ({
     content: Array.isArray(data) && data.length ? { data } : undefined,
   })),
+  getValue: vi.fn((data: any) => data?._text ?? data),
   getTable: vi.fn((data) => data || []),
   hasValue: vi.fn((fp: any) => Boolean(fp && fp._text && fp._text !== '')),
 }));
@@ -76,6 +77,15 @@ describe('generatePlatnosc', () => {
         { text: 'LABEL:Forma płatności: Płatność inna' },
         { text: 'LABEL:Opis płatności innej: Gotówka przy odbiorze' },
       ])
+    );
+  });
+
+  it('does not show "Brak zapłaty" when P_15 is 0 and payment section is empty', () => {
+    const p: Platnosc = {};
+    const result = generatePlatnosc(p, { _text: '0.00' });
+
+    expect(result).not.toEqual(
+      expect.arrayContaining([{ text: 'LABEL:Informacja o płatności: Brak zapłaty' }])
     );
   });
 

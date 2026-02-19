@@ -5,6 +5,7 @@ import {
   generateLine,
   generateTwoColumns,
   getContentTable,
+  getValue,
   getTable,
   hasValue,
 } from '../../../shared/PDF-functions';
@@ -15,7 +16,17 @@ import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { TableWithFields, TerminPlatnosciContent } from '../../types/fa1-additional-types';
 
-export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
+function isZeroCurrencyValue(value: unknown): boolean {
+  const rawValue = getValue(value as any);
+  if (rawValue === undefined || rawValue === null || rawValue === '') {
+    return false;
+  }
+
+  const parsedValue = Number(String(rawValue).replace(',', '.'));
+  return Number.isFinite(parsedValue) && parsedValue === 0;
+}
+
+export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?: unknown): Content {
   if (!platnosc) {
     return [];
   }
@@ -49,13 +60,14 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   ];
 
   const table: Content[] = [generateLine(), ...createHeader('Płatność')];
+  const isP15EqualZero = isZeroCurrencyValue(kwotaOgolnaP15);
 
   if (platnosc.Zaplacono?._text === '1') {
     table.push(createLabelText('Informacja o płatności: ', 'Zapłacono'));
     table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty, FormatTyp.Date));
   } else if (platnosc.ZaplataCzesciowa?._text === '1') {
     table.push(createLabelText('Informacja o płatności: ', 'Zapłata częściowa'));
-  } else {
+  } else if (!isP15EqualZero) {
     table.push(createLabelText('Informacja o płatności: ', 'Brak zapłaty'));
   }
 
