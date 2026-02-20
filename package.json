@@ -1,6 +1,6 @@
 {
   "name": "ksef-pdf-generator",
-  "version": "0.0.53",
+  "version": "0.0.54",
   "type": "module",
   "description": "CLI tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files",
   "private": true,
