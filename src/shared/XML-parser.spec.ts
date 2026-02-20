@@ -36,6 +36,28 @@ describe('stripPrefixes', () => {
 
     expect(stripPrefixes(input)).toEqual(expected);
   });
+
+  it('handles deeply nested objects without stack overflow', () => {
+    const depth = 20_000;
+    const input: Record<string, unknown> = {};
+    let current: Record<string, unknown> = input;
+
+    for (let i = 0; i < depth; i++) {
+      current['ns:child'] = {};
+      current = current['ns:child'] as Record<string, unknown>;
+    }
+    current['ns:value'] = 'ok';
+
+    const result = stripPrefixes(input) as Record<string, unknown>;
+    let pointer = result;
+
+    for (let i = 0; i < depth; i++) {
+      expect(pointer).toHaveProperty('child');
+      pointer = pointer.child as Record<string, unknown>;
+    }
+
+    expect(pointer.value).toBe('ok');
+  });
 });
 
 describe('parseXML', () => {

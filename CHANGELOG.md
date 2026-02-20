@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.54] - 2026-02-20
+
+### Fixed
+
+- Large UPO files could cause a `Maximum call stack size exceeded`: issue #62
+-
+
 ## [0.0.53] - 2026-02-19
 
 ### Changed
