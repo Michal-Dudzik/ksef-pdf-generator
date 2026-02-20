@@ -4,6 +4,7 @@ import { PDFDocument } from 'pdf-lib';
 import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
 import { parseArguments } from './args';
 import { initializeApp } from './init';
+import { applyConfigFromFile } from './config';
 
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
 
@@ -12,6 +13,8 @@ export async function main(): Promise<void> {
   log(`Node.js version: ${process.version}`, 'debug');
   log(`Platform: ${process.platform} ${process.arch}`, 'debug');
   log(`Working directory: ${process.cwd()}`, 'debug');
+
+  applyConfigFromFile();
   
   if (isPersistentLogEnabled()) {
     log(`Persistent logging enabled: ${getLogFilePath()}`, 'debug');

@@ -7,7 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Large UPO files could cause a `Maximum call stack size exceeded`: issue #62
--
+
+### Added
+
+- new config file for parameterization of certain elements
+- new parameter for the number of decimals in number type
 
 ## [0.0.53] - 2026-02-19
 

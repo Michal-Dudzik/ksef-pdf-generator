@@ -18,6 +18,27 @@ import { DifferentValues, FilteredKeysOfValues, TypesOfValues } from './types/un
 import { CreateLabelTextData } from './types/additional-data.types';
 import FormatTyp, { Answer, Position } from './enums/common.enum';
 
+const DEFAULT_NUMBER_DECIMALS = 2;
+const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
+
+function formatNumberByConfig(value: number | string | undefined): string {
+  if (isNaN(Number(value))) {
+    return replaceDotWithCommaIfNeeded(value);
+  }
+
+  const configuredValue = process?.env?.[NUMBER_DECIMALS_ENV];
+
+  if (configuredValue?.toLowerCase() === 'none') {
+    return replaceDotWithCommaIfNeeded(value);
+  }
+
+  const parsedDecimals = Number(configuredValue);
+  const decimals =
+    Number.isInteger(parsedDecimals) && parsedDecimals >= 0 ? parsedDecimals : DEFAULT_NUMBER_DECIMALS;
+
+  return dotToComma(Number(value).toFixed(decimals));
+}
+
 export function formatText(
   value: number | string | undefined | null,
   format: FormatTyp | FormatTyp[] | null = null,
@@ -117,8 +138,7 @@ function formatValue(
       result.text = `${value}%`;
       break;
     case FormatTyp.Number:
-      // result.text = replaceDotWithCommaIfNeeded(value);
-      result.text = dotToComma(Number(value).toFixed(2))
+      result.text = formatNumberByConfig(value);
       result.alignment = Position.RIGHT;
       break;
   }

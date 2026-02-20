@@ -160,6 +160,32 @@ For troubleshooting and system diagnostics:
 - Windows: `scripts\diagnose.bat`
 - Linux: `scripts/diagnose.sh`
 
+### Configuration File (Optional)
+
+You can create an optional `parameters.ini` file:
+
+- next to `ksef-pdf-generator.exe` (recommended for standalone usage), or
+- in the current working directory / project root.
+
+The first found file is used. You can also force a specific path with `KSEF_CONFIG_PATH`.
+
+Example:
+
+```ini
+; KSeF PDF Generator configuration
+[numberFormat]
+; Option 1: fixed decimals (integer >= 0)
+decimals = 3
+; Option 2: legacy unlimited behavior
+; decimals = null
+```
+
+`numberFormat.decimals` behavior:
+
+- integer `>= 0`: fixed decimal places (`2` means `12.3456` -> `12,35`)
+- `null`: legacy behavior (no fixed decimal limit), e.g. `12.3456` -> `12,3456`
+- missing/invalid value: fallback default `2`
+
 ---
 
 ## Development

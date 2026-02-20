@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   createLabelText,
@@ -17,6 +17,16 @@ import {
 import FormatTyp, { Position } from './enums/common.enum';
 
 describe('formatText', () => {
+  const numberDecimalsEnv = process.env.KSEF_FORMAT_NUMBER_DECIMALS;
+
+  afterEach(() => {
+    if (numberDecimalsEnv === undefined) {
+      delete process.env.KSEF_FORMAT_NUMBER_DECIMALS;
+      return;
+    }
+    process.env.KSEF_FORMAT_NUMBER_DECIMALS = numberDecimalsEnv;
+  });
+
   it('returns empty string for null or undefined value', () => {
     expect(formatText(null)).toBe('');
     expect(formatText(undefined)).toBe('');
@@ -75,6 +85,48 @@ describe('formatText', () => {
       expect.objectContaining({
         text: `${expectedHour}:${expectedMinute}:${expectedSecond}`,
         style: FormatTyp.Time,
+      })
+    );
+  });
+
+  it('formats Number with 2 decimals by default', () => {
+    delete process.env.KSEF_FORMAT_NUMBER_DECIMALS;
+
+    const content = formatText(12.3456, FormatTyp.Number);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '12,35',
+        style: FormatTyp.Number,
+        alignment: Position.RIGHT,
+      })
+    );
+  });
+
+  it('formats Number with unlimited decimals in legacy mode', () => {
+    process.env.KSEF_FORMAT_NUMBER_DECIMALS = 'none';
+
+    const content = formatText(12.3456, FormatTyp.Number);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '12,3456',
+        style: FormatTyp.Number,
+        alignment: Position.RIGHT,
+      })
+    );
+  });
+
+  it('formats Number with configured fixed decimals', () => {
+    process.env.KSEF_FORMAT_NUMBER_DECIMALS = '4';
+
+    const content = formatText(12.3, FormatTyp.Number);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '12,3000',
+        style: FormatTyp.Number,
+        alignment: Position.RIGHT,
       })
     );
   });
