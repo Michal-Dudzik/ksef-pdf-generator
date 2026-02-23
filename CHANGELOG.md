@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.55] - 2026-02-23
+
+### Added
+
+- Added version, company, and copyright metadata to the executable file properties
+
 ## [0.0.54] - 2026-02-20
 
 ### Fixed

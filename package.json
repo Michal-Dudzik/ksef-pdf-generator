@@ -39,6 +39,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "esbuild": "^0.27.0",
+    "rcedit": "^5.0.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
