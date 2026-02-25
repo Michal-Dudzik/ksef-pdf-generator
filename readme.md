@@ -2,13 +2,23 @@
 
 [![Download Latest](https://img.shields.io/github/v/release/Michal-Dudzik/ksef-pdf-generator?label=Download%20Latest&style=for-the-badge&logo=github)](https://github.com/Michal-Dudzik/ksef-pdf-generator/releases/latest)
 
-A command-line tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files.
+A command-line tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files, plus Excel export of invoice line data.
+
+## Tools Included
+
+This package includes **two tools**:
+
+1. **KSeF PDF Generator** - Generate PDF visualizations of KSeF invoices and UPO documents
+2. **KSeF Excel Summary** - Export invoice line data to Excel format ⭐ **NEW**
 
 ## Table of Contents
 
 - [Installation Options](#installation-options)
 - [Quick Start](#quick-start)
+  - [PDF Generator](#pdf-generator)
+  - [Excel Summary](#excel-summary-new)
 - [Command Line Options](#command-line-options)
+- [Excel Summary Tool](#excel-summary-tool)
 - [Logging](#persistent-session-logging)
 - [Development](#development)
 - [Building Standalone Executables](#building-standalone-executables)
@@ -84,7 +94,9 @@ npm run build
 
 ## Quick Start
 
-### Using Standalone Executable (Windows Only)
+### PDF Generator
+
+#### Using Standalone Executable (Windows Only)
 
 ```batch
 # Generate Invoice PDF
@@ -118,7 +130,7 @@ bin\ksef-pdf-generator.exe -i invoice.xml -o invoice-merged.pdf -t invoice ^
 bin\ksef-pdf-generator.exe -i assets\upo.xml -o upo.pdf -t upo
 ```
 
-### Using Node.js (Development)
+#### Using Node.js (Development)
 
 ```bash
 # Generate Invoice PDF
@@ -131,15 +143,57 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 
 ---
 
+### Excel Summary ⭐ NEW
+
+Export invoice line data (FaWiersz) to Excel format with automatic mapping of additional data (DodatkowyOpis).
+
+#### Windows:
+
+```batch
+# Basic usage
+bin\ksef-excel-summary.bat -i invoice.xml -o invoice.xlsx
+
+# With all fields (including empty ones)
+bin\ksef-excel-summary.bat -i invoice.xml -o invoice.xlsx --include-all
+
+# Verbose mode
+bin\ksef-excel-summary.bat -i invoice.xml -o invoice.xlsx --verbose
+```
+
+#### Linux/Mac:
+
+```bash
+# Basic usage
+./bin/ksef-excel-summary.sh -i invoice.xml -o invoice.xlsx
+
+# With all fields
+./bin/ksef-excel-summary.sh -i invoice.xml -o invoice.xlsx --include-all
+
+# Verbose mode
+./bin/ksef-excel-summary.sh -i invoice.xml -o invoice.xlsx --verbose
+```
+
+#### Using Node.js directly:
+
+```bash
+node dist/excel-summary.cjs -i invoice.xml -o invoice.xlsx
+```
+
+**See [EXCEL_SUMMARY.md](EXCEL_SUMMARY.md) for detailed documentation.**
+
+---
+
 ## Command Line Options
 
-### Required Arguments
+### PDF Generator Options
+
+#### Required Arguments
 
 - `--input` / `-i` - Path to input XML file
 - `--output` / `-o` - Path where PDF will be saved
 - `--type` / `-t` - Document type: `invoice` or `upo`
 
-### Optional Arguments (for invoices only)
+#### Optional Arguments (for invoices only)
 
 - `--nrKSeF` - KSeF number for the invoice (use "OFFLINE" for offline invoices)
 - `--qrCode1` - QR code data for the first QR code
@@ -147,11 +201,25 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 - `--simplified` - Generate simplified invoice PDF (header + QR only)
 - `--mergePdf` - Merge the simplified PDF with an existing PDF (existing PDF first, simplified appended)
 
-### Utility Commands
+#### Utility Commands
 
 - `--help` - Display help information
 - `--version` - Show version information
 - `--verbose` - Enable verbose output
+
+### Excel Summary Options
+
+#### Required Arguments
+
+- `--input` / `-i` - Path to KSeF invoice XML file
+- `--output` / `-o` - Path to output Excel file
+
+#### Optional Arguments
+
+- `--include-all` - Include all fields even if empty in all lines
+- `--verbose` - Enable verbose output
+- `--help` - Display help information
+- `--version` - Show version information
 
 ### Diagnostic Commands
 
