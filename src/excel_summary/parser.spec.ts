@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { parseInvoiceForExcel } from './parser';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
-vi.mock('fs');
+vi.mock('node:fs');
 
 describe('parseInvoiceForExcel', () => {
   const mockXmlContent = `<?xml version="1.0" encoding="utf-8"?>
@@ -48,16 +48,18 @@ describe('parseInvoiceForExcel', () => {
   beforeEach(() => {
     vi.mocked(fs.readFileSync).mockReturnValue(mockXmlContent);
     
-    // Mock global File and Blob
-    global.Blob = class Blob {
-      constructor(public parts: any[], public options?: any) {}
-    } as any;
+    // Mock globalThis File and Blob for browser environment compatibility
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    globalThis.Blob = class Blob {
+      constructor(public parts: unknown[], public options?: Record<string, unknown>) {}
+    } as unknown as typeof Blob;
     
-    global.File = class File extends Blob {
-      constructor(parts: any[], public name: string, options?: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    globalThis.File = class File extends Blob {
+      constructor(parts: unknown[], public name: string, options?: Record<string, unknown>) {
         super(parts, options);
       }
-    } as any;
+    } as unknown as typeof File;
   });
 
   afterEach(() => {

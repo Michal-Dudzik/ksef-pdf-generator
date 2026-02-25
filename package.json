@@ -48,10 +48,10 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "exceljs": "^4.4.0",
     "jsdom": "^26.1.0",
     "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.20",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }

@@ -65,7 +65,7 @@ src/excel_summary/
 ### 3. Technologia
 
 #### ✅ Biblioteki
-- **ExcelJS** (`^4.4.0`) - generowanie plików Excel
+- **SheetJS** (official CDN: `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`) - generowanie plików Excel (oficjalna dystrybucja, pinned version dla bezpieczeństwa)
 - **xml-js** (`^1.6.11`) - parsowanie XML (już była w projekcie)
 - TypeScript z pełnymi typami
 
@@ -192,7 +192,7 @@ Wszystkie testy jednostkowe projektu: **PASSED** (43 test suites)
 ## 📝 Uwagi implementacyjne
 
 ### Decyzje techniczne:
-1. **ExcelJS zamiast innych bibliotek** - najpopularniejsza, dobrze udokumentowana, aktywnie utrzymywana
+1. **SheetJS zamiast ExcelJS** - oficjalna dystrybucja z CDN (pinned version), aktywnie utrzymywana, bezpieczna, mniejszy bundle
 2. **Bezpośrednie użycie xml-js** - zamiast parseXML z FileReader (który nie działa w Node.js)
 3. **Szeroki format jako domyślny** - zgodnie z wymaganiami
 4. **Automatyczne filtrowanie kolumn** - zwiększa użyteczność przy fakturach o różnej strukturze

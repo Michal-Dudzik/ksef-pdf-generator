@@ -109,7 +109,7 @@ node dist/excel-summary.cjs -i assets/FA56.xml -o output/full.xlsx --include-all
 ## Wymagania
 
 - Node.js 22.14.0+
-- Biblioteka ExcelJS (zainstalowana automatycznie)
+- Biblioteka SheetJS (`xlsx` - official CDN distribution) - zainstalowana automatycznie
 
 ## Architektura
 

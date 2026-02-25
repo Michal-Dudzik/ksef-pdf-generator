@@ -167,7 +167,7 @@ Aby zobaczyć **wszystkie** kolumny (nawet puste), użyj flagi `--include-all`.
 
 - **Node.js:** 22.14.0 lub nowszy
 - **Biblioteki:**
-  - ExcelJS (automatycznie instalowane)
+  - SheetJS (`xlsx` - official CDN distribution) - automatycznie instalowane
   - xml-js (automatycznie instalowane)
 - **Systemy:** Windows, Linux, macOS
 

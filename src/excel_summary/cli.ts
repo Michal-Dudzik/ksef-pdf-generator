@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { parseArgs } from 'node:util';
-import { existsSync } from 'fs';
-import { resolve } from 'path';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { parseInvoiceForExcel } from './parser';
 import { exportToExcel } from './exporter';
 
@@ -46,6 +46,8 @@ Examples:
 }
 
 function printVersion(): void {
+  // Using require for package.json since it's outside the TypeScript module system
+  // and this is a CLI tool where dynamic require is acceptable
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const packageJson = require('../../package.json');
   console.log(`KSeF Excel Summary Generator v${packageJson.version}`);
