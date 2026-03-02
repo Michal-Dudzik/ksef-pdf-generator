@@ -43,11 +43,19 @@ jobs:
           echo "VERSION=$version" >> $env:GITHUB_OUTPUT
           echo "Building version: $version"
 
-      - name: Build standalone executable
+      - name: Build standalone executable (SEA) + set metadata + inject blob
         shell: pwsh
+        timeout-minutes: 10
         run: |
-          # Create SEA configuration
-          if (-not (Test-Path "build")) { New-Item -ItemType Directory -Path "build" }
+          # ---- paths ----
+          if (-not (Test-Path "build")) { New-Item -ItemType Directory -Path "build" | Out-Null }
+          if (-not (Test-Path "bin")) { New-Item -ItemType Directory -Path "bin" | Out-Null }
+
+          $exePath = "bin/ksef-pdf-generator.exe"
+          $version = "${{ steps.package-version.outputs.VERSION }}"
+          $fileVer = "$version.0"   # Windows wants 4-part version A.B.C.D
+
+          # ---- create SEA config ----
           @"
           {
             "main": "dist/cli.cjs",
@@ -58,73 +66,48 @@ jobs:
           }
           "@ | Out-File -FilePath "build/sea-config.json" -Encoding ASCII
 
-          # Generate SEA blob
+          # ---- generate SEA blob ----
           node --experimental-sea-config build/sea-config.json
 
-          # Create bin directory
-          if (-not (Test-Path "bin")) { New-Item -ItemType Directory -Path "bin" }
+          # ---- copy Node binary as our target EXE ----
+          Copy-Item (Get-Command node).Source $exePath -Force
 
-          # Copy Node.js binary
-          $exePath = "bin/ksef-pdf-generator.exe"
-          Copy-Item (Get-Command node).Source $exePath
+          # ---- locate rcedit from node_modules (installed via npm ci) ----
+          $rceditPath = ".\node_modules\rcedit\bin\rcedit-x64.exe"
+          if (-not (Test-Path $rceditPath)) { $rceditPath = ".\node_modules\rcedit\bin\rcedit.exe" }
+          if (-not (Test-Path $rceditPath)) {
+            Write-Error "rcedit not found. Ensure it's in devDependencies and installed by npm ci."
+            exit 1
+          }
 
-          # Inject application
+          # ---- FIX 1: set metadata BEFORE postject injection ----
+          Write-Host "Setting executable metadata to version $version (file/product: $fileVer)..."
+
+          & $rceditPath $exePath `
+            --set-version-string CompanyName "Todis Consulting" `
+            --set-version-string FileDescription "Library to translate KSEF XML files into PDF format" `
+            --set-version-string ProductName "KSEF PDF Generator" `
+            --set-version-string LegalCopyright "Copyright (C) $(Get-Date -Format 'yyyy') Todis Consulting" `
+            --set-file-version $fileVer `
+            --set-product-version $fileVer
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "rcedit failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+          Write-Host "[OK] Metadata applied."
+
+          # ---- inject SEA blob AFTER metadata ----
           npx --yes postject $exePath NODE_SEA_BLOB build/sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 
-          # Verify the file was created
-          if (Test-Path $exePath) {
-            $size = (Get-Item $exePath).Length / 1MB
-            Write-Host "[OK] Executable created: $exePath ($([math]::Round($size, 2)) MB)"
-          } else {
+          if (-not (Test-Path $exePath)) {
             Write-Error "Failed to create executable"
             exit 1
           }
 
-      - name: Install rcedit
-        shell: pwsh
-        run: |
-          Write-Host "Installing rcedit..."
-          npm install rcedit
-          Write-Host "rcedit installed successfully"
-
-      - name: Set executable metadata
-        shell: pwsh
-        timeout-minutes: 2
-        run: |
-          $exePath = "bin/ksef-pdf-generator.exe"
-          $version = "${{ steps.package-version.outputs.VERSION }}"
-          
-          Write-Host "Setting executable metadata to version $version..."
-          $rceditPath = ".\node_modules\rcedit\bin\rcedit-x64.exe"
-          if (-not (Test-Path $rceditPath)) { $rceditPath = ".\node_modules\rcedit\bin\rcedit.exe" }
-          if (-not (Test-Path $rceditPath)) {
-            Write-Error "rcedit binary not found at $rceditPath"
-            exit 1
-          }
-
-          $args = @(
-            $exePath,
-            "--set-version-string", "CompanyName", "Todis Consulting",
-            "--set-version-string", "FileDescription", "Library to translate KSEF XML files into PDF format",
-            "--set-version-string", "ProductName", "KSEF PDF Generator",
-            "--set-version-string", "LegalCopyright", "Copyright (C) $(Get-Date -Format 'yyyy') Todis Consulting",
-            "--set-file-version", "$version.0",
-            "--set-product-version", "$version.0"
-          )
-
-          $proc = Start-Process -FilePath $rceditPath -ArgumentList $args -NoNewWindow -PassThru
-          if (-not $proc.WaitForExit(60000)) {
-            $proc | Stop-Process -Force
-            Write-Error "rcedit timed out after 60s"
-            exit 1
-          }
-
-          if ($proc.ExitCode -eq 0) {
-            Write-Host "[OK] Successfully set metadata to version $version"
-          } else {
-            Write-Error "Failed to set executable metadata"
-            exit 1
-          }
+          $size = (Get-Item $exePath).Length / 1MB
+          Write-Host "[OK] Executable created: $exePath ($([math]::Round($size, 2)) MB)"
 
       - name: Prepare compressed executable copy
         shell: pwsh
@@ -168,12 +151,9 @@ jobs:
           $changelogName = "changelog-$versionFormatted.md"
           $changelogPath = "bin/$changelogName"
           
-          # Set output for use in subsequent steps
           echo "versionFormatted=$versionFormatted" >> $env:GITHUB_OUTPUT
           
-          # Copy CHANGELOG.md to versioned name
           Copy-Item "CHANGELOG.md" $changelogPath -Force
-          
           Write-Host "[OK] Created changelog: $changelogPath"
 
       - name: Create executable zip package
@@ -184,7 +164,6 @@ jobs:
           $zipPath = "bin/$zipName"
           $changelogName = "changelog-$versionFormatted.md"
           
-          # Create zip with uncompressed exe and changelog
           Compress-Archive -Path "bin/ksef-pdf-generator.exe","bin/$changelogName" -DestinationPath $zipPath -Force
           
           $size = (Get-Item $zipPath).Length / 1MB
