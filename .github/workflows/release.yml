@@ -82,6 +82,7 @@ jobs:
 
       - name: Set executable metadata
         shell: pwsh
+        timeout-minutes: 2
         run: |
           $exePath = "bin/ksef-pdf-generator.exe"
           $version = "${{ steps.package-version.outputs.VERSION }}"
@@ -93,10 +94,25 @@ jobs:
             Write-Error "rcedit binary not found at $rceditPath"
             exit 1
           }
-          
-          & $rceditPath $exePath --set-version-string "CompanyName" "Todis Consulting" --set-version-string "FileDescription" "Library to translate KSEF XML files into PDF format" --set-version-string "ProductName" "KSEF PDF Generator" --set-version-string "LegalCopyright" "Copyright (C) $(Get-Date -Format 'yyyy') Todis Consulting" --set-file-version "$version.0" --set-product-version "$version.0"
-          
-          if ($LASTEXITCODE -eq 0) {
+
+          $args = @(
+            $exePath,
+            "--set-version-string", "CompanyName", "Todis Consulting",
+            "--set-version-string", "FileDescription", "Library to translate KSEF XML files into PDF format",
+            "--set-version-string", "ProductName", "KSEF PDF Generator",
+            "--set-version-string", "LegalCopyright", "Copyright (C) $(Get-Date -Format 'yyyy') Todis Consulting",
+            "--set-file-version", "$version.0",
+            "--set-product-version", "$version.0"
+          )
+
+          $proc = Start-Process -FilePath $rceditPath -ArgumentList $args -NoNewWindow -PassThru
+          if (-not $proc.WaitForExit(60000)) {
+            $proc | Stop-Process -Force
+            Write-Error "rcedit timed out after 60s"
+            exit 1
+          }
+
+          if ($proc.ExitCode -eq 0) {
             Write-Host "[OK] Successfully set metadata to version $version"
           } else {
             Write-Error "Failed to set executable metadata"
