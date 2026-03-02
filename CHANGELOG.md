@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.57] - 2026-03-02
+
+### Changed
+
+- Updated vulnerable dependencies
+
 ## [0.0.56] - 2026-03-02
 
 ### Fixed
