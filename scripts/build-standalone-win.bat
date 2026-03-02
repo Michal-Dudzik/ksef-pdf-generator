@@ -140,7 +140,11 @@ if %ERRORLEVEL% neq 0 (
 
 echo.
 echo Step 6: Setting executable metadata...
-npx rcedit "!EXE_TARGET!" --set-version-string "CompanyName" "Todis Consulting" --set-version-string "FileDescription" "Library to translate KSEF XML files into PDF format" --set-version-string "ProductName" "KSEF PDF Generator" --set-version-string "LegalCopyright" "Copyright (C) 2026 Todis Consulting" --set-file-version "!APP_VERSION!.0" --set-product-version "!APP_VERSION!.0"
+
+REM Get current year for copyright
+for /f "usebackq tokens=*" %%i in (`powershell -Command "Get-Date -Format yyyy"`) do set "YEAR=%%i"
+
+npx rcedit "!EXE_TARGET!" --set-version-string "CompanyName" "Todis Consulting" --set-version-string "FileDescription" "Library to translate KSEF XML files into PDF format" --set-version-string "ProductName" "KSEF PDF Generator" --set-version-string "LegalCopyright" "Copyright (C) !YEAR! Todis Consulting" --set-file-version "!APP_VERSION!.0" --set-product-version "!APP_VERSION!.0"
 if %ERRORLEVEL% neq 0 (
     echo WARNING: Failed to set executable metadata
     echo The executable will still work, but will show Node.js details

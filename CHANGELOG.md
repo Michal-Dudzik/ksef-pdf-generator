@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.56] - 2026-03-02
+
+### Fixed
+
+- Fixed custom metadata in the exe
+- Copyright date no longer hardcoded
+
+### Changed
+
+- during release we will create new zip file with the uncompressed exe and changelog
+
 ## [0.0.55] - 2026-02-23
 
 ### Added

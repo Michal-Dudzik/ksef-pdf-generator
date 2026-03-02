@@ -80,6 +80,28 @@ jobs:
             exit 1
           }
 
+      - name: Set executable metadata
+        shell: pwsh
+        run: |
+          $exePath = "bin/ksef-pdf-generator.exe"
+          $version = "${{ steps.package-version.outputs.VERSION }}"
+          
+          Write-Host "Setting executable metadata to version $version..."
+          npx --yes rcedit $exePath `
+            --set-version-string "CompanyName" "Todis Consulting" `
+            --set-version-string "FileDescription" "Library to translate KSEF XML files into PDF format" `
+            --set-version-string "ProductName" "KSEF PDF Generator" `
+            --set-version-string "LegalCopyright" "Copyright (C) $(Get-Date -Format 'yyyy') Todis Consulting" `
+            --set-file-version "$version.0" `
+            --set-product-version "$version.0"
+          
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "[OK] Successfully set metadata to version $version"
+          } else {
+            Write-Error "Failed to set executable metadata"
+            exit 1
+          }
+
       - name: Prepare compressed executable copy
         shell: pwsh
         run: |
@@ -113,6 +135,39 @@ jobs:
           Write-Host "[OK] Saved: $([math]::Round($saved/1MB, 2))MB ($percent%)"
         continue-on-error: true
 
+      - name: Prepare changelog with version
+        id: prepare-changelog
+        shell: pwsh
+        run: |
+          $version = "${{ steps.package-version.outputs.VERSION }}"
+          $versionFormatted = $version -replace '\.', '-'
+          $changelogName = "changelog-$versionFormatted.md"
+          $changelogPath = "bin/$changelogName"
+          
+          # Set output for use in subsequent steps
+          echo "versionFormatted=$versionFormatted" >> $env:GITHUB_OUTPUT
+          
+          # Copy CHANGELOG.md to versioned name
+          Copy-Item "CHANGELOG.md" $changelogPath -Force
+          
+          Write-Host "[OK] Created changelog: $changelogPath"
+
+      - name: Create executable zip package
+        shell: pwsh
+        run: |
+          $versionFormatted = "${{ steps.prepare-changelog.outputs.versionFormatted }}"
+          $zipName = "ksef-pdf-generator-exe.zip"
+          $zipPath = "bin/$zipName"
+          $changelogName = "changelog-$versionFormatted.md"
+          
+          # Create zip with uncompressed exe and changelog
+          Compress-Archive -Path "bin/ksef-pdf-generator.exe","bin/$changelogName" -DestinationPath $zipPath -Force
+          
+          $size = (Get-Item $zipPath).Length / 1MB
+          Write-Host "[OK] Created zip package: $zipPath ($([math]::Round($size, 2)) MB)"
+          Write-Host "    - ksef-pdf-generator.exe"
+          Write-Host "    - $changelogName"
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -120,6 +175,7 @@ jobs:
           files: |
             bin/ksef-pdf-generator.exe
             bin/ksef-pdf-generator-compressed.exe
+            bin/ksef-pdf-generator-exe.zip
           tag_name: ${{ github.ref_name }}
           name: Release ${{ steps.package-version.outputs.VERSION }}
           body: |
@@ -128,6 +184,7 @@ jobs:
             ### Installation
             Download one of the executables and use it directly - no installation required!
 
+            - `ksef-pdf-generator-exe.zip` (recommended: includes exe + changelog)
             - `ksef-pdf-generator.exe` (uncompressed, better antivirus compatibility)
             - `ksef-pdf-generator-compressed.exe` (UPX compressed, smaller file)
 
