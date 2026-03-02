@@ -80,6 +80,13 @@ jobs:
             exit 1
           }
 
+      - name: Install rcedit
+        shell: pwsh
+        run: |
+          Write-Host "Installing rcedit..."
+          npm install rcedit
+          Write-Host "rcedit installed successfully"
+
       - name: Set executable metadata
         shell: pwsh
         timeout-minutes: 2
