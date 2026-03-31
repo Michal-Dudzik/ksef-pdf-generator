@@ -15,10 +15,6 @@ vi.mock('../../../shared/PDF-functions', () => ({
 }));
 
 describe(generujRachunekBankowy.name, () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockAccount: RachunekBankowy = {
     NrRB: { _text: '12345678901234567890123456' },
     SWIFT: { _text: 'BPKOPLPW' },
@@ -27,6 +23,7 @@ describe(generujRachunekBankowy.name, () => {
   };
 
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['header'] as any);
     vi.mocked(PDFFunctions.createSection).mockReturnValue('section' as any);
     vi.mocked(PDFFunctions.formatText).mockReturnValue('formatted' as any);
@@ -212,7 +209,7 @@ describe(generujRachunekBankowy.name, () => {
   });
 
   describe('table structure', () => {
-    it('should create table with 5 rows', () => {
+    it('should create table with 4 rows', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       const sectionCall = vi.mocked(PDFFunctions.createSection).mock.calls[0][0] as any[];

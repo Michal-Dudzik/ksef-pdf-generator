@@ -55,13 +55,10 @@ describe(generateSzczegoly.name, () => {
   });
 
   it('should call createSection and return result', () => {
-    const mockSection = 'section';
-    vi.mocked(PDFFunctions.createSection).mockReturnValue(mockSection as any);
-
     const result = generateSzczegoly(mockFaVat);
 
     expect(PDFFunctions.createSection).toHaveBeenCalledWith(expect.any(Array), true);
-    expect(result).toEqual(mockSection);
+    expect(result).toEqual('section');
   });
 
   describe('standard labels', () => {

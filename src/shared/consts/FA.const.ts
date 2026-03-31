@@ -175,6 +175,23 @@ export const TAXPAYER_STATUS: Record<string, string> = {
   '4': 'Przedsiębiorstwo w spadku',
 };
 
+/**
+ * Legacy text-based StatusInfoPodatnika values from the pre-December-2024 KSeF format,
+ * mapped to the current numeric codes introduced as a breaking change in December 2024.
+ *
+ * Source: docs/StatusInfoPodatnika-API.md v2.0 ("Breaking Change Notice: December 2024"),
+ *         co-authored with this mapping in commit b8731e0. The document cites the KSeF
+ *         Technical Documentation (Ministry of Finance, Poland) and the FA_VAT Schema.
+ *
+ * Verified 2026-03-31: all four entries were traced through the full git history and
+ * confirmed against docs/StatusInfoPodatnika-API.md (unchanged since introduction):
+ *   - 'SAMO'                   → '1' CONFIRMED per spec (Stan likwidacji).
+ *                                     Semantic origin is opaque but explicitly specified.
+ *   - 'zarejestrowany'         → '2' CONFIRMED per spec (Postępowanie restrukturyzacyjne).
+ *                                     Semantic origin is opaque but explicitly specified.
+ *   - 'stan upadłości'         → '3' CONFIRMED per spec (exact Polish text of code 3).
+ *   - 'przedsiębiorstwo w spadku' → '4' CONFIRMED per spec (exact Polish text of code 4).
+ */
 const LEGACY_TAXPAYER_STATUS_MAP: Record<string, string> = {
   SAMO: '1',
   zarejestrowany: '2',

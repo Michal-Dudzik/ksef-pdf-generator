@@ -1,4 +1,4 @@
-import { Content } from 'pdfmake/interfaces';
+import { Content, Margins } from 'pdfmake/interfaces';
 import {
   createHeader,
   createSection,
@@ -20,94 +20,42 @@ export function generateDodatkoweInformacje(fa: Fa): Content[] {
   return table.length > 1 ? createSection(table, true) : [];
 }
 
-function generateDokumentyZaplaty(dokumentZaplaty: DokumentZaplaty[] | undefined): Content[] {
-  if (!dokumentZaplaty) {
+function buildListTable<T extends object>(
+  data: T[] | undefined,
+  title: string,
+  headers: HeaderDefine[],
+  subHeaderMargin?: Margins
+): Content[] {
+  if (!data) {
     return [];
   }
-  const dokumentZaplatyTable = getTable(dokumentZaplaty)?.map((item, index) => ({
+  const mappedData = getTable(data).map((item, index) => ({
     ...item,
     lp: { _text: index + 1 },
   }));
-  const table: Content[] = createSubHeader('Dokumenty Zapłaty', [0, 0, 0, 4]);
-
-  const dokumentZaplatyHeader: HeaderDefine[] = [
-    {
-      name: 'lp',
-      title: 'Lp.',
-      format: FormatTyp.Default,
-      width: 'auto',
-    },
-    {
-      name: 'NrDokumentu',
-      title: 'Numer dokumentu',
-      format: FormatTyp.Default,
-      width: '*',
-    },
-    {
-      name: 'DataDokumentu',
-      title: 'Data dokumentu',
-      format: FormatTyp.Date,
-      width: 'auto',
-    },
-  ];
-  const dokumentZaplatyTableContent = getContentTable<(typeof dokumentZaplatyTable)[0]>(
-    dokumentZaplatyHeader,
-    dokumentZaplatyTable,
-    '*',
-    [0, 0, 0, 0]
-  );
-
-  if (dokumentZaplatyTableContent.content) {
-    table.push(dokumentZaplatyTableContent.content);
+  const table: Content[] = createSubHeader(title, subHeaderMargin);
+  const tableContent = getContentTable<(typeof mappedData)[0]>(headers, mappedData, '*', [0, 0, 0, 0]);
+  if (tableContent.content) {
+    table.push(tableContent.content);
   }
   return table;
 }
 
-function generateDodatkowyOpis(dodatkowyOpis: DodatkowyOpi[] | undefined): Content[] {
-  if (!dodatkowyOpis) {
-    return [];
-  }
-  const dodatkowyOpisTable = getTable(dodatkowyOpis)?.map((item, index) => ({
-    ...item,
-    lp: { _text: index + 1 },
-  }));
-  const table: Content[] = createSubHeader('Dodatkowy opis');
-
-  const dodatkowyOpisHeader: HeaderDefine[] = [
-    {
-      name: 'lp',
-      title: 'Lp.',
-      format: FormatTyp.Default,
-      width: 'auto',
-    },
-    {
-      name: 'NrWiersza',
-      title: 'Numer wiersza',
-      format: FormatTyp.Default,
-      width: 'auto',
-    },
-    {
-      name: 'Klucz',
-      title: 'Rodzaj informacji',
-      format: FormatTyp.Default,
-      width: 'auto',
-    },
-    {
-      name: 'Wartosc',
-      title: 'Treść informacji',
-      format: FormatTyp.Default,
-      width: '*',
-    },
+function generateDokumentyZaplaty(dokumentZaplaty: DokumentZaplaty[] | undefined): Content[] {
+  const headers: HeaderDefine[] = [
+    { name: 'lp', title: 'Lp.', format: FormatTyp.Default, width: 'auto' },
+    { name: 'NrDokumentu', title: 'Numer dokumentu', format: FormatTyp.Default, width: '*' },
+    { name: 'DataDokumentu', title: 'Data dokumentu', format: FormatTyp.Date, width: 'auto' },
   ];
-  const dodatkowyOpisTableContent = getContentTable<(typeof dodatkowyOpisTable)[0]>(
-    dodatkowyOpisHeader,
-    dodatkowyOpisTable,
-    '*',
-    [0, 0, 0, 0]
-  );
+  return buildListTable(dokumentZaplaty, 'Dokumenty Zapłaty', headers, [0, 0, 0, 4]);
+}
 
-  if (dodatkowyOpisTableContent.content) {
-    table.push(dodatkowyOpisTableContent.content);
-  }
-  return table;
+function generateDodatkowyOpis(dodatkowyOpis: DodatkowyOpi[] | undefined): Content[] {
+  const headers: HeaderDefine[] = [
+    { name: 'lp', title: 'Lp.', format: FormatTyp.Default, width: 'auto' },
+    { name: 'NrWiersza', title: 'Numer wiersza', format: FormatTyp.Default, width: 'auto' },
+    { name: 'Klucz', title: 'Rodzaj informacji', format: FormatTyp.Default, width: 'auto' },
+    { name: 'Wartosc', title: 'Treść informacji', format: FormatTyp.Default, width: '*' },
+  ];
+  return buildListTable(dodatkowyOpis, 'Dodatkowy opis', headers);
 }

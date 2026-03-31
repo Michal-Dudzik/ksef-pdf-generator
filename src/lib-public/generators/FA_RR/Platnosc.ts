@@ -20,7 +20,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   const table: Content[] = [generateLine(), ...createHeader('Płatność')];
 
   if (hasValue(platnosc.FormaPlatnosci)) {
-    table.push(createLabelText('Forma zapłaty: ', 'Przelew'));
+    table.push(createLabelText('Forma zapłaty: ', getValue(platnosc.FormaPlatnosci)));
   } else {
     if (hasValue(platnosc.OpisPlatnosci)) {
       table.push(createLabelText('Forma zapłaty: ', 'Inna'));
@@ -47,13 +47,11 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   );
   const rachunekBankowy: Content[][] = [...rachunekBankowy1, ...rachunekBankowy2];
 
-  if (rachunekBankowy.length > 0) {
-    rachunekBankowy.forEach((rachunek, index) => {
-      if (index % 2 === 0) {
-        table.push(generateTwoColumns(rachunek, rachunekBankowy[index + 1] ?? []));
-      }
-    });
-  }
+  rachunekBankowy.forEach((rachunek, index) => {
+    if (index % 2 === 0) {
+      table.push(generateTwoColumns(rachunek, rachunekBankowy[index + 1] ?? []));
+    }
+  });
 
   table.push({ margin: [0, 8, 0, 0], text: '' });
 

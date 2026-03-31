@@ -11,11 +11,11 @@ import FormatTyp from '../../../shared/enums/common.enum';
 import { RachunekBankowy } from '../../types/FaRR.types';
 
 export const generujRachunekBankowy = (accounts?: RachunekBankowy[], title?: string): Content[] => {
-  const result: Content[] = [];
-
   if (!accounts?.length) {
     return [];
   }
+
+  const result: Content[] = [];
 
   accounts.forEach((account, index) => {
     const table: Content[][] = [];
