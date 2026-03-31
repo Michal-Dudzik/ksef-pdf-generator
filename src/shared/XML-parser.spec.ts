@@ -96,6 +96,34 @@ describe('parseXML', () => {
     expect(Object.keys(result.root)).toContain('name');
   });
 
+  it('maps CDATA content to _text', async () => {
+    const cdataXmlSample = `<root><value><![CDATA[test value]]></value></root>`;
+    const cdataFile = new File([cdataXmlSample], 'cdata.xml', { type: 'text/xml' });
+
+    vi.stubGlobal(
+      'FileReader',
+      class {
+        onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+        public readAsText(): void {
+          const event = { target: { result: cdataXmlSample } } as ProgressEvent<FileReader>;
+
+          setTimeout(
+            () =>
+              (this.onload as ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null)?.call(
+                this as unknown as FileReader,
+                event
+              ),
+            0
+          );
+        }
+      }
+    );
+
+    const result: any = await parseXML(cdataFile);
+
+    expect(result.root.value._text).toBe('test value');
+  });
+
   it('rejects the promise with an error on invalid XML', async () => {
     vi.stubGlobal(
       'FileReader',

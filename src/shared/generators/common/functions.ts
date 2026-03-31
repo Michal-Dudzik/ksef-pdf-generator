@@ -12,6 +12,16 @@ import {
 } from '../../consts/const';
 import { FP as FP2 } from '../../../lib-public/types/fa2.types';
 
+export function translateMap(value: FP2 | string | undefined, map: Record<string, string>): string {
+  const valueToTranslate = (typeof value === 'string' ? value : value?._text)?.trim();
+
+  if (!valueToTranslate) {
+    return '';
+  }
+
+  return map[valueToTranslate] ?? '';
+}
+
 export function getRolaString(rola: FP2 | undefined, FA: 1 | 2 | 3): string {
   if (!rola || !rola._text) {
     return '';

@@ -7,6 +7,8 @@ import { Faktura as Faktura3 } from './types/fa3.types';
 import { parseXML } from '../shared/XML-parser';
 import { TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { AdditionalDataTypes } from './types/common.types';
+import { generateFARR } from './FARR-generator';
+import { FaRR } from './types/FaRR.types';
 
 export async function generateInvoice(
   file: File,
@@ -38,6 +40,10 @@ export async function generateInvoice(
         break;
       case 'FA (3)':
         pdf = generateFA3((xml as any).Faktura as Faktura3, additionalData);
+        break;
+      case 'FA_RR (1)':
+      case 'FA_RR(1)':
+        pdf = generateFARR((xml as any).Faktura as FaRR, additionalData);
         break;
     }
     switch (formatType) {

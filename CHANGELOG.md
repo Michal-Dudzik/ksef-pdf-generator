@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.58] - 2026-03-31
+
+### Added
+
+- added support for FA_RR, CDATA parsing compatibility and invoice page numbering 
+- added tests for the FA_RR 
+
 ## [0.0.57] - 2026-03-02
 
 ### Changed
