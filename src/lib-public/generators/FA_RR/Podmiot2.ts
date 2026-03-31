@@ -4,7 +4,7 @@ import FormatTyp from '../../../shared/enums/common.enum';
 import { generateAdres } from './Adres';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
 import { Podmiot1Class } from '../../types/FaRR.types';
-import { TAXPAYER_STATUS } from '../../../shared/consts/FA.const';
+import { getTaxpayerStatusDescription } from '../../../shared/consts/FA.const';
 import { generateDaneIdentyfikacyjneTPodmiot2Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot2Dto';
 
 export function generatePodmiot2(podmiot2: Podmiot1Class): Content[] {
@@ -30,9 +30,11 @@ export function generatePodmiot2(podmiot2: Podmiot1Class): Content[] {
     );
   }
   if (hasValue(podmiot2.StatusInfoPodatnika)) {
-    const statusInfo: string = TAXPAYER_STATUS[getValue(podmiot2.StatusInfoPodatnika)!];
+    const statusInfo = getTaxpayerStatusDescription(getValue(podmiot2.StatusInfoPodatnika));
 
-    result.push(createLabelText('Status podatnika: ', statusInfo));
+    if (statusInfo) {
+      result.push(createLabelText('Status podatnika: ', statusInfo));
+    }
   }
   return result;
 }

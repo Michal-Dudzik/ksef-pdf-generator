@@ -13,7 +13,7 @@ import { Podmiot1, Podmiot1K } from '../../types/fa1.types';
 import { generatePodmiotAdres } from './PodmiotAdres';
 import { generateDaneIdentyfikacyjne } from './PodmiotDaneIdentyfikacyjne';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
-import { getTaxpayerStatusDescription } from '../../../shared/consts/const';
+import { getTaxpayerStatusDescription } from '../../../shared/consts/FA.const';
 
 export function generatePodmiot1Podmiot1K(podmiot1: Podmiot1, podmiot1K: Podmiot1K): Content[] {
   const result: Content[] = createHeader('Sprzedawca');

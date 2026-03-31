@@ -7,10 +7,11 @@ import {
   generateTwoColumns,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
+import { FA3RolaPodmiotu3 } from '../../../shared/consts/FA.const';
 import { Podmiot3 } from '../../types/fa3.types';
 import { generateDaneIdentyfikacyjneTPodmiot3Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot3Dto';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
-import { getRolaString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { generateAdres } from '../FA2/Adres';
 
 export function generatePodmiot3(podmiot: Podmiot3, index: number): Content[] {
@@ -22,7 +23,7 @@ export function generatePodmiot3(podmiot: Podmiot3, index: number): Content[] {
     createLabelText('Identyfikator nabywcy: ', podmiot.IDNabywcy),
     createLabelText('Numer EORI: ', podmiot.NrEORI),
     ...generateDaneIdentyfikacyjneTPodmiot3Dto(podmiot.DaneIdentyfikacyjne),
-    createLabelText('Rola: ', getRolaString(podmiot.Rola, 3)),
+    createLabelText('Rola: ', translateMap(podmiot.Rola, FA3RolaPodmiotu3)),
     createLabelText('Rola inna: ', podmiot.OpisRoli),
     createLabelText('Udział: ', podmiot.Udzial, [FormatTyp.Percentage]),
   ];

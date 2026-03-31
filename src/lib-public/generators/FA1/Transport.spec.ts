@@ -20,8 +20,7 @@ vi.mock('./Przewoznik', () => ({
 
 vi.mock('../../../shared/generators/common/functions', () => ({
   getDateTimeWithoutSeconds: vi.fn(),
-  getRodzajTransportuString: vi.fn(),
-  getOpisTransportuString: vi.fn(),
+  translateMap: vi.fn((value: any) => (value?._text === 'Goods' ? 'Opis' : 'Road')),
 }));
 
 describe(generateTransport.name, () => {
@@ -65,8 +64,9 @@ describe(generateTransport.name, () => {
     vi.mocked(PDFFunctions.hasValue).mockReturnValue(true);
     vi.mocked(PrzewoznikModule.generatePrzewoznik).mockReturnValue('przewoznik' as any);
     vi.mocked(CommonFunctions.getDateTimeWithoutSeconds).mockReturnValue('2024-01-01 10:00');
-    vi.mocked(CommonFunctions.getRodzajTransportuString).mockReturnValue('Road');
-    vi.mocked(CommonFunctions.getOpisTransportuString).mockReturnValue('Opis');
+    vi.mocked(CommonFunctions.translateMap).mockImplementation((value: any) =>
+      value?._text === 'Goods' ? 'Opis' : 'Road'
+    );
   });
 
   it('should return a section', () => {
@@ -77,7 +77,7 @@ describe(generateTransport.name, () => {
 
   it('should handle RodzajTransportu', () => {
     generateTransport(mockTransport);
-    expect(CommonFunctions.getRodzajTransportuString).toHaveBeenCalledWith(mockTransport.RodzajTransportu);
+    expect(CommonFunctions.translateMap).toHaveBeenCalledWith(mockTransport.RodzajTransportu, expect.any(Object));
     expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Rodzaj transportu: ', 'Road');
   });
 

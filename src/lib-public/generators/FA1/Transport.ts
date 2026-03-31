@@ -9,11 +9,9 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import { Transport } from '../../types/fa1.types';
-import {
-  getDateTimeWithoutSeconds,
-  getOpisTransportuString,
-  getRodzajTransportuString,
-} from '../../../shared/generators/common/functions';
+import { RodzajTransportu } from '../../../shared/consts/FA.const';
+import { TypLadunku } from '../../../shared/consts/const';
+import { getDateTimeWithoutSeconds, translateMap } from '../../../shared/generators/common/functions';
 import { generateAdres } from './Adres';
 import { generatePrzewoznik } from './Przewoznik';
 
@@ -30,7 +28,7 @@ export function generateTransport(transport: Transport, index?: number | null): 
   table.push(createHeader(index ? `Transport ${index}` : 'Transport'));
   if (transport.RodzajTransportu?._text) {
     columns.transport.push(
-      createLabelText('Rodzaj transportu: ', getRodzajTransportuString(transport.RodzajTransportu))
+      createLabelText('Rodzaj transportu: ', translateMap(transport.RodzajTransportu, RodzajTransportu))
     );
   } else if (transport.TransportInny?._text == '1' && transport.OpisInnegoTransportu?._text) {
     columns.transport.push(createLabelText('Rodzaj transportu: ', 'Transport inny'));
@@ -40,7 +38,7 @@ export function generateTransport(transport: Transport, index?: number | null): 
   }
   columns.dane.push(createLabelText('Numer zlecenia transportu: ', transport.NrZleceniaTransportu));
   if (hasValue(transport.OpisLadunku)) {
-    columns.dane.push(createLabelText('Opis ładunku: ', getOpisTransportuString(transport.OpisLadunku)));
+    columns.dane.push(createLabelText('Opis ładunku: ', translateMap(transport.OpisLadunku, TypLadunku)));
     if (transport.LadunekInny?._text === '1' && transport.OpisInnegoLadunku?._text) {
       columns.dane.push(createLabelText('Opis ładunku: ', 'Ładunek inny'));
       columns.dane.push(createLabelText('Opis innego ładunku: ', transport.OpisInnegoLadunku));

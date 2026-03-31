@@ -11,7 +11,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getRolaUpowaznionegoString: vi.fn(() => 'Rola string'),
+  translateMap: vi.fn(() => 'Rola string'),
 }));
 vi.mock('./PodmiotAdres', () => ({
   generatePodmiotAdres: vi.fn((adres, label) => ({ adr: label })),

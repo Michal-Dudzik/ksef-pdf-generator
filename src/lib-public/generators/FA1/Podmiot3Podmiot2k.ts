@@ -9,8 +9,9 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
+import { FA1RolaPodmiotu3 } from '../../../shared/consts/FA.const';
 import { Podmiot3Podmiot2KDto } from '../../types/fa1-additional-types';
-import { getRolaString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { generatePodmiotAdres } from './PodmiotAdres';
 import { generateDaneIdentyfikacyjne } from './PodmiotDaneIdentyfikacyjne';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
@@ -36,7 +37,7 @@ export function generateDaneIdentyfikacyjneTPodmiot3Dto(
     result.push(
       ...createSubHeader('Dane identyfikacyjne'),
       createLabelText('Numer EORI: ', podmiot1.NrEORI),
-      createLabelText('Rola: ', getRolaString(podmiot1.Rola, 1)),
+      createLabelText('Rola: ', translateMap(podmiot1.Rola, FA1RolaPodmiotu3)),
       createLabelText('Rola inna: ', podmiot1.OpisRoli),
       createLabelText('Udział: ', podmiot1.Udzial, FormatTyp.Percentage)
     );

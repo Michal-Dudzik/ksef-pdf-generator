@@ -8,10 +8,11 @@ import {
   makeBreakable,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
+import { TypRachunkowWlasnych } from '../../../shared/consts/FA.const';
 import { RachunekBankowy } from '../../types/fa2.types';
-import { getTypRachunkowWlasnych } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { FP } from '../../types/fa1.types';
-import { DEFAULT_TABLE_LAYOUT } from '../../../shared/consts/const';
+import { DEFAULT_TABLE_LAYOUT } from '../../../shared/consts/FA.const';
 
 export const generujRachunekBankowy: (accounts?: Record<string, FP>[], title?: string) => Content[] = (
   accounts?: RachunekBankowy[],
@@ -40,7 +41,7 @@ export const generujRachunekBankowy: (accounts?: Record<string, FP>[], title?: s
     ]);
     table.push([
       formatText('Rachunek własny banku', FormatTyp.GrayBoldTitle),
-      formatText(makeBreakable(getTypRachunkowWlasnych(account.RachunekWlasnyBanku), 20), FormatTyp.Default),
+      formatText(makeBreakable(translateMap(account.RachunekWlasnyBanku, TypRachunkowWlasnych), 20), FormatTyp.Default),
     ]);
     table.push([
       formatText('Nazwa banku', FormatTyp.GrayBoldTitle),

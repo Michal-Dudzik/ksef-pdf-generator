@@ -2,7 +2,7 @@ import pdfMake, { TCreatedPdf } from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { generateStyle, getValue, hasValue } from '../shared/PDF-functions';
-import { TRodzajFaktury } from '../shared/consts/const';
+import { TRodzajFaktury } from '../shared/consts/FA.const';
 import { generateAdnotacje } from './generators/FA1/Adnotacje';
 import { generateDodatkoweInformacje } from './generators/FA1/DodatkoweInformacje';
 import { generatePlatnosc } from './generators/FA1/Platnosc';

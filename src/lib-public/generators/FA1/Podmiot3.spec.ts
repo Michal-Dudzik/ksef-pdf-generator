@@ -16,7 +16,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   hasValue: vi.fn((val) => !!(val && val._text)),
 }));
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getRolaString: vi.fn((rola, idx) => (rola && rola._text ? 'SPRZEDAWCA' : '')),
+  translateMap: vi.fn((rola) => (rola && rola._text ? 'SPRZEDAWCA' : '')),
 }));
 vi.mock('./PodmiotAdres', () => ({
   generatePodmiotAdres: vi.fn((adres, label) => ({ adr: label })),

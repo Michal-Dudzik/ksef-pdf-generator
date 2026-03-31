@@ -14,7 +14,7 @@ import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
 import { generateAdres } from '../FA2/Adres';
 import { Podmiot1Class, Podmiot1KClass } from '../../types/FaRR.types';
 import { generateDaneIdentyfikacyjneTPodmiot2Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot2Dto';
-import { TAXPAYER_STATUS } from '../../../shared/consts/FA.const';
+import { getTaxpayerStatusDescription } from '../../../shared/consts/FA.const';
 
 export function generatePodmiot2Podmiot2K(podmiot2: Podmiot1Class, podmiot2K: Podmiot1KClass): Content[] {
   const result: Content[] = createHeader('Nabywca');
@@ -34,9 +34,11 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot1Class, podmiot2K: Po
   }
 
   if (hasValue(podmiot2.StatusInfoPodatnika)) {
-    const statusInfo: string = TAXPAYER_STATUS[getValue(podmiot2.StatusInfoPodatnika)!];
+    const statusInfo = getTaxpayerStatusDescription(getValue(podmiot2.StatusInfoPodatnika));
 
-    firstColumn.push(createLabelText('Status podatnika: ', statusInfo));
+    if (statusInfo) {
+      firstColumn.push(createLabelText('Status podatnika: ', statusInfo));
+    }
   }
 
   if (firstColumn.length) {
