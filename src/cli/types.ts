@@ -7,10 +7,10 @@ export interface CliOptions {
   qrCode2?: string;
   simplifiedMode?: boolean;
   mergePdf?: string;
+  useCurrencyThousandsSeparator?: boolean;
 }
 
 export interface GeneratorFunctions {
   generateInvoice: any;
   generatePDFUPO: any;
 }
-

@@ -32,6 +32,9 @@ Optional Arguments (for invoice type):
   --qrCode2      QR code data for the second QR code (shown below the first with label "certyfikat")
   --simplified   Generate simplified invoice PDF (header + QR only)
   --mergePdf     Merge simplified PDF with an existing PDF
+  --currencyThousandsSeparator, --currency-thousands-separator
+                 Format currency values with non-breaking thousands separators (e.g. 10 000 000,00)
+
 Other Options:
   --help, -h     Show this help message
   --version      Show version information
@@ -70,6 +73,7 @@ Examples:
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
     --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
     --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..." \\
+    --currencyThousandsSeparator \\
     --simplified
 
   # Generate simplified invoice PDF and merge with an existing PDF
@@ -94,4 +98,3 @@ Diagnostics:
     Linux:   scripts/diagnose.sh
 `);
 }
-

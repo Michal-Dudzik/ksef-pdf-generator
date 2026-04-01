@@ -25,6 +25,7 @@ import { FP } from '../lib-public/types/fa3.types';
 import { DifferentValues, FilteredKeysOfValues, TypesOfValues } from './types/universal.types';
 import { CreateLabelTextData } from './types/additional-data.types';
 import FormatTyp, { Answer, Position } from './enums/common.enum';
+import { getCurrencyThousandsSeparatorChar, shouldUseCurrencyThousandsSeparator } from './formatting-config';
 
 const DEFAULT_NUMBER_DECIMALS = 2;
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
@@ -104,27 +105,46 @@ function formatValue(
 ): void {
   switch (item) {
     case FormatTyp.Currency:
+      if (value === undefined) {
+        result.text = '';
+        result.alignment = Position.RIGHT;
+        break;
+      }
       result.text = isNaN(Number(value))
         ? (value as string)
-        : `${normalizeCurrencySeparator(value)} ${currency}`;
+        : `${formatCurrencyValue(value)} ${currency}`;
       result.alignment = Position.RIGHT;
       break;
     case FormatTyp.CurrencyAbs:
+      if (value === undefined) {
+        result.text = '';
+        result.alignment = Position.RIGHT;
+        break;
+      }
       result.text = isNaN(Number(value))
         ? (value as string)
-        : `${dotToComma(Math.abs(Number(value)).toFixed(2))} ${currency}`;
+        : `${formatCurrencyValue(Math.abs(Number(value)), 2)} ${currency}`;
       result.alignment = Position.RIGHT;
       break;
     case FormatTyp.CurrencyGreater:
+      if (value === undefined) {
+        result.text = '';
+        break;
+      }
       result.text = isNaN(Number(value))
         ? (value as string)
-        : `${dotToComma(Number(value).toFixed(2))} ${currency}`;
+        : `${formatCurrencyValue(Number(value), 2)} ${currency}`;
       result.fontSize = 10;
       break;
     case FormatTyp.Currency6:
+      if (value === undefined) {
+        result.text = '';
+        result.alignment = Position.RIGHT;
+        break;
+      }
       result.text = isNaN(Number(value))
-      ? (value as string)
-      : `${dotToComma(Number(value).toFixed(6))} ${currency}`;
+        ? (value as string)
+        : `${formatCurrencyValue(Number(value), 6)} ${currency}`;
       result.alignment = Position.RIGHT;
       break;
     case FormatTyp.DateTime:
@@ -166,6 +186,28 @@ export function normalizeCurrencySeparator(value: string | number | undefined): 
   }
 
   return numberWithComma + ',00';
+}
+
+function formatCurrencyValue(value: string | number, fixedDecimals?: number): string {
+  const normalizedValue =
+    fixedDecimals === undefined
+      ? normalizeCurrencySeparator(value)
+      : dotToComma(Number(value).toFixed(fixedDecimals));
+
+  return shouldUseCurrencyThousandsSeparator()
+    ? addNonBreakingThousandsSeparator(normalizedValue, getCurrencyThousandsSeparatorChar())
+    : normalizedValue;
+}
+
+function addNonBreakingThousandsSeparator(value: string, separator: string = '\u00A0'): string {
+  const [integerPart, decimalPart] = value.split(',');
+  const sign = integerPart.startsWith('-') ? '-' : '';
+  const absoluteIntegerPart = sign ? integerPart.slice(1) : integerPart;
+  const groupedIntegerPart = absoluteIntegerPart.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+
+  return decimalPart === undefined
+    ? `${sign}${groupedIntegerPart}`
+    : `${sign}${groupedIntegerPart},${decimalPart}`;
 }
 
 export function replaceDotWithCommaIfNeeded(value: string | number | undefined): string {

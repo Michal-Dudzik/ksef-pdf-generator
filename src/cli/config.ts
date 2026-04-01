@@ -4,10 +4,14 @@ import { log } from './logger';
 
 const CONFIG_FILE_NAME = 'parameters.ini';
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
+const CURRENCY_THOUSANDS_SEPARATOR_ENV = 'KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR';
 
 type AppConfig = {
   numberFormat?: {
     decimals?: number | null;
+  };
+  currencyFormat?: {
+    thousandsSeparator?: boolean;
   };
 };
 
@@ -92,6 +96,31 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         );
       }
     }
+
+    if (section === 'currencyformat' && key === 'thousands_separator') {
+      if (!value) {
+        log(
+          `Invalid "currencyFormat.thousands_separator" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
+          'error'
+        );
+        continue;
+      }
+
+      if (['1', 'true', 'yes', 'on'].includes(value.toLowerCase())) {
+        result.currencyFormat = { thousandsSeparator: true };
+        continue;
+      }
+
+      if (['0', 'false', 'no', 'off'].includes(value.toLowerCase())) {
+        result.currencyFormat = { thousandsSeparator: false };
+        continue;
+      }
+
+      log(
+        `Invalid "currencyFormat.thousands_separator" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
+        'error'
+      );
+    }
   }
 
   return result;
@@ -122,6 +151,20 @@ function applyNumberFormatConfig(config: AppConfig, filePath: string): void {
   );
 }
 
+function applyCurrencyFormatConfig(config: AppConfig, filePath: string): void {
+  const thousandsSeparator = config.currencyFormat?.thousandsSeparator;
+
+  if (thousandsSeparator === undefined) {
+    return;
+  }
+
+  process.env[CURRENCY_THOUSANDS_SEPARATOR_ENV] = thousandsSeparator ? 'true' : 'false';
+  log(
+    `Config loaded from ${filePath}: currencyFormat.thousands_separator=${thousandsSeparator}`,
+    'info'
+  );
+}
+
 export function applyConfigFromFile(): void {
   const configPath = getConfigSearchPaths().find((p: string): boolean => fs.existsSync(p));
 
@@ -136,4 +179,5 @@ export function applyConfigFromFile(): void {
   }
 
   applyNumberFormatConfig(config, configPath);
+  applyCurrencyFormatConfig(config, configPath);
 }

@@ -146,6 +146,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 - `--qrCode2` - QR code data for the second QR code (shown below the first with label "certyfikat")
 - `--simplified` - Generate simplified invoice PDF (header + QR only)
 - `--mergePdf` - Merge the simplified PDF with an existing PDF (existing PDF first, simplified appended)
+- `--currencyThousandsSeparator` - Format currency values with a non-breaking thousands separator, e.g. `10 000 000,00`
 
 ### Utility Commands
 
@@ -178,6 +179,11 @@ Example:
 decimals = 3
 ; Option 2: legacy unlimited behavior
 ; decimals = null
+
+[currencyFormat]
+; true => 10 000 000,00
+; false => 10000000,00
+thousands_separator = true
 ```
 
 `numberFormat.decimals` behavior:
@@ -185,6 +191,12 @@ decimals = 3
 - integer `>= 0`: fixed decimal places (`2` means `12.3456` -> `12,35`)
 - `null`: legacy behavior (no fixed decimal limit), e.g. `12.3456` -> `12,3456`
 - missing/invalid value: fallback default `2`
+
+`currencyFormat.thousands_separator` behavior:
+
+- `true`: inserts a non-breaking space between thousands groups, e.g. `10000000` -> `10 000 000,00`
+- `false`: keeps the current compact format without grouping
+- missing/invalid value: disabled by default
 
 ---
 
@@ -328,6 +340,9 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
   if (options.qrCode) {
     command += ` --qrCode "${options.qrCode}"`;
   }
+  if (options.currencyThousandsSeparator) {
+    command += ' --currencyThousandsSeparator';
+  }
   if (options.simplifiedMode) {
     command += ' --simplified';
   }
@@ -346,6 +361,7 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
 await generatePDF("assets/invoice.xml", "output/invoice.pdf", "invoice", {
   nrKSeF: "5265877635-20250808-9231003CA67B-BE",
   qrCode: "https://ksef-test.mf.gov.pl/...",
+  currencyThousandsSeparator: true,
   simplifiedMode: true,
 });
 ```
@@ -370,6 +386,7 @@ public class KSefPdfGenerator
         string type,
         string? nrKSeF = null,
         string? qrCode = null,
+        bool currencyThousandsSeparator = false,
         bool simplifiedMode = false)
     {
         var arguments = $"--input \"{inputPath}\" --output \"{outputPath}\" --type {type}";
@@ -382,6 +399,11 @@ public class KSefPdfGenerator
         if (!string.IsNullOrEmpty(qrCode))
         {
             arguments += $" --qrCode \"{qrCode}\"";
+        }
+
+        if (currencyThousandsSeparator)
+        {
+            arguments += " --currencyThousandsSeparator";
         }
         
         if (simplifiedMode)
@@ -439,7 +461,8 @@ await generator.GeneratePdfAsync(
     "output/invoice.pdf",
     "invoice",
     nrKSeF: "5265877635-20250808-9231003CA67B-BE",
-    qrCode: "https://ksef-test.mf.gov.pl/..."
+    qrCode: "https://ksef-test.mf.gov.pl/...",
+    currencyThousandsSeparator: true
 );
 ```
 

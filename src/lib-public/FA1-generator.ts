@@ -22,54 +22,61 @@ import { ZamowienieKorekta } from './enums/invoice.enums';
 import { AdditionalDataTypes } from './types/common.types';
 import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplified-page-size';
 import { Position } from '../shared/enums/common.enum';
+import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
 
-pdfMake.vfs = pdfFonts.vfs;
+pdfMake.vfs = pdfFonts;
 
 export function generateFA1(invoice: Faktura, additionalData: AdditionalDataTypes): TCreatedPdf {
-  const isKOR_RABAT: boolean =
-    invoice.Fa?.RodzajFaktury?._text == TRodzajFaktury.KOR && hasValue(invoice.Fa?.OkresFaKorygowanej);
-  const rabatOrRowsInvoice: Content = isKOR_RABAT ? generateRabat(invoice.Fa!) : generateWiersze(invoice.Fa!);
-  const content: Content[] = additionalData?.simplifiedMode
-    ? [...generateNaglowek(invoice.Fa, additionalData), ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ)]
-    : [
-      ...generateNaglowek(invoice.Fa, additionalData),
-      generateDaneFaKorygowanej(invoice.Fa),
-      ...generatePodmioty(invoice),
-      generateSzczegoly(invoice.Fa!),
-      rabatOrRowsInvoice,
-      generateZamowienie(
-        invoice.Fa?.Zamowienie,
-        ZamowienieKorekta.Order,
-        invoice.Fa?.P_15?._text ?? '',
-        invoice.Fa?.RodzajFaktury?._text ?? '',
-        invoice.Fa?.KodWaluty?._text ?? '',
-        getValue(invoice.Fa?.Adnotacje?.P_PMarzy) as string | undefined
-      ),
-      generatePodsumowanieStawekPodatkuVat(invoice),
-      generateAdnotacje(invoice.Fa?.Adnotacje),
-      generateDodatkoweInformacje(invoice.Fa!),
-      generateRozliczenie(invoice.Fa?.Rozliczenie, invoice.Fa?.KodWaluty?._text ?? ''),
-      generatePlatnosc(invoice.Fa?.Platnosc, invoice.Fa?.P_15),
-      generateWarunkiTransakcji(invoice.Fa?.WarunkiTransakcji),
-      ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ),
-    ];
-  const docDefinition: TDocumentDefinitions = {
-    content,
-    footer: (currentPage, pageCount) => {
-      return {
-        text: currentPage.toString() + ' z ' + pageCount,
-        alignment: Position.RIGHT,
-        margin: [0, 0, 40, 0],
-      };
-    },
-    ...(additionalData?.simplifiedMode
-      ? {
-        pageSize: getSimplifiedPageSize(additionalData),
-        pageMargins: SIMPLIFIED_PAGE_MARGINS,
-      }
-      : {}),
-    ...generateStyle(),
-  };
+  try {
+    applyRuntimeFormattingConfig(additionalData);
 
-  return pdfMake.createPdf(docDefinition);
+    const isKOR_RABAT: boolean =
+      invoice.Fa?.RodzajFaktury?._text == TRodzajFaktury.KOR && hasValue(invoice.Fa?.OkresFaKorygowanej);
+    const rabatOrRowsInvoice: Content = isKOR_RABAT ? generateRabat(invoice.Fa!) : generateWiersze(invoice.Fa!);
+    const content: Content[] = additionalData?.simplifiedMode
+      ? [...generateNaglowek(invoice.Fa, additionalData), ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ)]
+      : [
+        ...generateNaglowek(invoice.Fa, additionalData),
+        generateDaneFaKorygowanej(invoice.Fa),
+        ...generatePodmioty(invoice),
+        generateSzczegoly(invoice.Fa!),
+        rabatOrRowsInvoice,
+        generateZamowienie(
+          invoice.Fa?.Zamowienie,
+          ZamowienieKorekta.Order,
+          invoice.Fa?.P_15?._text ?? '',
+          invoice.Fa?.RodzajFaktury?._text ?? '',
+          invoice.Fa?.KodWaluty?._text ?? '',
+          getValue(invoice.Fa?.Adnotacje?.P_PMarzy) as string | undefined
+        ),
+        generatePodsumowanieStawekPodatkuVat(invoice),
+        generateAdnotacje(invoice.Fa?.Adnotacje),
+        generateDodatkoweInformacje(invoice.Fa!),
+        generateRozliczenie(invoice.Fa?.Rozliczenie, invoice.Fa?.KodWaluty?._text ?? ''),
+        generatePlatnosc(invoice.Fa?.Platnosc, invoice.Fa?.P_15),
+        generateWarunkiTransakcji(invoice.Fa?.WarunkiTransakcji),
+        ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ),
+      ];
+    const docDefinition: TDocumentDefinitions = {
+      content,
+      footer: (currentPage, pageCount) => {
+        return {
+          text: currentPage.toString() + ' z ' + pageCount,
+          alignment: Position.RIGHT,
+          margin: [0, 0, 40, 0],
+        };
+      },
+      ...(additionalData?.simplifiedMode
+        ? {
+          pageSize: getSimplifiedPageSize(additionalData),
+          pageMargins: SIMPLIFIED_PAGE_MARGINS,
+        }
+        : {}),
+      ...generateStyle(),
+    };
+
+    return pdfMake.createPdf(docDefinition);
+  } finally {
+    resetRuntimeFormattingConfig();
+  }
 }

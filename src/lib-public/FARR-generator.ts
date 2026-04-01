@@ -14,31 +14,44 @@ import { generateRozliczenie } from './generators/common/Rozliczenie';
 import { generatePlatnosc } from './generators/FA_RR/Platnosc';
 import { generateStopka } from './generators/common/Stopka';
 import { Position } from '../shared/enums/common.enum';
+import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
 
-pdfMake.vfs = pdfFonts.vfs;
+pdfMake.vfs = pdfFonts;
 
 export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes): TCreatedPdf {
-  const docDefinition: TDocumentDefinitions = {
-    content: [
-      ...generateNaglowek(invoice.FakturaRR, additionalData),
-      generateDaneFaKorygowanej(invoice.FakturaRR),
-      ...generatePodmioty(invoice),
-      generateSzczegoly(invoice.FakturaRR!),
-      generateWiersze(invoice.FakturaRR!),
-      generateDodatkoweInformacje(invoice.FakturaRR!),
-      generateRozliczenie(invoice.FakturaRR?.Rozliczenie, invoice.FakturaRR?.KodWaluty?._text ?? ''),
-      generatePlatnosc(invoice.FakturaRR?.Platnosc),
-      ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek),
-    ],
-    footer: (currentPage, pageCount) => {
-      return {
-        text: currentPage.toString() + ' z ' + pageCount,
-        alignment: Position.RIGHT,
-        margin: [0, 0, 40, 0],
-      };
-    },
-    ...generateStyle(),
-  };
 
-  return pdfMake.createPdf(docDefinition);
+  try {
+    applyRuntimeFormattingConfig(additionalData);
+
+    if (!invoice.FakturaRR) {
+      throw new Error('Missing required FakturaRR data in invoice');
+    }
+    const fakturaRR = invoice.FakturaRR;
+
+    const docDefinition: TDocumentDefinitions = {
+      content: [
+        ...generateNaglowek(fakturaRR, additionalData),
+        generateDaneFaKorygowanej(fakturaRR),
+        ...generatePodmioty(invoice),
+        generateSzczegoly(fakturaRR),
+        generateWiersze(fakturaRR),
+        generateDodatkoweInformacje(fakturaRR),
+        generateRozliczenie(fakturaRR.Rozliczenie, fakturaRR.KodWaluty?._text ?? ''),
+        generatePlatnosc(fakturaRR.Platnosc),
+        ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek),
+      ],
+      footer: (currentPage, pageCount) => {
+        return {
+          text: currentPage.toString() + ' z ' + pageCount,
+          alignment: Position.RIGHT,
+          margin: [0, 0, 40, 0],
+        };
+      },
+      ...generateStyle(),
+    };
+
+    return pdfMake.createPdf(docDefinition);
+  } finally {
+    resetRuntimeFormattingConfig();
+  }
 }
