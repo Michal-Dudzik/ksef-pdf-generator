@@ -6,7 +6,7 @@ import { createHeader, createLabelText, hasValue } from '../../../shared/PDF-fun
 import { generatePodmiotAdres } from './PodmiotAdres';
 import { generateDaneIdentyfikacyjneTPodmiot1Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot1Dto';
 import { generatePodmiotUpowaznionyDaneKontaktowe } from './PodmiotUpowaznionyDaneKontaktowe';
-import { getRolaUpowaznionegoString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn(() => [{ text: 'Header: Podmiot upoważniony' }]),
@@ -27,7 +27,7 @@ vi.mock('./PodmiotUpowaznionyDaneKontaktowe', () => ({
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getRolaUpowaznionegoString: vi.fn(() => 'Agent celny'),
+  translateMap: vi.fn(() => 'Agent celny'),
 }));
 
 describe(generatePodmiotUpowazniony.name, () => {
@@ -59,7 +59,7 @@ describe(generatePodmiotUpowazniony.name, () => {
   it('adds Rola when RolaPU has value', () => {
     const result = generatePodmiotUpowazniony(baseData);
     expect(hasValue).toHaveBeenCalledWith(baseData.RolaPU);
-    expect(getRolaUpowaznionegoString).toHaveBeenCalledWith(baseData.RolaPU, 2);
+    expect(translateMap).toHaveBeenCalledWith(baseData.RolaPU, expect.any(Object));
     expect(createLabelText).toHaveBeenCalledWith('Rola: ', 'Agent celny');
     expect(result.some((r) => (r as any).text?.includes('Rola: Agent celny'))).toBe(true);
   });

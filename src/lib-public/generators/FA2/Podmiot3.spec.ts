@@ -29,7 +29,7 @@ describe(generatePodmiot3.name, () => {
       { text: 'mockDaneIdentyfikacyjne' },
     ]);
     vi.mocked(DaneKontaktoweModule.generateDaneKontaktowe).mockReturnValue([{ text: 'mockDaneKontaktowe' }]);
-    vi.mocked(CommonFunctions.getRolaString).mockReturnValue('mockRola');
+    vi.mocked(CommonFunctions.translateMap).mockReturnValue('mockRola');
   });
 
   it('generates minimal podmiot3 structure', () => {

@@ -12,7 +12,7 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import { HeaderDefine } from '../../../shared/types/pdf-types';
-import { Procedura, TRodzajFaktury } from '../../../shared/consts/const';
+import { Procedura, TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { Fa, FP } from '../../types/fa1.types';
 import FormatTyp, { Position } from '../../../shared/enums/common.enum';
 import { FormContentState } from '../../../shared/types/additional-data.types';

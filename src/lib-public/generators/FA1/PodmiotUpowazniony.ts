@@ -9,11 +9,12 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
+import { TRolaPodmiotuUpowaznionegoFA1 } from '../../../shared/consts/FA.const';
 import { PodmiotUpowazniony } from '../../types/fa1.types';
 import { generatePodmiotAdres } from './PodmiotAdres';
 import { generateDaneIdentyfikacyjne } from './PodmiotDaneIdentyfikacyjne';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
-import { getRolaUpowaznionegoString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 
 export function generatePodmiotUpowazniony(podmiot: PodmiotUpowazniony | undefined): Content[] {
   if (!podmiot) {
@@ -24,7 +25,9 @@ export function generatePodmiotUpowazniony(podmiot: PodmiotUpowazniony | undefin
   const columnRight: Content[] = [];
 
   if (hasValue(podmiot.RolaPU)) {
-    columnLeft.push(createLabelText('Rola: ', getRolaUpowaznionegoString(podmiot.RolaPU, 1)));
+    columnLeft.push(
+      createLabelText('Rola: ', translateMap(podmiot.RolaPU, TRolaPodmiotuUpowaznionegoFA1).split('-')[0] ?? '')
+    );
   }
   if (hasValue(podmiot.NrEORI)) {
     columnLeft.push(createLabelText('Numer EORI: ', podmiot.NrEORI));

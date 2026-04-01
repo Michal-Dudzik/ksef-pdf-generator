@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.58] - 2026-03-31
+
+### Added
+
+- Added support for FA_RR, CDATA parsing compatibility and invoice page numbering
+- Added tests for FA_RR
+
+### Changed
+
+- Aligned the constants with the upstream implementation
+
 ## [0.0.57] - 2026-03-02
 
 ### Changed
@@ -17,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- during release we will create new zip file with the uncompressed exe and changelog
+- During release we will create new zip file with the uncompressed exe and changelog
 
 ## [0.0.55] - 2026-02-23
 
@@ -33,8 +44,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- new config file for parameterization of certain elements
-- new parameter for the number of decimals in number type
+- New config file for parameterization of certain elements
+- New parameter for the number of decimals in number type
 
 ## [0.0.53] - 2026-02-19
 
@@ -46,13 +57,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- now text `kwota należności ogółem`/`kwota pozostała do zapłaty` will be shown alwas if the field P_15 exists in the xml
+- Now text `kwota należności ogółem`/`kwota pozostała do zapłaty` will be shown always if the field P_15 exists in the xml
 
 ## [0.0.51] - 2026-02-17
 
 ### Fixed
 
-- the '%' character was not showing up for the values of `Stawka podatku`
+- The '%' character was not showing up for the values of `Stawka podatku`
 
 ## [0.0.50] - 2026-02-05
 

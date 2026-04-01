@@ -12,7 +12,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getRolaString: vi.fn((rola: any) => `rola:${rola}`),
+  translateMap: vi.fn((rola: any) => `rola:${rola}`),
 }));
 
 vi.mock('./PodmiotAdres', () => ({

@@ -5,7 +5,7 @@ import { generateAdres } from './Adres';
 import { generateDaneIdentyfikacyjneTPodmiot1Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot1Dto';
 import { generateDaneKontaktowe } from './PodmiotDaneKontaktowe';
 import FormatTyp from '../../../shared/enums/common.enum';
-import { getTaxpayerStatusDescription } from '../../../shared/consts/const';
+import { getTaxpayerStatusDescription } from '../../../shared/consts/FA.const';
 
 export function generatePodmiot1(podmiot1: Podmiot1): Content[] {
   const result: Content[] = createHeader('Sprzedawca');

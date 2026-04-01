@@ -1,5 +1,5 @@
 import { Content } from 'pdfmake/interfaces';
-import { TypKorekty } from '../../../shared/consts/const';
+import { TypKorekty } from '../../../shared/consts/FA.const';
 import {
   createHeader,
   createLabelText,

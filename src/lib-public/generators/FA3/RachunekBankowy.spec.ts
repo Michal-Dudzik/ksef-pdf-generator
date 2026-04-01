@@ -15,7 +15,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
   hasValue: (val: any) => !!(val?._text),}));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getTypRachunkowWlasnych: vi.fn(),
+  translateMap: vi.fn(),
 }));
 
 describe(generujRachunekBankowy.name, () => {
@@ -35,7 +35,7 @@ describe(generujRachunekBankowy.name, () => {
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['header'] as any);
     vi.mocked(PDFFunctions.createSection).mockReturnValue('section' as any);
     vi.mocked(PDFFunctions.formatText).mockReturnValue('formatted' as any);
-    vi.mocked(CommonFunctions.getTypRachunkowWlasnych).mockReturnValue('Tak');
+    vi.mocked(CommonFunctions.translateMap).mockReturnValue('Tak');
   });
 
   describe('when accounts is undefined or empty', () => {
@@ -91,12 +91,12 @@ describe(generujRachunekBankowy.name, () => {
     });
 
     it('should format "Rachunek własny banku" field', () => {
-      vi.mocked(CommonFunctions.getTypRachunkowWlasnych).mockReturnValue('Tak');
+      vi.mocked(CommonFunctions.translateMap).mockReturnValue('Tak');
 
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Rachunek własny banku', FormatTyp.GrayBoldTitle);
-      expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku);
+      expect(CommonFunctions.translateMap).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku, expect.any(Object));
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
         mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Tak',
         FormatTyp.Default
@@ -207,7 +207,7 @@ describe(generujRachunekBankowy.name, () => {
       expect(sectionCall.length).toBe(2);
     });
 
-    it('should call getTypRachunkowWlasnych for each account', () => {
+    it('should call translateMap for each account', () => {
       const account2: RachunekBankowy = {
         NrRB: { _text: '98765432109876543210987654' },
         SWIFT: { _text: 'PKOPPLPW' },
@@ -218,9 +218,9 @@ describe(generujRachunekBankowy.name, () => {
 
       generujRachunekBankowy([mockAccount, account2], 'Rachunek bankowy');
 
-      expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledTimes(2);
-      expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku);
-      expect(CommonFunctions.getTypRachunkowWlasnych).toHaveBeenCalledWith(account2.RachunekWlasnyBanku);
+      expect(CommonFunctions.translateMap).toHaveBeenCalledTimes(2);
+      expect(CommonFunctions.translateMap).toHaveBeenCalledWith(mockAccount.RachunekWlasnyBanku, expect.any(Object));
+      expect(CommonFunctions.translateMap).toHaveBeenCalledWith(account2.RachunekWlasnyBanku, expect.any(Object));
     });
 
     it('should format all fields for all accounts', () => {

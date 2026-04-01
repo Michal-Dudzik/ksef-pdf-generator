@@ -10,7 +10,7 @@ import {
   getContentTable,
   hasValue,
 } from '../../../shared/PDF-functions';
-import { getFormaPlatnosciString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { generujRachunekBankowy } from './RachunekBankowy';
 
 vi.mock('../../../shared/PDF-functions', () => ({
@@ -27,7 +27,7 @@ vi.mock('../../../shared/PDF-functions', () => ({
 }));
 
 vi.mock('../../../shared/generators/common/functions', () => ({
-  getFormaPlatnosciString: vi.fn((v: any) => `Forma: ${v}`),
+  translateMap: vi.fn((v: any) => `Forma: ${v}`),
 }));
 
 vi.mock('./RachunekBankowy', () => ({
@@ -80,7 +80,7 @@ describe(generatePlatnosc.name, () => {
     const result = generatePlatnosc(platnosc as Platnosc);
 
     expect(hasValue).toHaveBeenCalledWith({ _text: 'Karta' });
-    expect(getFormaPlatnosciString).toHaveBeenCalledWith({ _text: 'Karta' });
+    expect(translateMap).toHaveBeenCalledWith({ _text: 'Karta' }, expect.any(Object));
   });
 
   it('generuje tabelę zapłaty częściowej i terminów płatności', () => {

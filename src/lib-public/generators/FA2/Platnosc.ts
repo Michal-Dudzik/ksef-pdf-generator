@@ -9,9 +9,10 @@ import {
   getValue,
   hasValue,
 } from '../../../shared/PDF-functions';
+import { FormaPlatnosci } from '../../../shared/consts/FA.const';
 import { HeaderDefine } from '../../../shared/types/pdf-types';
 import { Platnosc, TerminPlatnosci, ZaplataCzesciowa } from '../../types/fa2.types';
-import { getFormaPlatnosciString } from '../../../shared/generators/common/functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { FP } from '../../types/fa1.types';
@@ -69,7 +70,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
   }
 
   if (hasValue(platnosc.FormaPlatnosci)) {
-    table.push(createLabelText('Forma płatności: ', getFormaPlatnosciString(platnosc.FormaPlatnosci)));
+    table.push(createLabelText('Forma płatności: ', translateMap(platnosc.FormaPlatnosci, FormaPlatnosci)));
   } else {
     if (platnosc.OpisPlatnosci?._text) {
       table.push(createLabelText('Forma płatności: ', 'Płatność inna'));

@@ -10,8 +10,16 @@ import {
   TableCell,
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
-import { DEFAULT_TABLE_LAYOUT, Kraj, TStawkaPodatku_FA1, TStawkaPodatku_FA2, TStawkaPodatku_FA3 } from './consts/const';
-import { formatDateTime, formatTime, getFormaPlatnosciString } from './generators/common/functions';
+import {
+  DEFAULT_TABLE_LAYOUT,
+  FormaPlatnosci,
+  TStawkaPodatku_FA1,
+  TStawkaPodatku_FA2,
+  TStawkaPodatku_FA3,
+} from './consts/FA.const';
+import { Kraj } from './consts/const';
+import { TStawkaPodatku_FARR } from './consts/FARR.const';
+import { formatDateTime, formatTime, translateMap } from './generators/common/functions';
 import { HeaderDefine, PdfFP, PdfOptionField } from './types/pdf-types';
 import { FP } from '../lib-public/types/fa3.types';
 import { DifferentValues, FilteredKeysOfValues, TypesOfValues } from './types/universal.types';
@@ -129,7 +137,7 @@ function formatValue(
       result.text = formatTime(value as string);
       break;
     case FormatTyp.FormOfPayment:
-      result.text = getFormaPlatnosciString({ _text: value as string });
+      result.text = translateMap(value as string, FormaPlatnosci);
       break;
     case FormatTyp.Boolean:
       result.text = (value as string) === '1' ? Answer.TRUE : Answer.FALSE;
@@ -565,7 +573,7 @@ export function getKraj(kod: string): string {
   return kod;
 }
 
-export function getTStawkaPodatku(code: string, version: 1 | 2 | 3, P_PMarzy?: string): string {
+export function getTStawkaPodatku(code: string, version: 1 | 2 | 3 | 'RR', P_PMarzy?: string): string {
   let TStawkaPodatkuVersioned: Record<string, string> = {};
   const normalizedCode: string = (code ?? '').trim();
 
@@ -578,6 +586,9 @@ export function getTStawkaPodatku(code: string, version: 1 | 2 | 3, P_PMarzy?: s
       break;
     case 3:
       TStawkaPodatkuVersioned = TStawkaPodatku_FA3;
+      break;
+    case 'RR':
+      TStawkaPodatkuVersioned = TStawkaPodatku_FARR;
       break;
   }
   if (!normalizedCode && P_PMarzy === '1') {

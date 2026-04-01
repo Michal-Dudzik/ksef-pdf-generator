@@ -13,7 +13,7 @@ import {
   hasValue,
 } from '../../../shared/PDF-functions';
 import { HeaderDefine } from '../../../shared/types/pdf-types';
-import { TRodzajFaktury } from '../../../shared/consts/const';
+import { TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { Fa, ZaliczkaCzesciowa } from '../../types/fa3.types';
 import { ObjectKeysOfFP, TypesOfValues } from '../../../shared/types/universal.types';
 import FormatTyp from '../../../shared/enums/common.enum';

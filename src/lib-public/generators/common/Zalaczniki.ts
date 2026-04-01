@@ -1,5 +1,6 @@
 import { Content, ContentTable, ContentText, TableCell } from 'pdfmake/interfaces';
-import { DEFAULT_TABLE_LAYOUT, TableDataType } from '../../../shared/consts/const';
+import { DEFAULT_TABLE_LAYOUT } from '../../../shared/consts/FA.const';
+import { TableDataType } from '../../../shared/consts/const';
 import {
   createHeader,
   createLabelText,

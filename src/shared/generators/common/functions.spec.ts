@@ -10,110 +10,90 @@ import {
   TRolaPodmiotuUpowaznionegoFA2,
   TRolaPodmiotuUpowaznionegoFA3,
   TypRachunkowWlasnych,
-} from '../../consts/const';
+} from '../../consts/FA.const';
+import { TypLadunku } from '../../consts/const';
 import {
   formatDateTime,
   formatTime,
   getDateTimeWithoutSeconds,
-  getFormaPlatnosciString,
-  getRodzajTransportuString,
-  getRolaString,
-  getRolaUpowaznionegoString,
-  getTypRachunkowWlasnych,
+  translateMap,
 } from './functions';
 
-describe('getRolaString', () => {
-  it('returns empty string if rola undefined or _text missing', () => {
-    expect(getRolaString(undefined, 1)).toBe('');
-    expect(getRolaString({} as any, 1)).toBe('');
+describe('translateMap', () => {
+  it('returns empty string if value is undefined or empty', () => {
+    expect(translateMap(undefined, FormaPlatnosci)).toBe('');
+    expect(translateMap({} as any, FormaPlatnosci)).toBe('');
+    expect(translateMap('   ', FormaPlatnosci)).toBe('');
   });
 
-  it('returns correct string for FA=1', () => {
+  it('translates FA=1 role values', () => {
     const key = Object.keys(FA1RolaPodmiotu3)[0];
     const expected = FA1RolaPodmiotu3[key as keyof typeof FA1RolaPodmiotu3];
 
-    expect(getRolaString({ _text: key } as any, 1)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FA1RolaPodmiotu3)).toBe(expected);
   });
 
-  it('returns correct string for FA=2', () => {
+  it('translates FA=2 role values', () => {
     const key = Object.keys(FA2RolaPodmiotu3)[0];
     const expected = FA2RolaPodmiotu3[key as keyof typeof FA2RolaPodmiotu3];
 
-    expect(getRolaString({ _text: key } as any, 2)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FA2RolaPodmiotu3)).toBe(expected);
   });
 
-  it('returns correct string for FA=3', () => {
+  it('translates FA=3 role values', () => {
     const key = Object.keys(FA3RolaPodmiotu3)[0];
     const expected = FA3RolaPodmiotu3[key as keyof typeof FA3RolaPodmiotu3];
 
-    expect(getRolaString({ _text: key } as any, 3)).toBe(expected);
-  });
-});
-
-describe('getRolaUpowaznionegoString', () => {
-  it('returns empty string if rola undefined or _text missing', () => {
-    expect(getRolaUpowaznionegoString(undefined, 1)).toBe('');
-    expect(getRolaUpowaznionegoString({} as any, 1)).toBe('');
+    expect(translateMap({ _text: key } as any, FA3RolaPodmiotu3)).toBe(expected);
   });
 
-  it('returns correct string for FA=1', () => {
+  it('translates authorized-role values for FA=1', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA1)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA1[key].split('-')[0];
+    const expected = TRolaPodmiotuUpowaznionegoFA1[key];
 
-    expect(getRolaUpowaznionegoString({ _text: key } as any, 1)).toBe(expected);
+    expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA1)).toBe(expected);
   });
 
-  it('returns correct string for FA=2', () => {
+  it('translates authorized-role values for FA=2', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA2)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA2[key].split('-')[0];
+    const expected = TRolaPodmiotuUpowaznionegoFA2[key];
 
-    expect(getRolaUpowaznionegoString({ _text: key } as any, 2)).toBe(expected);
+    expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA2)).toBe(expected);
   });
 
-  it('returns correct string for FA=3', () => {
+  it('translates authorized-role values for FA=3', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA3)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA3[key].split('-')[0];
+    const expected = TRolaPodmiotuUpowaznionegoFA3[key];
 
-    expect(getRolaUpowaznionegoString({ _text: key } as any, 3)).toBe(expected);
-  });
-});
-
-describe('getFormaPlatnosciString', () => {
-  it('returns empty string if undefined or no _text', () => {
-    expect(getFormaPlatnosciString(undefined)).toBe('');
+    expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA3)).toBe(expected);
   });
 
-  it('returns correct string for known key', () => {
+  it('translates payment-form values', () => {
     const key = Object.keys(FormaPlatnosci)[0];
     const expected = FormaPlatnosci[key as keyof typeof FormaPlatnosci];
 
-    expect(getFormaPlatnosciString({ _text: key } as any)).toBe(expected);
-  });
-});
-
-describe('getRodzajTransportuString', () => {
-  it('returns empty string if undefined or no _text', () => {
-    expect(getRodzajTransportuString(undefined)).toBe('');
+    expect(translateMap({ _text: key } as any, FormaPlatnosci)).toBe(expected);
   });
 
-  it('returns correct string for known key', () => {
+  it('translates transport-type values', () => {
     const key = Object.keys(RodzajTransportu)[0];
     const expected = RodzajTransportu[key as keyof typeof RodzajTransportu];
 
-    expect(getRodzajTransportuString({ _text: key } as any)).toBe(expected);
-  });
-});
-
-describe('getTypRachunkowWlasnych', () => {
-  it('returns empty string if undefined or no _text', () => {
-    expect(getTypRachunkowWlasnych(undefined)).toBe('');
+    expect(translateMap({ _text: key } as any, RodzajTransportu)).toBe(expected);
   });
 
-  it('returns correct string for known key', () => {
+  it('translates own-account-type values', () => {
     const key = Object.keys(TypRachunkowWlasnych)[0];
     const expected = TypRachunkowWlasnych[key as keyof typeof TypRachunkowWlasnych];
 
-    expect(getTypRachunkowWlasnych({ _text: key } as any)).toBe(expected);
+    expect(translateMap({ _text: key } as any, TypRachunkowWlasnych)).toBe(expected);
+  });
+
+  it('translates cargo-type values', () => {
+    const key = Object.keys(TypLadunku)[0];
+    const expected = TypLadunku[key as keyof typeof TypLadunku];
+
+    expect(translateMap({ _text: key } as any, TypLadunku)).toBe(expected);
   });
 });
 

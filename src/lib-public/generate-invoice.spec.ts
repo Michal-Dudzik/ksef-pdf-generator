@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as FA1Generator from './FA1-generator';
 import * as FA2Generator from './FA2-generator';
 import * as FA3Generator from './FA3-generator';
+import * as FARRGenerator from './FARR-generator';
 import { generateInvoice } from './generate-invoice';
 import * as XMLParser from '../shared/XML-parser';
 import { AdditionalDataTypes } from './types/common.types';
@@ -15,7 +16,7 @@ describe('generateInvoice', () => {
 
   const additionalData: AdditionalDataTypes = {
     nrKSeF: 'testKSeF',
-    qrCode: 'qrCodeValue',
+    qrCode1: 'qrCodeValue',
     isMobile: false,
   };
 
@@ -97,6 +98,33 @@ describe('generateInvoice', () => {
     expect(result).toBe(mockBlob);
     expect(XMLParser.parseXML).toHaveBeenCalledWith(file);
     expect(FA3Generator.generateFA3).toHaveBeenCalledWith(fakeXml.Faktura, additionalData);
+    expect(getBlobMock).toHaveBeenCalled();
+  });
+
+  it('should call generateFARR and resolve with blob for version FA_RR (1)', async () => {
+    const fakeXml = {
+      Faktura: {
+        Naglowek: {
+          KodFormularza: {
+            _attributes: { kodSystemowy: 'FA_RR (1)' },
+          },
+        },
+      },
+    };
+
+    vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
+
+    const getBlobMock = vi.fn().mockImplementation((cb) => cb(mockBlob));
+
+    vi.spyOn(FARRGenerator, 'generateFARR').mockReturnValue({ getBlob: getBlobMock } as any);
+
+    const file = new File([], 'test.xml');
+
+    const result = await generateInvoice(file, additionalData, 'blob');
+
+    expect(result).toBe(mockBlob);
+    expect(XMLParser.parseXML).toHaveBeenCalledWith(file);
+    expect(FARRGenerator.generateFARR).toHaveBeenCalledWith(fakeXml.Faktura, additionalData);
     expect(getBlobMock).toHaveBeenCalled();
   });
 });

@@ -76,7 +76,13 @@ export function parseXML(file: File): Promise<unknown> {
     reader.onload = function (e: ProgressEvent<FileReader>): void {
       try {
         const xmlStr: string = e.target?.result as string;
-        const jsonDoc: Faktura = stripPrefixes(xml2js(xmlStr, { compact: true })) as Faktura;
+        const jsonDoc: Faktura = stripPrefixes(
+          xml2js(xmlStr, {
+            compact: true,
+            cdataKey: '_text',
+            trim: true,
+          })
+        ) as Faktura;
 
         resolve(jsonDoc);
       } catch (error) {
