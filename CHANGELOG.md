@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-04-01
+
+### Changed
+
+- Decided to change version from 0.0.59 to 1.0.0 after implementing new updates from the upstream (1.1.0) also because from this day onward the KSEF is used by everybody
 
 ## [0.0.59] - 2026-04-01
 
