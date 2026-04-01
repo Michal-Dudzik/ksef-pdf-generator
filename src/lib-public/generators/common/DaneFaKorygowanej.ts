@@ -24,7 +24,12 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
   let previousSection: boolean = false;
 
   if (invoice) {
-    const daneFakturyKorygowanej: DaneFaKorygowanej[] = getTable(invoice.DaneFaKorygowanej ?? []);
+    const correctionInvoiceData = Array.isArray(invoice.DaneFaKorygowanej)
+      ? invoice.DaneFaKorygowanej
+      : invoice.DaneFaKorygowanej
+        ? [invoice.DaneFaKorygowanej]
+        : [];
+    const daneFakturyKorygowanej: DaneFaKorygowanej[] = getTable(correctionInvoiceData);
 
     if (invoice.NrFaKorygowany) {
       firstColumn.push(createLabelText('Poprawny numer faktury korygowanej: ', invoice.NrFaKorygowany));

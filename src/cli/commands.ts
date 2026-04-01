@@ -32,7 +32,7 @@ Optional Arguments (for invoice type):
   --qrCode2      QR code data for the second QR code (shown below the first with label "certyfikat")
   --simplified   Generate simplified invoice PDF (header + QR only)
   --mergePdf     Merge simplified PDF with an existing PDF
-  --currencyThousandsSeparator
+  --currencyThousandsSeparator, --currency-thousands-separator
                  Format currency values with non-breaking thousands separators (e.g. 10 000 000,00)
 
 Other Options:

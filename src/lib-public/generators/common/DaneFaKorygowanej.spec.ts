@@ -77,6 +77,24 @@ describe('generateDaneFaKorygowanej', () => {
     expect(PDFFunctions.createSection).toHaveBeenCalled();
   });
 
+  it('should normalize single DaneFaKorygowanej object into an array', () => {
+    const invoice = {
+      DaneFaKorygowanej: {
+        DataWystFaKorygowanej: '2025-01-03',
+        NrFaKorygowanej: 'NR3',
+      },
+    };
+
+    generateDaneFaKorygowanej(invoice as any);
+
+    expect(PDFFunctions.createHeader).toHaveBeenCalledWith('Dane identyfikacyjne faktury korygowanej');
+    expect(PDFFunctions.createLabelText).toHaveBeenCalledWith(
+      'Data wystawienia faktury, której dotyczy faktura korygująca: ',
+      '2025-01-03'
+    );
+    expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Numer faktury korygowanej: ', 'NR3');
+  });
+
   it('should return empty section if no invoice provided', () => {
     generateDaneFaKorygowanej(undefined);
 

@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Added requested (issue #3) parameterization for thousands number formatting
+- Added requested (issue #3) parameterization for currency thousands separator formatting
 
 ## [0.0.58] - 2026-03-31
 

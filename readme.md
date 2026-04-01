@@ -192,7 +192,7 @@ thousands_separator = true
 - `null`: legacy behavior (no fixed decimal limit), e.g. `12.3456` -> `12,3456`
 - missing/invalid value: fallback default `2`
 
-`currencyFormat.thousandsSeparator` behavior:
+`currencyFormat.thousands_separator` behavior:
 
 - `true`: inserts a non-breaking space between thousands groups, e.g. `10000000` -> `10 000 000,00`
 - `false`: keeps the current compact format without grouping
@@ -386,7 +386,7 @@ public class KSefPdfGenerator
         string type,
         string? nrKSeF = null,
         string? qrCode = null,
-        bool useCurrencyThousandsSeparator = false,
+        bool currencyThousandsSeparator = false,
         bool simplifiedMode = false)
     {
         var arguments = $"--input \"{inputPath}\" --output \"{outputPath}\" --type {type}";
