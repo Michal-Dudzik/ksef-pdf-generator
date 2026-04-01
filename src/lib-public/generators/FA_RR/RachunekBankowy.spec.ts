@@ -10,8 +10,9 @@ vi.mock('../../../shared/PDF-functions', () => ({
   createSection: vi.fn(),
   formatText: vi.fn(),
   makeBreakable: vi.fn(),
-  getValue: (val: any) => val?._text || '',
-  hasValue: (val: any) => val?._text || '',
+  getValue: (val: any) => (typeof val === 'object' ? val?._text : val),
+  hasValue: (val: any) =>
+    !!((typeof val !== 'object' && val) || (typeof val === 'object' && val?._text)) || val === 0,
 }));
 
 describe(generujRachunekBankowy.name, () => {
@@ -27,6 +28,9 @@ describe(generujRachunekBankowy.name, () => {
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['header'] as any);
     vi.mocked(PDFFunctions.createSection).mockReturnValue('section' as any);
     vi.mocked(PDFFunctions.formatText).mockReturnValue('formatted' as any);
+    vi.mocked(PDFFunctions.makeBreakable).mockImplementation((value: string | number | undefined) =>
+      value === undefined ? '' : `break:${value}`
+    );
   });
 
   describe('when accounts is undefined or empty', () => {
@@ -81,12 +85,12 @@ describe(generujRachunekBankowy.name, () => {
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.SWIFT?._text, FormatTyp.Default);
     });
 
-    it('should format "Pełny numer rachunku" field', () => {
+    it('should wrap "Nazwa banku" value when it exists', () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith('Pełny numer rachunku', FormatTyp.GrayBoldTitle);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Tak',
+        makeBreakable(mockAccount.NazwaBanku?._text, 20),
         FormatTyp.Default
       );
     });
@@ -96,7 +100,7 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Nazwa banku',
+        makeBreakable(mockAccount.NazwaBanku?._text, 20),
         FormatTyp.Default
       );
     });
@@ -106,7 +110,7 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Opis rachunku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        mockAccount.NazwaBanku?._text ? makeBreakable('Bank', 20) : 'Nazwa banku',
+        makeBreakable(mockAccount.OpisRachunku?._text, 20),
         FormatTyp.Default
       );
     });
@@ -173,7 +177,7 @@ describe(generujRachunekBankowy.name, () => {
 
       generujRachunekBankowy([accountWithUndefined], 'Rachunek bankowy');
 
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith('', FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(undefined, FormatTyp.Default);
     });
   });
 

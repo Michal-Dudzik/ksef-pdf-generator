@@ -26,7 +26,7 @@ function buildListTable<T extends object>(
   headers: HeaderDefine[],
   subHeaderMargin?: Margins
 ): Content[] {
-  if (!data) {
+  if (!data?.length) {
     return [];
   }
   const mappedData = getTable(data).map((item, index) => ({

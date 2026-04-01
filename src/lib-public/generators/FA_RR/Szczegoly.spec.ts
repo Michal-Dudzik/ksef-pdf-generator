@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateSzczegoly } from './Szczegoly';
 import * as PDFFunctions from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
-import { TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { FakturaRR } from '../../types/FaRR.types';
 
 vi.mock('../../../shared/PDF-functions', () => ({
@@ -20,10 +19,6 @@ vi.mock('../../../shared/PDF-functions', () => ({
 }));
 
 describe(generateSzczegoly.name, () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   const mockFaVat: FakturaRR = {
     P_4B: { _text: '2024-01-01' },
     P_1M: { _text: 'Warsaw' },
@@ -32,6 +27,7 @@ describe(generateSzczegoly.name, () => {
   };
 
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(PDFFunctions.getTable).mockReturnValue([]);
     vi.mocked(PDFFunctions.createHeader).mockReturnValue(['header'] as any);
     vi.mocked(PDFFunctions.createLabelText).mockReturnValue('label' as any);

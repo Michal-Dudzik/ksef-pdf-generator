@@ -45,13 +45,11 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   const rachunekBankowy2: Content[][] = getTable(platnosc.RachunekBankowy2).map((rachunek) =>
     generujRachunekBankowy([rachunek], 'Rachunek bankowy nabywcy')
   );
-  const rachunekBankowy: Content[][] = [...rachunekBankowy1, ...rachunekBankowy2];
+  const maxRows = Math.max(rachunekBankowy1.length, rachunekBankowy2.length);
 
-  rachunekBankowy.forEach((rachunek, index) => {
-    if (index % 2 === 0) {
-      table.push(generateTwoColumns(rachunek, rachunekBankowy[index + 1] ?? []));
-    }
-  });
+  for (let i = 0; i < maxRows; i++) {
+    table.push(generateTwoColumns(rachunekBankowy1[i] ?? [], rachunekBankowy2[i] ?? []));
+  }
 
   table.push({ margin: [0, 8, 0, 0], text: '' });
 

@@ -35,7 +35,7 @@ describe(generateDodatkoweInformacje.name, () => {
 
     const result = generateDodatkoweInformacje(faVat as any);
 
-    expect(createSubHeader).toHaveBeenCalledWith('Dodatkowy opis');
+    expect(createSubHeader).toHaveBeenCalledWith('Dodatkowy opis', undefined);
     expect(getContentTable).toHaveBeenCalled();
     expect(result.length).toBeGreaterThan(0);
     expect(createSection).toHaveBeenCalled();
@@ -59,6 +59,17 @@ describe(generateDodatkoweInformacje.name, () => {
 
   it('zwraca pustą tablicę gdy brak danych wejściowych', () => {
     const result = generateDodatkoweInformacje({} as any);
+    expect(result).toEqual([]);
+  });
+
+  it('zwraca pustą tablicę dla pustych list bez renderowania nagłówków sekcji', () => {
+    const result = generateDodatkoweInformacje({
+      DokumentZaplaty: [],
+      DodatkowyOpis: [],
+    } as any);
+
+    expect(createSubHeader).not.toHaveBeenCalled();
+    expect(createSection).not.toHaveBeenCalled();
     expect(result).toEqual([]);
   });
 });
