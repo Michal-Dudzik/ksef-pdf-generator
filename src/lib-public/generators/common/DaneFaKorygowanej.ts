@@ -9,9 +9,15 @@ import {
 } from '../../../shared/PDF-functions';
 import { DaneFaKorygowanej, Fa as Fa1 } from '../../types/fa1.types';
 import { Fa as Fa2 } from '../../types/fa2.types';
+import { FakturaRR } from '../../types/FaRR.types';
 import { Fa as Fa3 } from '../../types/fa3.types';
 
-export function generateDaneFaKorygowanej(invoice?: Fa1 | Fa2 | Fa3): Content[] {
+type SupportedCorrectionInvoice = Pick<FakturaRR, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
+  | Pick<Fa1, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
+  | Pick<Fa2, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
+  | Pick<Fa3, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>;
+
+export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice): Content[] {
   const result: Content[] = [];
   let firstColumn: Content[] = [];
   let secondColumn: Content[] = [];

@@ -18,13 +18,20 @@ import FormatTyp, { Position } from './enums/common.enum';
 
 describe('formatText', () => {
   const numberDecimalsEnv = process.env.KSEF_FORMAT_NUMBER_DECIMALS;
+  const currencyThousandsSeparatorEnv = process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR;
 
   afterEach(() => {
     if (numberDecimalsEnv === undefined) {
       delete process.env.KSEF_FORMAT_NUMBER_DECIMALS;
-      return;
+    } else {
+      process.env.KSEF_FORMAT_NUMBER_DECIMALS = numberDecimalsEnv;
     }
-    process.env.KSEF_FORMAT_NUMBER_DECIMALS = numberDecimalsEnv;
+
+    if (currencyThousandsSeparatorEnv === undefined) {
+      delete process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR;
+    } else {
+      process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR = currencyThousandsSeparatorEnv;
+    }
   });
 
   it('returns empty string for null or undefined value', () => {
@@ -127,6 +134,21 @@ describe('formatText', () => {
         text: '12,3000',
         style: FormatTyp.Number,
         alignment: Position.RIGHT,
+      })
+    );
+  });
+
+  it('formats Currency with non-breaking thousands separator when enabled', () => {
+    process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR = 'true';
+
+    const content = formatText(1000000, FormatTyp.Currency, { bold: true }, 'PLN');
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        alignment: Position.RIGHT,
+        text: '1\u00A0000\u00A0000,00 PLN',
+        style: FormatTyp.Currency,
+        bold: true,
       })
     );
   });

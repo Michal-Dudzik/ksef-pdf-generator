@@ -64,6 +64,10 @@ export async function parseArguments(): Promise<CliOptions | null> {
       case '--simplified':
         options.simplifiedMode = true;
         break;
+      case '--currencyThousandsSeparator':
+      case '--currency-thousands-separator':
+        options.useCurrencyThousandsSeparator = true;
+        break;
       case '--mergePdf':
       case '--merge-pdf':
         if (!nextArg) {
@@ -100,4 +104,3 @@ export async function parseArguments(): Promise<CliOptions | null> {
 
   return options as CliOptions;
 }
-

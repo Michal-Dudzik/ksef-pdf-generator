@@ -39,7 +39,8 @@ export async function main(): Promise<void> {
       qrCode1: options.qrCode1 || null,
       qrCode2: options.qrCode2 || null,
       simplifiedMode: options.simplifiedMode || null,
-      mergePdf: options.mergePdf || null
+      mergePdf: options.mergePdf || null,
+      useCurrencyThousandsSeparator: options.useCurrencyThousandsSeparator || null,
     },
     options.type,
     options.input,
@@ -124,6 +125,10 @@ export async function main(): Promise<void> {
       if (options.simplifiedMode) {
         additionalData.simplifiedMode = true;
         log('Using simplifiedMode: true', 'debug');
+      }
+      if (options.useCurrencyThousandsSeparator) {
+        additionalData.useCurrencyThousandsSeparator = true;
+        log('Using useCurrencyThousandsSeparator: true', 'debug');
       }
 
       log('Generating invoice PDF...', 'info');
@@ -255,4 +260,3 @@ async function convertBlobToBuffer(pdfBlob: any): Promise<Buffer> {
 
   return buffer;
 }
-

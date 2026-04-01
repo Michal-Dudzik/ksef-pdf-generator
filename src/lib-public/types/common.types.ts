@@ -28,4 +28,5 @@ export interface AdditionalDataTypes {
   qrCode2?: string;
   isMobile?: boolean;
   simplifiedMode?: boolean;
+  useCurrencyThousandsSeparator?: boolean;
 }
