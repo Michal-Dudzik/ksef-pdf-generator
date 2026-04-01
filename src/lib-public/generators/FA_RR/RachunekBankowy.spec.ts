@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generujRachunekBankowy } from './RachunekBankowy';
 import * as PDFFunctions from '../../../shared/PDF-functions';
-import { makeBreakable } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { RachunekBankowy } from '../../types/FaRR.types';
 
@@ -29,7 +28,7 @@ describe(generujRachunekBankowy.name, () => {
     vi.mocked(PDFFunctions.createSection).mockReturnValue('section' as any);
     vi.mocked(PDFFunctions.formatText).mockReturnValue('formatted' as any);
     vi.mocked(PDFFunctions.makeBreakable).mockImplementation((value: string | number | undefined) =>
-      value === undefined ? '' : `break:${value}`
+      value === undefined ? undefined : `break:${value}`
     );
   });
 
@@ -90,19 +89,21 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        makeBreakable(mockAccount.NazwaBanku?._text, 20),
+        PDFFunctions.makeBreakable(mockAccount.NazwaBanku?._text, 20),
         FormatTyp.Default
       );
     });
 
-    it('should format "Nazwa banku" field', () => {
-      generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
+    it('should not wrap "Nazwa banku" value when it is missing', () => {
+      const accountWithoutBankName: RachunekBankowy = {
+        ...mockAccount,
+        NazwaBanku: { _text: undefined },
+      };
 
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith('Nazwa banku', FormatTyp.GrayBoldTitle);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        makeBreakable(mockAccount.NazwaBanku?._text, 20),
-        FormatTyp.Default
-      );
+      generujRachunekBankowy([accountWithoutBankName], 'Rachunek bankowy');
+
+      expect(PDFFunctions.makeBreakable).not.toHaveBeenCalledWith(undefined, 20);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(undefined, FormatTyp.Default);
     });
 
     it('should format "Opis rachunku" field', () => {
@@ -110,7 +111,7 @@ describe(generujRachunekBankowy.name, () => {
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Opis rachunku', FormatTyp.GrayBoldTitle);
       expect(PDFFunctions.formatText).toHaveBeenCalledWith(
-        makeBreakable(mockAccount.OpisRachunku?._text, 20),
+        PDFFunctions.makeBreakable(mockAccount.OpisRachunku?._text, 20),
         FormatTyp.Default
       );
     });

@@ -26,6 +26,20 @@ vi.mock('./RachunekBankowy', () => ({
 const mockedCreateLabelText = vi.mocked(createLabelText);
 
 describe(generatePlatnosc.name, () => {
+  const farmerAccount: RachunekBankowy = {
+    NrRB: { _text: '12345678901234567890123456' },
+    SWIFT: { _text: 'BPKOPLPW' },
+    NazwaBanku: { _text: 'PKO Bank Polski' },
+    OpisRachunku: { _text: 'Rachunek rolnika' },
+  };
+
+  const buyerAccount: RachunekBankowy = {
+    NrRB: { _text: '65432109876543210987654321' },
+    SWIFT: { _text: 'BREXPLPW' },
+    NazwaBanku: { _text: 'mBank' },
+    OpisRachunku: { _text: 'Rachunek nabywcy' },
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -37,30 +51,31 @@ describe(generatePlatnosc.name, () => {
     expect(createLabelText).toHaveBeenCalledWith('Forma zapłaty: ', 'Przelew');
   });
 
-  it('dodaje informacje o formie zapłaty inna jezeli istnieje PlatnoscInna', () => {
-    const platnosc: Partial<Platnosc> = { PlatnoscInna: { _text: '1' }, OpisPlatnosci: { _text: 'opis' } };
-    const result = generatePlatnosc(platnosc as Platnosc);
+  it('dodaje informacje o formie zapłaty inna jezeli istnieje OpisPlatnosci', () => {
+    const platnosc: Partial<Platnosc> = { OpisPlatnosci: { _text: 'opis' } };
+    generatePlatnosc(platnosc as Platnosc);
 
     expect(createLabelText).toHaveBeenCalledWith('Forma zapłaty: ', 'Inna');
+    expect(createLabelText).toHaveBeenCalledWith('Opis: ', 'opis');
   });
 
   it('dodaje rachunki bankowe', () => {
     const platnosc: Partial<Platnosc> = {
-      RachunekBankowy1: ['123'] as RachunekBankowy[],
-      RachunekBankowy2: ['456'] as RachunekBankowy[],
+      RachunekBankowy1: [farmerAccount],
+      RachunekBankowy2: [buyerAccount],
     };
 
-    const result: Content = generatePlatnosc(platnosc as Platnosc);
+    generatePlatnosc(platnosc as Platnosc);
 
     expect(generujRachunekBankowy).toHaveBeenCalledTimes(2);
     expect(createHeader).toHaveBeenCalledWith('Płatność');
   });
 
   it('paruje rachunki bankowe według indeksu po obu stronach', () => {
-    const farmer1 = { id: 'farmer-1' } as unknown as RachunekBankowy;
-    const farmer2 = { id: 'farmer-2' } as unknown as RachunekBankowy;
-    const buyer1 = { id: 'buyer-1' } as unknown as RachunekBankowy;
-    const buyer2 = { id: 'buyer-2' } as unknown as RachunekBankowy;
+    const farmer1 = { ...farmerAccount, OpisRachunku: { _text: 'Rachunek rolnika 1' } };
+    const farmer2 = { ...farmerAccount, OpisRachunku: { _text: 'Rachunek rolnika 2' } };
+    const buyer1 = { ...buyerAccount, OpisRachunku: { _text: 'Rachunek nabywcy 1' } };
+    const buyer2 = { ...buyerAccount, OpisRachunku: { _text: 'Rachunek nabywcy 2' } };
 
     vi.mocked(generujRachunekBankowy)
       .mockReturnValueOnce([{ text: 'farmer-1' }] as Content[])

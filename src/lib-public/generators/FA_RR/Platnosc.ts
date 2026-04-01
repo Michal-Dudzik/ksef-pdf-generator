@@ -21,11 +21,9 @@ export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
 
   if (hasValue(platnosc.FormaPlatnosci)) {
     table.push(createLabelText('Forma zapłaty: ', getValue(platnosc.FormaPlatnosci)));
-  } else {
-    if (hasValue(platnosc.OpisPlatnosci)) {
-      table.push(createLabelText('Forma zapłaty: ', 'Inna'));
-      table.push(createLabelText('Opis: ', platnosc.OpisPlatnosci));
-    }
+  } else if (hasValue(platnosc.OpisPlatnosci)) {
+    table.push(createLabelText('Forma zapłaty: ', 'Inna'));
+    table.push(createLabelText('Opis: ', getValue(platnosc.OpisPlatnosci)));
   }
 
   if (hasValue(platnosc.LinkDoPlatnosci)) {

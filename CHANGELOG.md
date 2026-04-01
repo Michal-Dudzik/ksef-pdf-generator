@@ -57,7 +57,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Now text `kwota należności ogółem`/`kwota pozostała do zapłaty` will be shown alwas if the field P_15 exists in the xml
+- Now text `kwota należności ogółem`/`kwota pozostała do zapłaty` will be shown always if the field P_15 exists in the xml
 
 ## [0.0.51] - 2026-02-17
 
