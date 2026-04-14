@@ -4,6 +4,10 @@
 
 A command-line tool for generating PDF visualizations of KSeF invoices and UPO documents from XML files.
 
+## Disclaimer
+
+This project versioning is separete from the CIRFMF/ksef-pdf-generator. It's being kept up to date with the latest changes from their repository, but follows different versions due to additional work put into it.
+
 ## Table of Contents
 
 - [Installation Options](#installation-options)
@@ -341,10 +345,10 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
     command += ` --qrCode "${options.qrCode}"`;
   }
   if (options.currencyThousandsSeparator) {
-    command += ' --currencyThousandsSeparator';
+    command += " --currencyThousandsSeparator";
   }
   if (options.simplifiedMode) {
-    command += ' --simplified';
+    command += " --simplified";
   }
 
   try {
@@ -405,7 +409,7 @@ public class KSefPdfGenerator
         {
             arguments += " --currencyThousandsSeparator";
         }
-        
+
         if (simplifiedMode)
         {
             arguments += " --simplified";
