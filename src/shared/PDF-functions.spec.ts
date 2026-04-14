@@ -55,14 +55,10 @@ describe('formatText', () => {
   it('formats datetime correctly', () => {
     const date = '2025-10-03T12:15:30Z';
     const content = formatText(date, FormatTyp.DateTime);
-    const parsedDate = new Date(date);
-    const expectedHour = parsedDate.getHours().toString().padStart(2, '0');
-    const expectedMinute = parsedDate.getMinutes().toString().padStart(2, '0');
-    const expectedSecond = parsedDate.getSeconds().toString().padStart(2, '0');
 
     expect(content).toEqual(
       expect.objectContaining({
-        text: `03.10.2025 ${expectedHour}:${expectedMinute}:${expectedSecond}`,
+        text: '03.10.2025 14:15:30',
         style: FormatTyp.DateTime,
       })
     );
@@ -76,6 +72,17 @@ describe('formatText', () => {
       expect.objectContaining({
         text: '03.10.2025',
         style: FormatTyp.Date,
+      })
+    );
+  });
+
+  it('formats datetime consistently across DST boundaries', () => {
+    const content = formatText('2026-03-30T13:46:26.307+02:00', FormatTyp.DateTime);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '30.03.2026 13:46:26',
+        style: FormatTyp.DateTime,
       })
     );
   });

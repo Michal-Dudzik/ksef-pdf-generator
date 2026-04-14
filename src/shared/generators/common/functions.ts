@@ -35,11 +35,37 @@ export function formatDateTime(data?: string, withoutSeconds?: boolean, withoutT
   return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 }
 
+export function formatDateTimePl(value: string, withTime?: boolean, withSeconds?: boolean): string {
+  const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+  const secondOptions: Intl.DateTimeFormatOptions = { second: '2-digit' };
+  const includeTime = withTime || withSeconds;
+
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('pl-PL', {
+    timeZone: 'Europe/Warsaw',
+    ...dateOptions,
+    ...(includeTime ? timeOptions : {}),
+    ...(withSeconds ? secondOptions : {}),
+  })
+    .format(date)
+    .replace(', ', ' ');
+}
+
 export function getDateTimeWithoutSeconds(isoDate?: FP2): string {
   if (!isoDate?._text) {
     return '';
   }
-  return formatDateTime(isoDate._text, true);
+  return formatDateTimePl(isoDate._text, true);
 }
 
 export function formatTime(data?: string, withoutSeconds?: boolean): string {

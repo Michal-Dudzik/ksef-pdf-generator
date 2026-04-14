@@ -79,7 +79,9 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
   }
 
   if (firstColumn.length && secondColumn.length) {
-    result.push(createSection([generateTwoColumns(firstColumn, secondColumn)], previousSection));
+    result.push(
+      createSection([generateTwoColumns(firstColumn, secondColumn, undefined, false)], previousSection)
+    );
   }
   return createSection(result, true);
 }

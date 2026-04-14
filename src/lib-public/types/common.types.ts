@@ -29,4 +29,5 @@ export interface AdditionalDataTypes {
   isMobile?: boolean;
   simplifiedMode?: boolean;
   useCurrencyThousandsSeparator?: boolean;
+  watermark?: string;
 }

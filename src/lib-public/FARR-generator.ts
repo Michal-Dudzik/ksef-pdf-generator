@@ -29,6 +29,7 @@ export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes)
     const fakturaRR = invoice.FakturaRR;
 
     const docDefinition: TDocumentDefinitions = {
+      watermark: additionalData?.watermark,
       content: [
         ...generateNaglowek(fakturaRR, additionalData),
         generateDaneFaKorygowanej(fakturaRR),

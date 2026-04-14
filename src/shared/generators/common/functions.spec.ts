@@ -14,6 +14,7 @@ import {
 import { TypLadunku } from '../../consts/const';
 import {
   formatDateTime,
+  formatDateTimePl,
   formatTime,
   getDateTimeWithoutSeconds,
   translateMap,
@@ -208,7 +209,26 @@ describe('getDateTimeWithoutSeconds', () => {
     expect(result).toMatch(/^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$/);
     // Should contain the correct date part
     expect(result).toContain('03.10.2025');
-    // Verify it matches formatDateTime output
-    expect(result).toBe(formatDateTime(isoDate._text, true));
+    expect(result).toBe('03.10.2025 14:15');
+  });
+});
+
+describe('formatDateTimePl', () => {
+  it('returns a date from a valid string', () => {
+    expect(formatDateTimePl('2026-05-02')).toBe('02.05.2026');
+  });
+
+  it('returns a date-time in Warsaw time', () => {
+    expect(formatDateTimePl('2026-05-02 14:40', true)).toBe('02.05.2026 14:40');
+    expect(formatDateTimePl('2026-03-19T23:31:47.543+01:00', true)).toBe('19.03.2026 23:31');
+    expect(formatDateTimePl('2026-03-30T13:46:26.307+02:00', true)).toBe('30.03.2026 13:46');
+    expect(formatDateTimePl('2026-03-30T13:46:26.307+02:00', true, true)).toBe('30.03.2026 13:46:26');
+    expect(formatDateTimePl('2026-03-30T13:46:26.307+02:00', false, true)).toBe('30.03.2026 13:46:26');
+  });
+
+  it('returns empty or original value for invalid data', () => {
+    expect(formatDateTimePl(undefined as any, true)).toBe('');
+    expect(formatDateTimePl('', true)).toBe('');
+    expect(formatDateTimePl('ABC', true)).toBe('ABC');
   });
 });

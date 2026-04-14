@@ -62,6 +62,7 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
         ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ, invoice.Zalacznik),
       ];
     const docDefinition: TDocumentDefinitions = {
+      watermark: additionalData?.watermark,
       content,
       footer: (currentPage, pageCount) => {
         return {
