@@ -99,6 +99,17 @@ bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
   --nrKSeF "5265877635-20250808-9231003CA67B-BE" ^
   --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..."
 
+# Generate Invoice PDF with a text watermark
+bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
+  --watermark "DRAFT"
+
+# Generate Invoice PDF with a styled watermark
+bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
+  --watermark "DRAFT" ^
+  --watermark-color "#cc0000" ^
+  --watermark-opacity "0.15" ^
+  --watermark-angle "315"
+
 # Generate Offline Invoice PDF with Certificate QR Code
 bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
   --nrKSeF "OFFLINE" ^
@@ -128,6 +139,13 @@ bin\ksef-pdf-generator.exe -i assets\upo.xml -o upo.pdf -t upo
 # Generate Invoice PDF
 node dist/cli.cjs --input assets/invoice.xml --output invoice.pdf --type invoice
 
+# Generate Invoice PDF with a styled watermark
+node dist/cli.cjs --input assets/invoice.xml --output invoice.pdf --type invoice \
+  --watermark "DRAFT" \
+  --watermark-color "#cc0000" \
+  --watermark-opacity "0.15" \
+  --watermark-angle "315"
+
 # Using batch/shell script wrappers
 bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Windows
 ./bin/ksef-pdf-generator.sh -i assets/invoice.xml -o invoice.pdf -t invoice # Linux/Mac
@@ -146,11 +164,22 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice  # Wi
 ### Optional Arguments (for invoices only)
 
 - `--nrKSeF` - KSeF number for the invoice (use "OFFLINE" for offline invoices)
+- `--watermark` / `--watermark-text` - Watermark text rendered diagonally on each invoice page
+- `--watermark-color` - Watermark text color, e.g. `#cc0000` or `gray`
+- `--watermark-opacity` - Watermark opacity from `0` to `1`
+- `--watermark-angle` - Watermark angle in degrees
 - `--qrCode1` - QR code data for the first QR code
 - `--qrCode2` - QR code data for the second QR code (shown below the first with label "certyfikat")
 - `--simplified` - Generate simplified invoice PDF (header + QR only)
 - `--mergePdf` - Merge the simplified PDF with an existing PDF (existing PDF first, simplified appended)
 - `--currencyThousandsSeparator` - Format currency values with a non-breaking thousands separator, e.g. `10 000 000,00`
+
+### Watermark Notes
+
+- The watermark is text, not an image.
+- `--watermark` and `--watermark-text` are equivalent; both set the watermark text.
+- If you pass `--watermark-color`, `--watermark-opacity`, or `--watermark-angle`, you must also pass watermark text.
+- Watermark styling is applied through pdfmake, so the text is rendered on every page.
 
 ### Utility Commands
 

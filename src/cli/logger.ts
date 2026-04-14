@@ -312,6 +312,18 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
   if (params.nrKSeF) {
     commandLine += ` --nrKSeF ${params.nrKSeF}`;
   }
+  if (params.watermark) {
+    commandLine += ` --watermark "${params.watermark.length > 50 ? params.watermark.substring(0, 50) + '...' : params.watermark}"`;
+  }
+  if (params.watermarkColor) {
+    commandLine += ` --watermark-color "${params.watermarkColor}"`;
+  }
+  if (params.watermarkOpacity !== null && params.watermarkOpacity !== undefined) {
+    commandLine += ` --watermark-opacity "${params.watermarkOpacity}"`;
+  }
+  if (params.watermarkAngle !== null && params.watermarkAngle !== undefined) {
+    commandLine += ` --watermark-angle "${params.watermarkAngle}"`;
+  }
   if (params.qrCode1) {
     commandLine += ` --qrCode1 "${params.qrCode1.length > 50 ? params.qrCode1.substring(0, 50) + '...' : params.qrCode1}"`;
   }
@@ -325,6 +337,10 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
     output: params.output,
     type: params.type,
     nrKSeF: params.nrKSeF,
+    watermark: params.watermark,
+    watermarkColor: params.watermarkColor,
+    watermarkOpacity: params.watermarkOpacity,
+    watermarkAngle: params.watermarkAngle,
     qrCode1: params.qrCode1,
     qrCode2: params.qrCode2,
   };
@@ -427,4 +443,3 @@ export function getLogFilePath(): string {
 export function isPersistentLogEnabled(): boolean {
   return PERSISTENT_LOG_ENABLED;
 }
-

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { PDFDocument } from 'pdf-lib';
+import type { Watermark } from 'pdfmake/interfaces';
 import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
 import { parseArguments } from './args';
 import { initializeApp } from './init';
@@ -36,6 +37,10 @@ export async function main(): Promise<void> {
       output: options.output,
       type: options.type,
       nrKSeF: options.nrKSeF || null,
+      watermark: options.watermark || null,
+      watermarkColor: options.watermarkColor || null,
+      watermarkOpacity: options.watermarkOpacity ?? null,
+      watermarkAngle: options.watermarkAngle ?? null,
       qrCode1: options.qrCode1 || null,
       qrCode2: options.qrCode2 || null,
       simplifiedMode: options.simplifiedMode || null,
@@ -113,6 +118,23 @@ export async function main(): Promise<void> {
       if (options.nrKSeF) {
         additionalData.nrKSeF = options.nrKSeF;
         log(`Using nrKSeF: ${options.nrKSeF}`, 'debug');
+      }
+      if (options.watermark) {
+        const hasCustomWatermarkOptions =
+          options.watermarkColor !== undefined ||
+          options.watermarkOpacity !== undefined ||
+          options.watermarkAngle !== undefined;
+
+        additionalData.watermark = hasCustomWatermarkOptions
+          ? ({
+              text: options.watermark,
+              ...(options.watermarkColor ? { color: options.watermarkColor } : {}),
+              ...(options.watermarkOpacity !== undefined ? { opacity: options.watermarkOpacity } : {}),
+              ...(options.watermarkAngle !== undefined ? { angle: options.watermarkAngle } : {}),
+            } satisfies Watermark)
+          : options.watermark;
+
+        log(`Using watermark: ${JSON.stringify(additionalData.watermark)}`, 'debug');
       }
       if (options.qrCode1) {
         additionalData.qrCode1 = options.qrCode1;

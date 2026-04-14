@@ -1,3 +1,4 @@
+import type { Watermark } from 'pdfmake/interfaces';
 import { FP as FP3 } from './fa3.types';
 import { FP as FP2 } from './fa2.types';
 
@@ -29,5 +30,5 @@ export interface AdditionalDataTypes {
   isMobile?: boolean;
   simplifiedMode?: boolean;
   useCurrencyThousandsSeparator?: boolean;
-  watermark?: string;
+  watermark?: string | Watermark;
 }

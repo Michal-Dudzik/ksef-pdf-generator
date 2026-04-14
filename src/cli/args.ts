@@ -45,6 +45,51 @@ export async function parseArguments(): Promise<CliOptions | null> {
         options.nrKSeF = nextArg;
         i++;
         break;
+      case '--watermark':
+      case '--watermark-text':
+        if (!nextArg) {
+          console.error('Error: --watermark requires a value');
+          return null;
+        }
+        options.watermark = nextArg;
+        i++;
+        break;
+      case '--watermark-color':
+        if (!nextArg) {
+          console.error('Error: --watermark-color requires a value');
+          return null;
+        }
+        options.watermarkColor = nextArg;
+        i++;
+        break;
+      case '--watermark-opacity': {
+        if (!nextArg) {
+          console.error('Error: --watermark-opacity requires a value');
+          return null;
+        }
+        const opacity = Number(nextArg);
+        if (!Number.isFinite(opacity) || opacity < 0 || opacity > 1) {
+          console.error('Error: --watermark-opacity must be a number between 0 and 1');
+          return null;
+        }
+        options.watermarkOpacity = opacity;
+        i++;
+        break;
+      }
+      case '--watermark-angle': {
+        if (!nextArg) {
+          console.error('Error: --watermark-angle requires a value');
+          return null;
+        }
+        const angle = Number(nextArg);
+        if (!Number.isFinite(angle)) {
+          console.error('Error: --watermark-angle must be a valid number');
+          return null;
+        }
+        options.watermarkAngle = angle;
+        i++;
+        break;
+      }
       case '--qrCode1':
         if (!nextArg) {
           console.error('Error: --qrCode1 requires a value');
@@ -99,6 +144,16 @@ export async function parseArguments(): Promise<CliOptions | null> {
   if (!options.input || !options.output || !options.type) {
     console.error('Error: Missing required arguments');
     printHelp();
+    return null;
+  }
+
+  const hasWatermarkStyleOptions =
+    options.watermarkColor !== undefined ||
+    options.watermarkOpacity !== undefined ||
+    options.watermarkAngle !== undefined;
+
+  if (hasWatermarkStyleOptions && !options.watermark) {
+    console.error('Error: watermark style options require --watermark or --watermark-text');
     return null;
   }
 

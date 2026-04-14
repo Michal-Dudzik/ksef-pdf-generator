@@ -28,6 +28,14 @@ Required Arguments:
 
 Optional Arguments (for invoice type):
   --nrKSeF       KSeF number for the invoice (use "OFFLINE" for offline invoices)
+  --watermark, --watermark-text
+                 Watermark text rendered diagonally on each invoice page (e.g. "DRAFT")
+  --watermark-color
+                 Watermark text color, e.g. "#cc0000" or "gray"
+  --watermark-opacity
+                 Watermark opacity from 0 to 1, e.g. "0.15"
+  --watermark-angle
+                 Watermark angle in degrees, e.g. "315"
   --qrCode1      QR code data for the first QR code
   --qrCode2      QR code data for the second QR code (shown below the first with label "certyfikat")
   --simplified   Generate simplified invoice PDF (header + QR only)
@@ -62,6 +70,17 @@ Examples:
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
     --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
     --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..."
+
+  # Generate invoice PDF with a text watermark
+  ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
+    --watermark "DRAFT"
+
+  # Generate invoice PDF with a styled watermark
+  ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
+    --watermark "DRAFT" \\
+    --watermark-color "#cc0000" \\
+    --watermark-opacity "0.15" \\
+    --watermark-angle "315"
 
   # Generate offline invoice PDF with certificate QR code
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\

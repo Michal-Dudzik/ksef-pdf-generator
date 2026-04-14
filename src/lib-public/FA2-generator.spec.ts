@@ -128,4 +128,35 @@ describe('generateFA2', () => {
     expect(generateRabat).not.toHaveBeenCalled();
     expect(generatePodsumowanieStawekPodatkuVat).not.toHaveBeenCalled();
   });
+
+  it('passes watermark configuration to pdfMake', () => {
+    const invoice: Faktura = {
+      Fa: {
+        RodzajFaktury: { _text: 'VAT' },
+        Zamowienie: {},
+        P_15: { _text: '15' },
+        KodWaluty: { _text: 'PLN' },
+      },
+      Stopka: {},
+      Naglowek: {},
+    } as any;
+
+    const watermark = {
+      text: 'DRAFT',
+      color: '#cc0000',
+      opacity: 0.15,
+      angle: 315,
+    };
+    const additionalData: AdditionalDataTypes = { nrKSeF: 'nrKSeF', watermark };
+
+    const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+
+    generateFA2(invoice, additionalData);
+
+    expect(createPdfSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        watermark,
+      })
+    );
+  });
 });

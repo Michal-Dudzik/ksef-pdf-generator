@@ -8,12 +8,17 @@ All notable changes to this project will be documented in this file.
 
 - Synced selected upstream changes from commits `66b920be75c78d7e4e102414907c2b7608778bb6` and `c13560c4310b2a6e2a134cba40c7f3c4feb4af5a`
 - Added invoice watermark support across FA1, FA2, FA3 and FA_RR generators
+- Added CLI support for watermark text via `--watermark` / `--watermark-text`
+- Added CLI support for watermark styling via `--watermark-color`, `--watermark-opacity` and `--watermark-angle`
 - Switched invoice date and date-time rendering to stable `Europe/Warsaw` formatting to avoid timezone-dependent output differences
+- Updated CLI help and README with watermark usage examples and option documentation
 
 ### Fixed
 
 - Allowed the final two-column section in `DaneFaKorygowanej` to break across pages, fixing correction invoice layout overflow
 - Added regression tests for the new Warsaw-time formatting behavior
+- Added test coverage for watermark propagation into generated PDF definitions
+
 ## [1.0.0] - 2026-04-01
 
 ### Changed
