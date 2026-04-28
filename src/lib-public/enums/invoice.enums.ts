@@ -1,5 +1,5 @@
 export enum ZamowienieKorekta {
-  BeforeCorrection = 'Zamówienie przed korektą',
-  AfterCorrection = 'Zamówienie po korekcie',
-  Order = 'Zamówienie',
+  BeforeCorrection = 'before-correction',
+  AfterCorrection = 'after-correction',
+  Order = 'order',
 }

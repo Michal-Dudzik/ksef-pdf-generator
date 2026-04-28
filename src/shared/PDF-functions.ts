@@ -13,11 +13,11 @@ import {
 import {
   DEFAULT_TABLE_LAYOUT,
   FormaPlatnosci,
+  Kraj,
   TStawkaPodatku_FA1,
   TStawkaPodatku_FA2,
   TStawkaPodatku_FA3,
 } from './consts/FA.const';
-import { Kraj } from './consts/const';
 import { TStawkaPodatku_FARR } from './consts/FARR.const';
 import { formatDateTimePl, formatTime, translateMap } from './generators/common/functions';
 import { HeaderDefine, PdfFP, PdfOptionField } from './types/pdf-types';
@@ -26,6 +26,7 @@ import { DifferentValues, FilteredKeysOfValues, TypesOfValues } from './types/un
 import { CreateLabelTextData } from './types/additional-data.types';
 import FormatTyp, { Answer, Position } from './enums/common.enum';
 import { getCurrencyThousandsSeparatorChar, shouldUseCurrencyThousandsSeparator } from './formatting-config';
+import i18n from 'i18next';
 
 const DEFAULT_NUMBER_DECIMALS = 2;
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
@@ -57,7 +58,9 @@ export function formatText(
   if (!value) {
     return '';
   }
-  const result: ContentText = { text: value.toString() };
+  const result: ContentText = {
+    text: value.toString(),
+  };
 
   Object.assign(result, options);
 
@@ -270,6 +273,19 @@ export function createLabelTextArray(data: CreateLabelTextData[]): Content[] {
   ];
 }
 
+export function addThousandSeparator(
+  value: string,
+  thousandSeparator: string = ' ',
+  decimalSeparator: string = ','
+): string {
+  const splitRegex = /\B(?=(\d{3})+(?!\d))/g;
+  if (value.includes(decimalSeparator)) {
+    const splitValue = value.split(decimalSeparator);
+    return `${splitValue[0].replace(splitRegex, thousandSeparator)}${decimalSeparator}${splitValue[1]}`;
+  } else {
+    return value.replace(splitRegex, thousandSeparator);
+  }
+}
 export function createLabelText(
   label: string,
   value: FP | string | number | undefined | null,
@@ -512,7 +528,7 @@ export function getContentTable<T>(
 
       return formatText(
         makeBreakable(
-          header.mappingData && value ? header.mappingData[value] : (value ?? ''),
+          header.mappingData && value ? translateMap(value, header.mappingData) : (value ?? ''),
           wordBreak ?? 40
         ),
         header.format ?? FormatTyp.Default,
@@ -616,7 +632,7 @@ export function verticalSpacing(height: number): ContentText {
 
 export function getKraj(kod: string): string {
   if (Kraj[kod]) {
-    return Kraj[kod];
+    return translateMap(kod, Kraj);
   }
   return kod;
 }
@@ -640,11 +656,11 @@ export function getTStawkaPodatku(code: string, version: 1 | 2 | 3 | 'RR', P_PMa
       break;
   }
   if (!normalizedCode && P_PMarzy === '1') {
-    return 'marża';
+    return i18n.t('invoice.summary.margin');
   }
 
   if (TStawkaPodatkuVersioned[normalizedCode]) {
-    return TStawkaPodatkuVersioned[normalizedCode];
+    return translateMap(normalizedCode, TStawkaPodatkuVersioned);
   }
   return normalizedCode || code;
 }

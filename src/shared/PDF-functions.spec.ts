@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import {
   createLabelText,
@@ -15,6 +15,11 @@ import {
   verticalSpacing,
 } from './PDF-functions';
 import FormatTyp, { Position } from './enums/common.enum';
+import { initI18next } from '../lib-public/i18n/i18n-init';
+
+beforeAll(async () => {
+  await initI18next();
+});
 
 describe('formatText', () => {
   const numberDecimalsEnv = process.env.KSEF_FORMAT_NUMBER_DECIMALS;
@@ -32,6 +37,7 @@ describe('formatText', () => {
     } else {
       process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR = currencyThousandsSeparatorEnv;
     }
+
   });
 
   it('returns empty string for null or undefined value', () => {
@@ -159,6 +165,7 @@ describe('formatText', () => {
       })
     );
   });
+
 });
 
 describe('hasValue', () => {
@@ -210,6 +217,7 @@ describe('createLabelText', () => {
       typeof result2[0] === 'object' && 'text' in result2[0] && (result2[0] as any).text.length === 2
     ).toBe(true);
   });
+
 });
 
 describe('generateQRCode', () => {
@@ -231,7 +239,7 @@ describe('generateQRCode', () => {
 });
 
 describe('getKraj', () => {
-  it('returns country name if code exists, else returns input code', () => {
+  it('returns country name translation if code exists, else returns input code', () => {
     expect(getKraj('PL')).toBe('Polska');
     expect(getKraj('XYZ')).toBe('XYZ');
   });

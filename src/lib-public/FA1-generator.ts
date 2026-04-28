@@ -23,6 +23,7 @@ import { AdditionalDataTypes } from './types/common.types';
 import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplified-page-size';
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
+import { generateWatermark } from '../shared/consts/watermark';
 
 pdfMake.vfs = pdfFonts;
 
@@ -58,7 +59,7 @@ export function generateFA1(invoice: Faktura, additionalData: AdditionalDataType
         ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ),
       ];
     const docDefinition: TDocumentDefinitions = {
-      watermark: additionalData?.watermark,
+      ...generateWatermark(additionalData?.watermark),
       content,
       footer: (currentPage, pageCount) => {
         return {

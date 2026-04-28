@@ -15,6 +15,7 @@ import { generatePlatnosc } from './generators/FA_RR/Platnosc';
 import { generateStopka } from './generators/common/Stopka';
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
+import { generateWatermark } from '../shared/consts/watermark';
 
 pdfMake.vfs = pdfFonts;
 
@@ -29,7 +30,7 @@ export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes)
     const fakturaRR = invoice.FakturaRR;
 
     const docDefinition: TDocumentDefinitions = {
-      watermark: additionalData?.watermark,
+      ...generateWatermark(additionalData?.watermark),
       content: [
         ...generateNaglowek(fakturaRR, additionalData),
         generateDaneFaKorygowanej(fakturaRR),

@@ -13,7 +13,7 @@ This guide covers the main features, CLI options, common commands, configuration
 - text watermarks with configurable color, opacity, and angle
 - simplified invoice output
 - appending simplified output to an existing PDF
-- configurable decimal and currency formatting
+- configurable language, decimal formatting, and currency formatting
 
 ## Quick Start
 
@@ -153,6 +153,9 @@ decimals = 3
 
 [currencyFormat]
 thousands_separator = true
+
+[i18n]
+language = en
 ```
 
 Behavior:
@@ -160,6 +163,19 @@ Behavior:
 - `numberFormat.decimals = 2` changes `12.3456` to `12,35`
 - `numberFormat.decimals = null` keeps legacy precision such as `12,3456`
 - `currencyFormat.thousands_separator = true` changes `10000000` to `10 000 000,00`
+- `i18n.language = en` generates English PDF labels
+- supported languages are `pl` and `en`
+- missing or invalid language falls back to `pl`
+
+You can also override the language with an environment variable:
+
+```batch
+set KSEF_LANGUAGE=en
+```
+
+```bash
+export KSEF_LANGUAGE=en
+```
 
 ## Logging
 

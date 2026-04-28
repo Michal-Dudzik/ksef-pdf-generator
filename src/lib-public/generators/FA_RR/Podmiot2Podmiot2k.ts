@@ -15,21 +15,22 @@ import { generateAdres } from '../FA2/Adres';
 import { Podmiot1Class, Podmiot1KClass } from '../../types/FaRR.types';
 import { generateDaneIdentyfikacyjneTPodmiot2Dto } from './PodmiotDaneIdentyfikacyjneTPodmiot2Dto';
 import { getTaxpayerStatusDescription } from '../../../shared/consts/FA.const';
+import i18n from 'i18next';
 
 export function generatePodmiot2Podmiot2K(podmiot2: Podmiot1Class, podmiot2K: Podmiot1KClass): Content[] {
-  const result: Content[] = createHeader('Nabywca');
+  const result: Content[] = createHeader(i18n.t('invoice.subject2.buyer'));
   let firstColumn: Content[] = [];
   let secondColumn: Content[] = [];
 
   if (podmiot2.DaneIdentyfikacyjne) {
     firstColumn.push(
-      createHeader('Dane identyfikacyjne'),
+      createHeader(i18n.t('invoice.subject2k.identificationData')),
       ...generateDaneIdentyfikacyjneTPodmiot2Dto(podmiot2.DaneIdentyfikacyjne)
     );
   }
 
   if (podmiot2.DaneKontaktowe) {
-    firstColumn.push(formatText('Dane kontaktowe', [FormatTyp.Label, FormatTyp.LabelMargin]));
+    firstColumn.push(formatText(i18n.t('invoice.subject2.contactDetails'), [FormatTyp.Label, FormatTyp.LabelMargin]));
     firstColumn.push(generateDaneKontaktowe(getTable(podmiot2.DaneKontaktowe)));
   }
 
@@ -37,7 +38,7 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot1Class, podmiot2K: Po
     const statusInfo = getTaxpayerStatusDescription(getValue(podmiot2.StatusInfoPodatnika));
 
     if (statusInfo) {
-      firstColumn.push(createLabelText('Status podatnika: ', statusInfo));
+      firstColumn.push(createLabelText(i18n.t('invoice.subject2.taxPayerStatus'), statusInfo));
     }
   }
 
@@ -47,12 +48,12 @@ export function generatePodmiot2Podmiot2K(podmiot2: Podmiot1Class, podmiot2K: Po
       columnGap: 20,
     });
   }
-  firstColumn = generateCorrectedContent(podmiot2K, 'Treść korygowana');
-  secondColumn = generateCorrectedContent(podmiot2, 'Treść korygująca');
+  firstColumn = generateCorrectedContent(podmiot2K, i18n.t('invoice.subject2k.correctedContent'));
+  secondColumn = generateCorrectedContent(podmiot2, i18n.t('invoice.subject2k.correctiveContent'));
 
   if (podmiot2.AdresKoresp) {
     secondColumn.push(
-      formatText('Adres do korespondencji', [FormatTyp.Label, FormatTyp.LabelMargin]),
+      formatText(i18n.t('invoice.subject2.correspondenceAddress'), [FormatTyp.Label, FormatTyp.LabelMargin]),
       generateAdres(podmiot2.AdresKoresp)
     );
   }
@@ -76,7 +77,7 @@ export function generateCorrectedContent(podmiot: Podmiot1Class | Podmiot1KClass
     result.push(...generateDaneIdentyfikacyjneTPodmiot2Dto(podmiot.DaneIdentyfikacyjne));
   }
   if (podmiot.Adres) {
-    result.push(formatText('Adres', [FormatTyp.Label, FormatTyp.LabelMargin]), generateAdres(podmiot.Adres));
+    result.push(formatText(i18n.t('invoice.subject2k.address'), [FormatTyp.Label, FormatTyp.LabelMargin]), generateAdres(podmiot.Adres));
   }
   return result;
 }

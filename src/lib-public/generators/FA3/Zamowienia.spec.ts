@@ -5,6 +5,7 @@ import { TRodzajFaktury } from '../../../shared/consts/const';
 import { Zamowienie } from '../../types/fa3.types';
 import { generateZamowienie } from './Zamowienie';
 import { ZamowienieKorekta } from '../../enums/invoice.enums';
+import i18n from 'i18next';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn(),
@@ -278,7 +279,7 @@ describe(generateZamowienie.name, () => {
     it('should call createHeader with correct parameter', () => {
       generateZamowienie(mockOrderData, ZamowienieKorekta.BeforeCorrection, '100', TRodzajFaktury.ZAL, 'PLN');
 
-      expect(PDFFunctions.createHeader).toHaveBeenCalledWith(ZamowienieKorekta.BeforeCorrection);
+      expect(PDFFunctions.createHeader).toHaveBeenCalledWith(i18n.t('invoice.order.header.before-correction'));
     });
 
     it('should format order value', () => {

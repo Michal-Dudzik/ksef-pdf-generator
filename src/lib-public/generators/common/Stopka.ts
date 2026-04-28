@@ -20,6 +20,7 @@ import { generateZalaczniki } from './Zalaczniki';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { Informacje, Rejestry } from '../../types/fa1.types';
 import { AdditionalDataTypes } from '../../types/common.types';
+import i18n from 'i18next';
 
 export function generateStopka(
   additionalData?: AdditionalDataTypes,
@@ -50,7 +51,7 @@ export function generateStopka(
     createSection(
       [
         {
-          stack: createLabelText('Wytworzona w: ', naglowek?.SystemInfo),
+          stack: createLabelText(i18n.t('invoice.footer.generatedIn'), naglowek?.SystemInfo),
           margin: [0, 8, 0, 0],
         },
       ],
@@ -64,7 +65,9 @@ export function generateStopka(
 
 function generateWZ(wz?: FP[]): Content[] {
   const result: Content[] = [];
-  const definedHeader: HeaderDefine[] = [{ name: '', title: 'Numer WZ', format: FormatTyp.Default }];
+  const definedHeader: HeaderDefine[] = [
+    { name: '', title: i18n.t('invoice.wz.number'), format: FormatTyp.Default },
+  ];
   const faWiersze: FP[] = getTable(wz ?? []);
   const content: FormContentState = getContentTable<(typeof faWiersze)[0]>(
     [...definedHeader],
@@ -73,7 +76,7 @@ function generateWZ(wz?: FP[]): Content[] {
   );
 
   if (content.fieldsWithValue.length && content.content) {
-    result.push(createSubHeader('Numery dokumentów magazynowych WZ', [0, 8, 0, 4]));
+    result.push(createSubHeader(i18n.t('invoice.wz.documentsHeader'), [0, 8, 0, 4]));
     result.push(content.content);
   }
   return result;
@@ -82,7 +85,7 @@ function generateWZ(wz?: FP[]): Content[] {
 function generateRejestry(stopka?: Stopka): Content[] {
   const result: Content[] = [];
   const definedHeader: HeaderDefine[] = [
-    { name: 'PelnaNazwa', title: 'Pełna nazwa', format: FormatTyp.Default },
+    { name: 'PelnaNazwa', title: i18n.t('invoice.registers.fullName'), format: FormatTyp.Default },
     { name: 'KRS', title: 'KRS', format: FormatTyp.Default },
     { name: 'REGON', title: 'REGON', format: FormatTyp.Default },
     { name: 'BDO', title: 'BDO', format: FormatTyp.Default },
@@ -95,7 +98,7 @@ function generateRejestry(stopka?: Stopka): Content[] {
   );
 
   if (content.fieldsWithValue.length && content.content) {
-    result.push(createHeader('Rejestry'));
+    result.push(createHeader(i18n.t('invoice.registers.header')));
     result.push(content.content);
   }
   return result;
@@ -104,7 +107,7 @@ function generateRejestry(stopka?: Stopka): Content[] {
 function generateInformacje(stopka?: Stopka): Content[] {
   const result: Content[] = [];
   const definedHeader: HeaderDefine[] = [
-    { name: 'StopkaFaktury', title: 'Stopka faktury', format: FormatTyp.Default },
+    { name: 'StopkaFaktury', title: i18n.t('invoice.information.invoiceFooter'), format: FormatTyp.Default },
   ];
   const faWiersze: Informacje[] = getTable(stopka?.Informacje ?? []);
   const content: FormContentState = getContentTable<(typeof faWiersze)[0]>(
@@ -114,7 +117,7 @@ function generateInformacje(stopka?: Stopka): Content[] {
   );
 
   if (content.fieldsWithValue.length && content.content) {
-    result.push(createHeader('Pozostałe informacje'));
+    result.push(createHeader(i18n.t('invoice.information.header')));
     result.push(content.content);
   }
   return result;
@@ -131,7 +134,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
   if (additionalData?.qrCode1 && additionalData.nrKSeF) {
     const qrCode: ContentQr | undefined = generateQRCode(additionalData.qrCode1, qrCodeSize);
 
-    result.push(createHeader('Sprawdź, czy Twoja faktura znajduje się w KSeF!'));
+    result.push(createHeader(i18n.t('invoice.qr1.header')));
     if (qrCode) {
       qrCode1Stack = [
         qrCode,
@@ -170,7 +173,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
       qrCode2Stack = [
         certQrCode,
         {
-          text: 'CERTYFIKAT',
+          text: i18n.t('invoice.qr2.certificate'),
           alignment: 'center',
           fontSize: 10,
           margin: [0, 10, 0, 0],
@@ -180,7 +183,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
         stack: [
           certQrCode,
           {
-            text: 'CERTYFIKAT',
+            text: i18n.t('invoice.qr2.certificate'),
             alignment: 'center',
             fontSize: 10,
             margin: [0, 10, 0, 0],
@@ -225,10 +228,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
     verificationLinkText.marginTop = 5;
     result.push({
       stack: [
-        formatText(
-          'Nie możesz zeskanować kodu z obrazka? Kliknij w link weryfikacyjny i przejdź do weryfikacji faktury!',
-          FormatTyp.Value
-        ),
+        formatText(i18n.t('invoice.qr1.description'), FormatTyp.Value),
         verificationLinkText,
       ],
       margin: [0, 8, 0, 0],

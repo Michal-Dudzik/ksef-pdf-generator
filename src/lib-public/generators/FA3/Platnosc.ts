@@ -16,6 +16,7 @@ import { Platnosc } from '../../types/fa3.types';
 import { translateMap } from '../../../shared/generators/common/functions';
 import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
+import i18n from 'i18next';
 
 function isZeroCurrencyValue(value: unknown): boolean {
   const rawValue = getValue(value as any);
@@ -36,56 +37,64 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
   const zaplataCzesciowaHeader: HeaderDefine[] = [
     {
       name: 'Termin',
-      title: 'Termin płatności',
+      title: i18n.t('invoice.payment.maturityDate'),
       format: FormatTyp.Default,
     },
   ];
 
   if (terminPlatnosci.some((termin) => termin.TerminOpis)) {
-    zaplataCzesciowaHeader.push({ name: 'TerminOpis', title: 'Opis płatności', format: FormatTyp.Default });
+    zaplataCzesciowaHeader.push({
+      name: 'TerminOpis',
+      title: i18n.t('invoice.payment.paymentDescription'),
+      format: FormatTyp.Default,
+    });
   }
 
   const zaplataCzesciowaNaglowek: HeaderDefine[] = [
     {
       name: 'DataZaplatyCzesciowej',
-      title: 'Data zapłaty częściowej',
+      title: i18n.t('invoice.payment.partialPaymentDate'),
       format: FormatTyp.Default,
     },
-    { name: 'KwotaZaplatyCzesciowej', title: 'Kwota zapłaty częściowej', format: FormatTyp.Currency },
-    { name: 'FormaPlatnosci', title: 'Forma płatności', format: FormatTyp.FormOfPayment },
+    {
+      name: 'KwotaZaplatyCzesciowej',
+      title: i18n.t('invoice.payment.partialPaymentAmount'),
+      format: FormatTyp.Currency,
+    },
+    { name: 'FormaPlatnosci', title: i18n.t('invoice.payment.paymentMethod'), format: FormatTyp.FormOfPayment },
   ];
 
-  const table: Content[] = [generateLine(), ...createHeader('Płatność')];
+  const table: Content[] = [generateLine(), ...createHeader(i18n.t('invoice.payment.payment'))];
   const isP15EqualZero = isZeroCurrencyValue(kwotaOgolnaP15);
 
   //  TODO: Add to FA2 and FA1? (KSEF20-15289)
   if (getValue(platnosc.Zaplacono) === '1') {
-    table.push(createLabelText('Informacja o płatności: ', 'Zapłacono'));
-    table.push(createLabelText('Data zapłaty: ', platnosc.DataZaplaty, FormatTyp.Date));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.paidStatus')));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentDate'), platnosc.DataZaplaty, FormatTyp.Date));
   } else if (
     getValue(platnosc.ZnacznikZaplatyCzesciowej) === '1' ||
     getValue(platnosc.ZnacznikZaplatyCzesciowej) === '2'
   ) {
-    table.push(createLabelText('Informacja o płatności: ', 'Zapłata częściowa'));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.partialPayment')));
     table.push(
       createLabelText(
-        'Informacja o płatności (kontynuacja): ',
+        i18n.t('invoice.payment.paymentInformationContinued'),
         getValue(platnosc.ZnacznikZaplatyCzesciowej) === '1'
-          ? 'Zapłacono w części'
-          : 'Zapłacono całość w częściach'
+          ? i18n.t('invoice.payment.paidInPart')
+          : i18n.t('invoice.payment.paidAllInParts')
       )
     );
   } else if (!isP15EqualZero) {
-    table.push(createLabelText('Informacja o płatności: ', 'Brak zapłaty'));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.noPayment')));
   }
 
   if (hasValue(platnosc.FormaPlatnosci)) {
-    table.push(createLabelText('Forma płatności: ', translateMap(platnosc.FormaPlatnosci, FormaPlatnosci)));
-  } else {
-    if (platnosc.OpisPlatnosci?._text) {
-      table.push(createLabelText('Forma płatności: ', 'Płatność inna'));
-      table.push(createLabelText('Opis płatności innej: ', platnosc.OpisPlatnosci));
-    }
+    table.push(
+      createLabelText(i18n.t('invoice.payment.paymentMethod2'), translateMap(platnosc.FormaPlatnosci, FormaPlatnosci))
+    );
+  } else if (platnosc.OpisPlatnosci?._text) {
+    table.push(createLabelText(i18n.t('invoice.payment.paymentMethod2'), i18n.t('invoice.payment.paymentDifferent')));
+    table.push(createLabelText(i18n.t('invoice.payment.otherPaymentDescription'), platnosc.OpisPlatnosci));
   }
 
   const zaplataCzesciowa = getTable(platnosc.ZaplataCzesciowa);
@@ -127,28 +136,28 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
     );
   } else if (terminPlatnosci.length > 0) {
     if (tableTerminPlatnosci.content) {
-      table.push(generateTwoColumns([], tableTerminPlatnosci.content));
+      table.push(generateTwoColumns(tableTerminPlatnosci.content, []));
     }
   } else if (zaplataCzesciowa.length > 0 && tableZaplataCzesciowa.content) {
     table.push(tableZaplataCzesciowa.content);
   }
 
   if (platnosc.LinkDoPlatnosci) {
-    table.push(formatText('Link do płatności bezgotówkowej: ', FormatTyp.Label));
+    table.push(formatText(i18n.t('invoice.payment.moneylessLink'), FormatTyp.Label));
     table.push({
       text: formatText(platnosc.LinkDoPlatnosci._text, FormatTyp.Link),
       link: formatText(platnosc.LinkDoPlatnosci._text, FormatTyp.Link),
     } as ContentText);
   }
   if (platnosc.IPKSeF?._text) {
-    table.push(createLabelText('Identyfikator płatności Krajowego Systemu e-Faktur: ', platnosc.IPKSeF));
+    table.push(createLabelText(i18n.t('invoice.payment.ksefTransferId'), platnosc.IPKSeF));
   }
 
   const rachunekBankowy: Content[][] = getTable(platnosc.RachunekBankowy).map((rachunek) =>
-    generujRachunekBankowy([rachunek], 'Numer rachunku bankowego')
+    generujRachunekBankowy([rachunek], i18n.t('invoice.payment.bankAccountNumber'))
   );
   const rachunekBankowyFaktora: Content[][] = getTable(platnosc.RachunekBankowyFaktora).map((rachunek) =>
-    generujRachunekBankowy([rachunek], 'Numer rachunku bankowego faktora')
+    generujRachunekBankowy([rachunek], i18n.t('invoice.payment.factorsBankAccountNumber'))
   );
   const rachunkiBankowe: Content[][] = [...rachunekBankowy, ...rachunekBankowyFaktora];
 
@@ -161,9 +170,9 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
   }
 
   if (platnosc.Skonto) {
-    table.push(createHeader('Skonto', [0, 0]));
-    table.push(createLabelText('Warunki skonta: ', platnosc.Skonto.WarunkiSkonta));
-    table.push(createLabelText('Wysokość skonta: ', platnosc.Skonto.WysokoscSkonta));
+    table.push(createHeader(i18n.t('invoice.payment.conditionalDiscount'), [0, 0]));
+    table.push(createLabelText(i18n.t('invoice.payment.discountConditions'), platnosc.Skonto.WarunkiSkonta));
+    table.push(createLabelText(i18n.t('invoice.payment.discountAmount'), platnosc.Skonto.WysokoscSkonta));
   }
   return table;
 }
