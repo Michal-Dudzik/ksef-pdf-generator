@@ -84,7 +84,7 @@ export function generateWiersze(faVat: Fa): Content {
   const ceny: string | ContentText = formatText(
     i18n.t('invoice.rows.issuedInPricesAndCurrency', {
       priceType: content.fieldsWithValue.includes('P_11') ? i18n.t('invoice.details.net') : i18n.t('invoice.details.gross'),
-      currency: faVat.KodWaluty?._text,
+      currency: getValue(faVat.KodWaluty)?.toString() ?? '',
     }),
     [FormatTyp.Label, FormatTyp.MarginBottom8]
   );

@@ -16,6 +16,8 @@ export function generateAdres(adres: Adres): Content[] {
     if (adres?.KodKraju) {
         result.push(formatText(i18n.t(getKraj((getValue(adres.KodKraju) as string) ?? '')), FormatTyp.Value));
     }
-    result.push(...createLabelText(i18n.t('invoice.address.GLN'), adres.GLN));
+    if (adres?.GLN) {
+        result.push(...createLabelText(i18n.t('invoice.address.GLN'), adres?.GLN));
+    }
     return result;
 }

@@ -15,7 +15,10 @@ export function generatePodmiot1(podmiot1: Podmiot1Class): Content[] {
     }
 
     if (podmiot1.Adres) {
-        result.push(formatText(i18n.t('invoice.subject1.address'), [FormatTyp.Label, FormatTyp.LabelMargin]), generateAdres(podmiot1.Adres));
+        result.push(
+            formatText(i18n.t('invoice.subject1.address'), [FormatTyp.Label, FormatTyp.LabelMargin]),
+            ...generateAdres(podmiot1.Adres)
+        );
     }
     if (podmiot1.AdresKoresp) {
         result.push(

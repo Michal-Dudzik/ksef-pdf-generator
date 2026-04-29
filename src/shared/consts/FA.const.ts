@@ -25,7 +25,7 @@ export const TStawkaPodatku_FA1: Record<string, string> = {
   '7': 'const.fa.taxRate7',
   '5': 'const.fa.taxRate5',
   '4': 'const.fa.taxRate4oo',
-  '3': 'const.fa.taxRate4oo',
+  '3': 'const.fa.taxRate3oo',
   '0': 'const.fa.taxRate0',
   zw: 'const.fa.taxRateZw',
   oo: 'const.fa.taxRateOo',

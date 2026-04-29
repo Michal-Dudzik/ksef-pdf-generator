@@ -12,7 +12,7 @@ import { HeaderDefine } from '../../../shared/types/pdf-types';
 import { Procedura, TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { FP, Zamowienie } from '../../types/fa1.types';
 import FormatTyp, { Position } from '../../../shared/enums/common.enum';
-import { ZamowienieKorekta } from '../../enums/invoice.enums';
+import { getZamowienieKorektaKey, ZamowienieKorekta } from '../../enums/invoice.enums';
 import { FormContentState } from '../../../shared/types/additional-data.types';
 import i18n from 'i18next';
 
@@ -27,8 +27,9 @@ export function generateZamowienie(
   if (!orderData) {
     return [];
   }
+  const zamowienieKorektaKey = getZamowienieKorektaKey(zamowienieKorekta);
   const formatAbs: FormatTyp.Currency | FormatTyp.CurrencyAbs =
-    zamowienieKorekta === ZamowienieKorekta.BeforeCorrection ? FormatTyp.CurrencyAbs : FormatTyp.Currency;
+    zamowienieKorektaKey === ZamowienieKorekta.BeforeCorrectionKey ? FormatTyp.CurrencyAbs : FormatTyp.Currency;
   const orderTable: Record<string, FP>[] = getTable(orderData?.ZamowienieWiersz).map((el, index) => {
     if (!el.NrWierszaZam._text) {
       el.NrWierszaZam._text = (index + 1).toString();
@@ -78,6 +79,7 @@ export function generateZamowienie(
     orderTable,
     '*'
   );
+  const originalFields = content.fieldsWithValue;
   const table: Content[] = [];
 
   if (content.fieldsWithValue.length <= 9) {
@@ -103,7 +105,10 @@ export function generateZamowienie(
     }
   }
   const ceny = i18n.t('invoice.rows.issuedInPricesAndCurrency', {
-    priceType: content.fieldsWithValue.includes('P_11') ? i18n.t('invoice.details.net') : i18n.t('invoice.details.gross'),
+    priceType:
+      originalFields.includes('P_11') || originalFields.includes('P_11NettoZ')
+        ? i18n.t('invoice.details.net')
+        : i18n.t('invoice.details.gross'),
     currency: KodWaluty,
   });
   let opis: Content = '';
@@ -118,7 +123,7 @@ export function generateZamowienie(
       margin: [0, 8, 0, 0],
     };
   } else if (
-    zamowienieKorekta !== ZamowienieKorekta.BeforeCorrection &&
+    zamowienieKorektaKey !== ZamowienieKorekta.BeforeCorrectionKey &&
     rodzajFaktury == TRodzajFaktury.KOR_ZAL &&
     Number(p_15) >= 0
   ) {
@@ -134,7 +139,7 @@ export function generateZamowienie(
   return [
     {
       stack: [
-        createHeader(i18n.t(`invoice.order.header.${zamowienieKorekta}`)),
+        createHeader(i18n.t(`invoice.order.header.${zamowienieKorektaKey}`)),
         ceny,
         {
           text: [

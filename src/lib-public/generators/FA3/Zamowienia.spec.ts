@@ -144,6 +144,27 @@ describe(generateZamowienie.name, () => {
         const cenaNetto = header.find((h: any) => h.name === 'P_9AZ');
         expect(cenaNetto?.format).toBe(FormatTyp.Currency);
       });
+
+      it('should also use FormatTyp.CurrencyAbs for BeforeCorrectionKey', () => {
+        vi.mocked(PDFFunctions.getContentTable).mockReturnValue({
+          content: { table: {} } as any,
+          fieldsWithValue: ['field1', 'field2', 'field3'],
+        });
+
+        generateZamowienie(
+          mockOrderData,
+          ZamowienieKorekta.BeforeCorrectionKey,
+          '100',
+          TRodzajFaktury.ZAL,
+          'PLN'
+        );
+
+        const calls = vi.mocked(PDFFunctions.getContentTable).mock.calls;
+        const header = calls[0][0];
+        const cenaNetto = header.find((h: any) => h.name === 'P_9AZ');
+        expect(cenaNetto?.format).toBe(FormatTyp.CurrencyAbs);
+        expect(PDFFunctions.createHeader).toHaveBeenCalledWith(i18n.t('invoice.order.header.before-correction'));
+      });
     });
 
     describe('table generation', () => {
@@ -163,6 +184,35 @@ describe(generateZamowienie.name, () => {
 
         expect(PDFFunctions.getContentTable).toHaveBeenCalledTimes(1);
         expect(result[0]).toBeDefined();
+      });
+
+      it('should keep net priceType when the split table no longer includes the original net field', () => {
+        const tSpy = vi.spyOn(i18n, 't');
+
+        vi.mocked(PDFFunctions.getContentTable)
+          .mockReturnValueOnce({
+            content: null,
+            fieldsWithValue: Array(9).fill('field').concat('P_11NettoZ'),
+          })
+          .mockReturnValueOnce({
+            content: { table: {} } as any,
+            fieldsWithValue: ['field1', 'field2'],
+          })
+          .mockReturnValueOnce({
+            content: { table: {} } as any,
+            fieldsWithValue: ['field3', 'field4'],
+          });
+
+        generateZamowienie(
+          mockOrderData,
+          ZamowienieKorekta.BeforeCorrection,
+          '100',
+          TRodzajFaktury.ZAL,
+          'PLN'
+        );
+
+        const cenyCall = tSpy.mock.calls.find(([key]) => key === 'invoice.rows.issuedInPricesAndCurrency');
+        expect(cenyCall?.[1]).toMatchObject({ priceType: i18n.t('invoice.details.net'), currency: 'PLN' });
       });
 
       it('should generate two tables when fieldsWithValue.length > 8', () => {

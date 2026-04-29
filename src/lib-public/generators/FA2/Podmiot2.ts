@@ -26,7 +26,7 @@ export function generatePodmiot2(podmiot2: Podmiot2): Content[] {
   if (podmiot2.Adres) {
     result.push(
       formatText(i18n.t('invoice.subject2.address'), [FormatTyp.Label, FormatTyp.LabelMargin]),
-      generateAdres(podmiot2.Adres)
+      ...generateAdres(podmiot2.Adres)
     );
   }
   if (podmiot2.AdresKoresp) {

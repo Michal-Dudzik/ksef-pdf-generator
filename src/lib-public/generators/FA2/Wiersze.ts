@@ -86,10 +86,11 @@ export function generateWiersze(faVat: Fa): Content {
     faWiersze,
     'auto'
   );
+  const currency = faVat.KodWaluty?._text ?? '';
   const ceny: string | ContentText = formatText(
     i18n.t('invoice.rows.issuedInPricesAndCurrency', {
       priceType: content.fieldsWithValue.includes('P_11') ? i18n.t('invoice.details.net') : i18n.t('invoice.details.gross'),
-      currency: faVat.KodWaluty?._text,
+      currency,
     }),
     [FormatTyp.Label, FormatTyp.MarginBottom8]
   );

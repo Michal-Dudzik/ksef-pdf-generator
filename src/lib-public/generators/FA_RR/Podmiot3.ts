@@ -31,7 +31,7 @@ export function generatePodmiot3(podmiot: Podmiot3, index: number): Content[] {
   if (podmiot.Adres) {
     column2.push(
       formatText(i18n.t('invoice.subject3.address'), [FormatTyp.Label, FormatTyp.LabelMargin]),
-      generateAdres(podmiot.Adres)
+      ...generateAdres(podmiot.Adres)
     );
   }
   if (podmiot.AdresKoresp) {

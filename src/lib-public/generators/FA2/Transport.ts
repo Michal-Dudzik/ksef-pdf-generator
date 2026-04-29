@@ -27,8 +27,9 @@ export function generateTransport(transport: Transport, index?: number | null): 
   };
 
   const header = i18n.t('invoice.transport.header');
+  const transportHeader = index !== undefined && index !== null ? `${header} ${index}` : header;
 
-  table.push(createHeader(index ? `${header} ${index}` : header));
+  table.push(createHeader(transportHeader));
   if (transport.RodzajTransportu?._text) {
     columns.transport.push(
       createLabelText(

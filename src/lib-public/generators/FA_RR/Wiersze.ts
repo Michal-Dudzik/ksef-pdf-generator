@@ -130,13 +130,14 @@ export function generateWiersze(fa: Fa): Content {
               formatTyp: [FormatTyp.Currency, FormatTyp.ValueMedium, FormatTyp.LabelMargin],
               currency: getValue(fa.KodWaluty)?.toString() ?? '',
             },
-            getValue(fa.KodWaluty)?.toString() === 'PLN'
-              ? { value: '' }
-              : {
-                  value: ` (${normalizeCurrencySeparator(getValue(fa.P_12_1W))} PLN)`,
-                  formatTyp: [FormatTyp.Currency, FormatTyp.ValueMedium, FormatTyp.LabelMargin],
-                },
-          ]),
+             getValue(fa.KodWaluty)?.toString() === 'PLN'
+               ? { value: '' }
+               : {
+                   value: ` (${normalizeCurrencySeparator(getValue(fa.P_12_1W))} PLN)`,
+                   formatTyp: [FormatTyp.Currency, FormatTyp.ValueMedium, FormatTyp.LabelMargin],
+                   currency: getValue(fa.KodWaluty)?.toString() ?? '',
+                 },
+           ]),
         ],
         margin: [0, 0, 0, 8],
       },

@@ -18,7 +18,7 @@ export function generateDaneIdentyfikacyjne(daneIdentyfikacyjne: DaneIdentyfikac
   if (daneIdentyfikacyjne.PelnaNazwa) {
     result.push(createLabelText(i18n.t('invoice.subjectIdentificationData.fullName'), daneIdentyfikacyjne.PelnaNazwa));
   }
-  if (daneIdentyfikacyjne.Nazwisko) {
+  if (daneIdentyfikacyjne.NazwaHandlowa) {
     result.push(createLabelText(i18n.t('invoice.subjectIdentificationData.tradeName'), daneIdentyfikacyjne.NazwaHandlowa));
   }
   return result;
