@@ -11,7 +11,7 @@ export function generateWatermark(watermark?: string | Watermark): Record<'water
         fontSize: 50,
       },
     };
-  } else if (typeof watermark === 'object' && watermark.text && watermark.text.trim() !== '') {
+  } else if (watermark !== null && typeof watermark === 'object' && watermark.text && watermark.text.trim() !== '') {
     return {
       watermark,
     };

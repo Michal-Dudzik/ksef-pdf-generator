@@ -255,7 +255,7 @@ describe(generateZamowienie.name, () => {
         );
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
-          { value: 'Otrzymana kwota zapłaty (zaliczki): ', formatTyp: FormatTyp.LabelGreater },
+          { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
           { value: '100', formatTyp: FormatTyp.CurrencyGreater },
         ]);
       });
@@ -280,7 +280,7 @@ describe(generateZamowienie.name, () => {
         );
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
-          { value: 'Kwota należności ogółem: ', formatTyp: FormatTyp.LabelGreater },
+          { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
           { value: '150', formatTyp: FormatTyp.CurrencyGreater },
         ]);
       });
@@ -302,7 +302,7 @@ describe(generateZamowienie.name, () => {
         );
 
         const stack = (result[0] as any).stack;
-        expect(stack[1]).toContain('netto');
+        expect(stack[1]).toContain(i18n.t('invoice.details.net'));
         expect(stack[1]).toContain('EUR');
       });
 
@@ -321,7 +321,7 @@ describe(generateZamowienie.name, () => {
         );
 
         const stack = (result[0] as any).stack;
-        expect(stack[1]).toContain('brutto');
+        expect(stack[1]).toContain(i18n.t('invoice.details.gross'));
         expect(stack[1]).toContain('USD');
       });
     });

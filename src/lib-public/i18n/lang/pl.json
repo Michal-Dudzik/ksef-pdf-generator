@@ -520,7 +520,8 @@
     },
     "footer": {
       "generatedIn": "Wytworzona w: ",
-      "margin": "marża"
+      "margin": "marża",
+      "pageOf": "{{current}} z {{total}}"
     },
     "header": {
       "advance": "Faktura zaliczkowa",

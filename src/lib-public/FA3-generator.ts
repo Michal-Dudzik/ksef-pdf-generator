@@ -24,6 +24,7 @@ import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplifi
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
 import { generateWatermark } from '../shared/consts/watermark';
+import i18n from 'i18next';
 
 pdfMake.vfs = pdfFonts;
 
@@ -67,7 +68,7 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
       content,
       footer: (currentPage, pageCount) => {
         return {
-          text: currentPage.toString() + ' z ' + pageCount,
+          text: i18n.t('invoice.footer.pageOf', { current: currentPage, total: pageCount }),
           alignment: Position.RIGHT,
           margin: [0, 0, 40, 0],
         };

@@ -71,8 +71,8 @@ export function generateAdnotacje(adnotacje?: Adnotacje): Content[] {
       obowiazekVAT = [
         ...createLabelText(`${i18n.t('invoice.annotations.newTransportsDelivery')}: `, value ?? ''),
       ];
-      if (obowiazekVAT) {
-        firstColumn = [firstColumn, ...obowiazekVAT];
+      if (obowiazekVAT.length) {
+        firstColumn = [...firstColumn, ...obowiazekVAT];
       }
     }
 

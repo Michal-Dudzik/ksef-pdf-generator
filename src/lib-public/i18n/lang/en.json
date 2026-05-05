@@ -443,7 +443,7 @@
     "attachment": {
       "blockHeader": "ExampleText",
       "description": "ExampleText",
-      "details": "ExampleText",
+      "details": "ExampleText ({{index}})",
       "header": "ExampleText",
       "key": "ExampleText",
       "tableLabel": "ExampleText",
@@ -520,7 +520,8 @@
     },
     "footer": {
       "generatedIn": "ExampleText",
-      "margin": "ExampleText"
+      "margin": "ExampleText",
+      "pageOf": "{{current}} of {{total}}"
     },
     "header": {
       "advance": "ExampleText",
@@ -776,7 +777,7 @@
       "name": "ExampleText",
       "nip": "ExampleText",
       "noTaxId": "ExampleText",
-      "otherEntity": "ExampleText",
+      "otherEntity": "Other entity {{index}}",
       "otherId": "ExampleText",
       "otherRole": "ExampleText",
       "otherTaxId": "ExampleText",

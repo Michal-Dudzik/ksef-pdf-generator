@@ -13,7 +13,7 @@ export function generateNaglowek(
   additionalData?: AdditionalDataTypes,
   zalacznik?: Zalacznik
 ): Content[] {
-  let invoiceName = '???';
+  let invoiceName = i18n.t('invoice.header.vat');
 
   switch (fa?.RodzajFaktury?._text) {
     case TRodzajFaktury.VAT:

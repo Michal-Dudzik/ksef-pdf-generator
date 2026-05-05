@@ -6,6 +6,7 @@ import { generateNaglowekUPO } from './generators/UPO4_3/Naglowek';
 import { generateDokumentUPO } from './generators/UPO4_3/Dokumenty';
 import { parseXML } from '../shared/XML-parser';
 import { Position } from '../shared/enums/common.enum';
+import i18n from 'i18next';
 
 export async function generatePDFUPO(file: File): Promise<Blob> {
   const upo = (await parseXML(file)) as Upo;
@@ -16,7 +17,7 @@ export async function generatePDFUPO(file: File): Promise<Blob> {
     pageOrientation: 'landscape',
     footer: function (currentPage: number, pageCount: number) {
       return {
-        text: currentPage.toString() + ' z ' + pageCount,
+        text: i18n.t('invoice.footer.pageOf', { current: currentPage, total: pageCount }),
         alignment: Position.RIGHT,
         margin: [0, 0, 20, 0],
       };

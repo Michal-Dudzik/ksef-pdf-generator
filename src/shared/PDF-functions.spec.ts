@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   createLabelText,
@@ -15,11 +15,6 @@ import {
   verticalSpacing,
 } from './PDF-functions';
 import FormatTyp, { Position } from './enums/common.enum';
-import { initI18next } from '../lib-public/i18n/i18n-init';
-
-beforeAll(async () => {
-  await initI18next();
-});
 
 describe('formatText', () => {
   const numberDecimalsEnv = process.env.KSEF_FORMAT_NUMBER_DECIMALS;

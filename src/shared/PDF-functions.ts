@@ -280,8 +280,10 @@ export function addThousandSeparator(
 ): string {
   const splitRegex = /\B(?=(\d{3})+(?!\d))/g;
   if (value.includes(decimalSeparator)) {
-    const splitValue = value.split(decimalSeparator);
-    return `${splitValue[0].replace(splitRegex, thousandSeparator)}${decimalSeparator}${splitValue[1]}`;
+    const splitIndex = value.indexOf(decimalSeparator);
+    const integerPart = value.slice(0, splitIndex);
+    const decimalPart = value.slice(splitIndex + decimalSeparator.length);
+    return `${integerPart.replace(splitRegex, thousandSeparator)}${decimalSeparator}${decimalPart}`;
   } else {
     return value.replace(splitRegex, thousandSeparator);
   }

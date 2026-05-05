@@ -40,7 +40,7 @@ export function generateTransport(transport: Transport, index?: number | null): 
   if (hasValue(transport.OpisLadunku)) {
     columns.dane.push(createLabelText(i18n.t('invoice.transport.cargoDescription'), translateMap(transport.OpisLadunku, TypLadunku)));
     if (transport.LadunekInny?._text === '1' && transport.OpisInnegoLadunku?._text) {
-      columns.dane.push(createLabelText(i18n.t('invoice.transport.otherCargo'), i18n.t('invoice.transport.otherCargo')));
+      columns.dane.push(createLabelText(i18n.t('invoice.transport.otherCargo'), ' '));
       columns.dane.push(createLabelText(i18n.t('invoice.transport.otherCargoDescription'), transport.OpisInnegoLadunku));
     }
   }
