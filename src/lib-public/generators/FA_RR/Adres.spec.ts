@@ -31,8 +31,8 @@ describe(generateAdres.name, () => {
       expect(formatText).toHaveBeenCalledWith(text, FormatTyp.Value);
     });
 
-    expect(createLabelText).toHaveBeenCalledWith('GLN: ', (adres as any).GLN);
-    expect((result[result.length - 1] as any).text).toContain('GLN:');
+    expect(createLabelText).not.toHaveBeenCalled();
+    expect(result).toHaveLength(expectedTexts.length);
   });
 
   it('zwraca tylko GLN gdy brak innych pól', () => {
