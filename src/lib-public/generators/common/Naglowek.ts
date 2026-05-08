@@ -1,4 +1,4 @@
-import { Content, ContentText } from 'pdfmake/interfaces';
+import { Content } from 'pdfmake/interfaces';
 import { formatText, generateLine } from '../../../shared/PDF-functions';
 import { TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { Fa as Fa1 } from '../../types/fa1.types';
@@ -13,6 +13,19 @@ export function generateNaglowek(
   additionalData?: AdditionalDataTypes,
   zalacznik?: Zalacznik
 ): Content[] {
+  const headerContent: Content[] = [];
+  const pushRightAlignedText = (
+    value: number | string | undefined | null,
+    format: FormatTyp | FormatTyp[]
+  ): void => {
+    const formatted = formatText(value, format);
+    if (typeof formatted === 'object' && formatted !== null) {
+      headerContent.push({
+        ...formatted,
+        alignment: Position.RIGHT,
+      });
+    }
+  };
   let invoiceName = i18n.t('invoice.header.vat');
 
   switch (fa?.RodzajFaktury?._text) {
@@ -43,46 +56,35 @@ export function generateNaglowek(
       break;
   }
 
-  return [
-    {
-      text: [
-        { text: i18n.t('invoice.header.ksefPart1'), fontSize: 18 },
-        { text: i18n.t('invoice.header.ksefPart2'), color: 'red', bold: true, fontSize: 18 },
-        { text: i18n.t('invoice.header.ksefPart3'), bold: true, fontSize: 18 },
-      ],
-    },
-    {
-      ...(formatText(i18n.t('invoice.header.invoiceNumberLabel'), FormatTyp.ValueMedium) as ContentText),
-      alignment: Position.RIGHT,
-    },
-    { ...(formatText(fa?.P_2?._text, FormatTyp.HeaderPosition) as ContentText), alignment: Position.RIGHT },
-    {
-      ...(formatText(invoiceName, [FormatTyp.ValueMedium, FormatTyp.Default]) as ContentText),
-      alignment: Position.RIGHT,
-    },
-    ...(additionalData?.nrKSeF
-      ? [
-          {
-            text: [
-              formatText(i18n.t('invoice.header.ksefNumberLabel'), FormatTyp.LabelMedium) as ContentText,
-              formatText(additionalData?.nrKSeF, FormatTyp.ValueMedium),
-            ],
-            alignment: Position.RIGHT,
-          } as Content,
-        ]
-      : []),
-    ...(additionalData?.isMobile && zalacznik
-      ? [
-          { stack: [generateLine()], margin: [0, 8, 0, 8] } as Content,
-          {
-            text: [
-              formatText(
-                i18n.t('invoice.header.attachmentWarning'),
-                FormatTyp.Bold
-              ),
-            ],
-          },
-        ]
-      : []),
-  ];
+  headerContent.push({
+    text: [
+      { text: i18n.t('invoice.header.ksefPart1'), fontSize: 18 },
+      { text: i18n.t('invoice.header.ksefPart2'), color: 'red', bold: true, fontSize: 18 },
+      { text: i18n.t('invoice.header.ksefPart3'), bold: true, fontSize: 18 },
+    ],
+  });
+
+  pushRightAlignedText(i18n.t('invoice.header.invoiceNumberLabel'), FormatTyp.ValueMedium);
+  pushRightAlignedText(fa?.P_2?._text, FormatTyp.HeaderPosition);
+  pushRightAlignedText(invoiceName, [FormatTyp.ValueMedium, FormatTyp.Default]);
+
+  if (additionalData?.nrKSeF) {
+    const ksefLabel = formatText(i18n.t('invoice.header.ksefNumberLabel'), FormatTyp.LabelMedium);
+    const ksefValue = formatText(additionalData.nrKSeF, FormatTyp.ValueMedium);
+    if (typeof ksefLabel === 'object' && ksefLabel !== null && typeof ksefValue === 'object' && ksefValue !== null) {
+      headerContent.push({
+        text: [ksefLabel, ksefValue],
+        alignment: Position.RIGHT,
+      });
+    }
+  }
+
+  if (additionalData?.isMobile && zalacznik) {
+    headerContent.push({ stack: [generateLine()], margin: [0, 8, 0, 8] } as Content);
+    headerContent.push({
+      text: [formatText(i18n.t('invoice.header.attachmentWarning'), FormatTyp.Bold)],
+    });
+  }
+
+  return headerContent;
 }

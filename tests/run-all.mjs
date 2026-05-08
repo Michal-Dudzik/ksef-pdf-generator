@@ -8,6 +8,12 @@ console.log('========================================');
 console.log('KSeF PDF Generator - Test Suite');
 console.log('========================================\n');
 
+// Default to Node mode for deterministic local and CI test behavior.
+// Set TEST_MODE=exe explicitly to validate standalone binaries.
+if (!process.env.TEST_MODE) {
+  process.env.TEST_MODE = 'node';
+}
+
 let total = 0;
 let passed = 0;
 let failed = 0;

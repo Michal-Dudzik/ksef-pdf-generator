@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-05-08
+
+### Fixed
+
+- more old tests
+
+## [1.1.1] - 2026-05-08
+
+### Fixed
+
+- Fixed some old translation tests for English language
+
 ## [1.1.0] - 2026-05-08
 
 ### Added

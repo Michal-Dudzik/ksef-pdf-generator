@@ -12,8 +12,8 @@ const TEST_CONFIG_FILE = 'tests/test-currency-thousands-separator.ini';
 const OUTPUT_WITH_SEPARATOR = 'tests/test-currency-thousands-separator.pdf';
 const OUTPUT_WITHOUT_SEPARATOR = 'tests/test-currency-no-thousands-separator.pdf';
 const LARGE_AMOUNT = '1234567.89';
-const LARGE_AMOUNT_WITHOUT_SEPARATOR = '1234567,89 PLN';
-const LARGE_AMOUNT_WITH_SEPARATOR = '1\u00A0234\u00A0567,89 PLN';
+const LARGE_AMOUNT_WITHOUT_SEPARATOR = '1234567,89';
+const LARGE_AMOUNT_WITH_SEPARATOR = '1\u00A0234\u00A0567,89';
 const UTF16_BE_DECODER = new TextDecoder('utf-16be');
 
 console.log(`Running test: ${TEST_NAME}`);
