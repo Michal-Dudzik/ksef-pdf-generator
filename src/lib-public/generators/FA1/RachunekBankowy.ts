@@ -11,6 +11,7 @@ import FormatTyp from '../../../shared/enums/common.enum';
 import { TypRachunkowWlasnych } from '../../../shared/consts/FA.const';
 import { FP } from '../../types/fa1.types';
 import { translateMap } from '../../../shared/generators/common/functions';
+import i18n from 'i18next';
 import { DEFAULT_TABLE_LAYOUT } from '../../../shared/consts/FA.const';
 
 export const generujRachunekBankowy: (accounts?: Record<string, FP>[], title?: string) => Content[] = (
@@ -32,36 +33,36 @@ export const generujRachunekBankowy: (accounts?: Record<string, FP>[], title?: s
 
     if (hasValue(account.NrRBZagr)) {
       table.push([
-        formatText('Format rachunku', FormatTyp.GrayBoldTitle),
-        formatText('Zagraniczny', FormatTyp.Default),
+        formatText(i18n.t('invoice.registers.billFormat'), FormatTyp.GrayBoldTitle),
+        formatText(i18n.t('invoice.registers.foreign'), FormatTyp.Default),
       ]);
     } else if (hasValue(account.NrRBPL)) {
       table.push([
-        formatText('Format rachunku', FormatTyp.GrayBoldTitle),
-        formatText('Polski', FormatTyp.Default),
+        formatText(i18n.t('invoice.registers.billFormat'), FormatTyp.GrayBoldTitle),
+        formatText(i18n.t('invoice.registers.polish'), FormatTyp.Default),
       ]);
     }
     if (hasValue(account.NrRBZagr)) {
       table.push([
-        formatText('Pełny numer rachunku zagranicznego', FormatTyp.GrayBoldTitle),
+        formatText(i18n.t('invoice.registers.fullForeignAccountNumber'), FormatTyp.GrayBoldTitle),
         formatText(getValue(account.NrRBZagr), FormatTyp.Default),
       ]);
     } else if (hasValue(account.NrRBPL)) {
       table.push([
-        formatText('Pełny numer rachunku w standardzie NRB', FormatTyp.GrayBoldTitle),
+        formatText(i18n.t('invoice.registers.fullNrbAccountNumber'), FormatTyp.GrayBoldTitle),
         formatText(getValue(account.NrRBPL), FormatTyp.Default),
       ]);
     }
     table.push([
-      formatText('Kod SWIFT', FormatTyp.GrayBoldTitle),
+      formatText(i18n.t('invoice.registers.swiftCode'), FormatTyp.GrayBoldTitle),
       formatText(getValue(account.SWIFT), FormatTyp.Default),
     ]);
     table.push([
-      formatText('Rachunek własny banku', FormatTyp.GrayBoldTitle),
+      formatText(i18n.t('invoice.registers.ownBankAccount'), FormatTyp.GrayBoldTitle),
       formatText(makeBreakable(translateMap(account.RachunekWlasnyBanku, TypRachunkowWlasnych), 20), FormatTyp.Default),
     ]);
     table.push([
-      formatText('Nazwa banku', FormatTyp.GrayBoldTitle),
+      formatText(i18n.t('invoice.registers.bankName'), FormatTyp.GrayBoldTitle),
       formatText(makeBreakable(getValue(account.NazwaBanku), 20), FormatTyp.Default),
     ]);
     result.push([

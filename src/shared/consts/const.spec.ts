@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import FormatTyp from '../enums/common.enum';
-import { TableDataType } from './const';
+import { TableDataType, TStawkaPodatku_FA1 } from './const';
 
 describe('TableDataType', () => {
   it('should map date column type to FormatTyp.Date', () => {
@@ -29,6 +29,12 @@ describe('TableDataType', () => {
 
   it('should have exactly 6 type mappings', () => {
     expect(Object.keys(TableDataType)).toHaveLength(6);
+  });
+});
+
+describe('TStawkaPodatku_FA1', () => {
+  it('maps 3% to the dedicated 3oo translation key', () => {
+    expect(TStawkaPodatku_FA1['3']).toBe('const.fa.taxRate3oo');
   });
 });
 

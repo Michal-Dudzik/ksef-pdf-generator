@@ -23,6 +23,8 @@ import { AdditionalDataTypes } from './types/common.types';
 import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplified-page-size';
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
+import { generateWatermark } from '../shared/consts/watermark';
+import i18n from 'i18next';
 
 pdfMake.vfs = pdfFonts;
 
@@ -58,11 +60,11 @@ export function generateFA2(invoice: Faktura, additionalData: AdditionalDataType
         ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ),
       ];
     const docDefinition: TDocumentDefinitions = {
-      watermark: additionalData?.watermark,
+      ...generateWatermark(additionalData?.watermark),
       content,
       footer: (currentPage, pageCount) => {
         return {
-          text: currentPage.toString() + ' z ' + pageCount,
+          text: i18n.t('invoice.footer.pageOf', { current: currentPage, total: pageCount }),
           alignment: Position.RIGHT,
           margin: [0, 0, 40, 0],
         };

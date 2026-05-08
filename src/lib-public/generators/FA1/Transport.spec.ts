@@ -164,7 +164,10 @@ describe(generateTransport.name, () => {
       OpisInnegoLadunku: { _text: 'Custom cargo' },
     };
     generateTransport(data);
-    expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Opis ładunku: ', 'Ładunek inny');
+    expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Ładunek inny', 'Ładunek inny');
+    expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Opis innego ładunku: ', {
+      _text: 'Custom cargo',
+    });
     expect(PDFFunctions.createLabelText).toHaveBeenCalledWith('Rodzaj transportu: ', 'Road');
   });
 });

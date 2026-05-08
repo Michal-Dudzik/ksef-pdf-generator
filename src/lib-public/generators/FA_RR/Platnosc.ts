@@ -12,36 +12,37 @@ import {
 import { Platnosc } from '../../types/FaRR.types';
 import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
+import i18n from 'i18next';
 
 export function generatePlatnosc(platnosc: Platnosc | undefined): Content {
   if (!platnosc) {
     return [];
   }
-  const table: Content[] = [generateLine(), ...createHeader('Płatność')];
+  const table: Content[] = [generateLine(), ...createHeader(i18n.t('invoice.payment.payment'))];
 
   if (hasValue(platnosc.FormaPlatnosci)) {
-    table.push(createLabelText('Forma zapłaty: ', getValue(platnosc.FormaPlatnosci)));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentMethod3'), getValue(platnosc.FormaPlatnosci)));
   } else if (hasValue(platnosc.OpisPlatnosci)) {
-    table.push(createLabelText('Forma zapłaty: ', 'Inna'));
-    table.push(createLabelText('Opis: ', getValue(platnosc.OpisPlatnosci)));
+    table.push(createLabelText(i18n.t('invoice.payment.paymentMethod3'), i18n.t('invoice.payment.other')));
+    table.push(createLabelText(i18n.t('invoice.payment.description'), getValue(platnosc.OpisPlatnosci)));
   }
 
   if (hasValue(platnosc.LinkDoPlatnosci)) {
-    table.push(formatText('Link do płatności bezgotówkowej: ', FormatTyp.Label));
+    table.push(formatText(i18n.t('invoice.payment.moneylessLink'), FormatTyp.Label));
     table.push({
       text: formatText(getValue(platnosc.LinkDoPlatnosci), FormatTyp.Link),
       link: formatText(getValue(platnosc.LinkDoPlatnosci), FormatTyp.Link),
     } as ContentText);
   }
   if (hasValue(platnosc.IPKSeF)) {
-    table.push(createLabelText('Identyfikator płatności Krajowego Systemu e-Faktur: ', platnosc.IPKSeF));
+    table.push(createLabelText(i18n.t('invoice.payment.ksefTransferId'), platnosc.IPKSeF));
   }
 
   const rachunekBankowy1: Content[][] = getTable(platnosc.RachunekBankowy1).map((rachunek) =>
-    generujRachunekBankowy([rachunek], 'Rachunek bankowy rolnika')
+    generujRachunekBankowy([rachunek], i18n.t('invoice.payment.farmer'))
   );
   const rachunekBankowy2: Content[][] = getTable(platnosc.RachunekBankowy2).map((rachunek) =>
-    generujRachunekBankowy([rachunek], 'Rachunek bankowy nabywcy')
+    generujRachunekBankowy([rachunek], i18n.t('invoice.payment.getter'))
   );
   const maxRows = Math.max(rachunekBankowy1.length, rachunekBankowy2.length);
 

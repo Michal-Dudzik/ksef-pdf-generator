@@ -47,6 +47,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "i18next": "^25.8.4",
     "jsdom": "^26.1.0",
     "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.20",

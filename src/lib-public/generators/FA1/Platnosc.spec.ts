@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as PDFFunctions from '../../../shared/PDF-functions';
 import { generatePlatnosc } from './Platnosc';
 import { Platnosc } from '../../types/fa1.types';
 
@@ -101,6 +102,19 @@ describe('generatePlatnosc', () => {
     const result: any = generatePlatnosc(p);
 
     expect(result.some((el: any) => el.type === '2COL')).toBe(true);
+  });
+
+  it('renders payment terms in the right column when terms exist without partial payments', () => {
+    const p: Platnosc = {
+      TerminyPlatnosci: [{ TerminPlatnosci: { _text: '2025-02-01' } }],
+    };
+
+    generatePlatnosc(p);
+
+    expect(vi.mocked(PDFFunctions.generateTwoColumns)).toHaveBeenCalledWith(
+      [],
+      { data: p.TerminyPlatnosci }
+    );
   });
 
   it('renders Skonto info if present', () => {

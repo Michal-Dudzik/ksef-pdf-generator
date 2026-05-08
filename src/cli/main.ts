@@ -46,6 +46,7 @@ export async function main(): Promise<void> {
       simplifiedMode: options.simplifiedMode || null,
       mergePdf: options.mergePdf || null,
       useCurrencyThousandsSeparator: options.useCurrencyThousandsSeparator || null,
+      language: process.env.KSEF_LANGUAGE || null,
     },
     options.type,
     options.input,

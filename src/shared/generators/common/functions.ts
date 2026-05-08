@@ -1,13 +1,13 @@
 import { FP as FP2 } from '../../../lib-public/types/fa2.types';
+import i18n from 'i18next';
 
 export function translateMap(value: FP2 | string | undefined, map: Record<string, string>): string {
   const valueToTranslate = (typeof value === 'string' ? value : value?._text)?.trim();
 
-  if (!valueToTranslate) {
+  if (!valueToTranslate || !map[valueToTranslate]) {
     return '';
   }
-
-  return map[valueToTranslate] ?? '';
+  return i18n.t(map[valueToTranslate]);
 }
 
 export function formatDateTime(data?: string, withoutSeconds?: boolean, withoutTime?: boolean): string {

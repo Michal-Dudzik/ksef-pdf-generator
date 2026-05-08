@@ -54,7 +54,7 @@ describe(generatePodmiot3.name, () => {
     const column2 = result[1].columns[1];
 
     expect(column2[0]).toHaveProperty('text', 'Adres');
-    expect(column2[1]).toEqual([{ text: 'GLN: ' }]);
+    expect(column2[1]).toEqual({ text: 'GLN: ' });
   });
 
   it('adds column2 when AdresKoresp is present', () => {

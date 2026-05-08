@@ -7,10 +7,12 @@ import {
   generateTwoColumns,
   getTable,
 } from '../../../shared/PDF-functions';
+import { translateMap } from '../../../shared/generators/common/functions';
 import { DaneFaKorygowanej, Fa as Fa1 } from '../../types/fa1.types';
 import { Fa as Fa2 } from '../../types/fa2.types';
 import { FakturaRR } from '../../types/FaRR.types';
 import { Fa as Fa3 } from '../../types/fa3.types';
+import i18n from 'i18next';
 
 type SupportedCorrectionInvoice = Pick<FakturaRR, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
   | Pick<Fa1, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
@@ -32,23 +34,23 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
     const daneFakturyKorygowanej: DaneFaKorygowanej[] = getTable(correctionInvoiceData);
 
     if (invoice.NrFaKorygowany) {
-      firstColumn.push(createLabelText('Poprawny numer faktury korygowanej: ', invoice.NrFaKorygowany));
+      firstColumn.push(createLabelText(i18n.t('invoice.correctedInvoice.correctInvoiceNumber'), invoice.NrFaKorygowany));
     }
     if (invoice.PrzyczynaKorekty) {
-      firstColumn.push(
-        createLabelText('Przyczyna korekty dla faktur korygujących: ', invoice.PrzyczynaKorekty)
-      );
+      firstColumn.push(createLabelText(i18n.t('invoice.correctedInvoice.correctionReason'), invoice.PrzyczynaKorekty));
     }
     if (invoice.TypKorekty?._text) {
-      firstColumn.push(createLabelText('Typ skutku korekty: ', TypKorekty[invoice.TypKorekty._text]));
+      firstColumn.push(
+        createLabelText(i18n.t('invoice.correctedInvoice.correctionEffectType'), translateMap(invoice.TypKorekty, TypKorekty))
+      );
     }
 
     if (firstColumn.length) {
-      firstColumn.unshift(createHeader('Dane faktury korygowanej'));
+      firstColumn.unshift(createHeader(i18n.t('invoice.correctedInvoice.sectionHeader')));
     }
 
     if (daneFakturyKorygowanej?.length === 1) {
-      secondColumn.push(createHeader('Dane identyfikacyjne faktury korygowanej'));
+      secondColumn.push(createHeader(i18n.t('invoice.correctedInvoice.identificationHeader')));
       generateCorrectiveData(daneFakturyKorygowanej[0], secondColumn);
       if (firstColumn.length > 0 || secondColumn.length) {
         if (firstColumn.length) {
@@ -68,10 +70,14 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
       firstColumn = [];
       daneFakturyKorygowanej?.forEach((item: DaneFaKorygowanej, index: number): void => {
         if (index % 2 === 0) {
-          firstColumn.push(createHeader(`Dane identyfikacyjne faktury korygowanej ${index + 1}`));
+          firstColumn.push(
+            createHeader(i18n.t('invoice.correctedInvoice.identificationHeaderIndexed', { index: index + 1 }))
+          );
           generateCorrectiveData(item, firstColumn);
         } else {
-          secondColumn.push(createHeader(`Dane identyfikacyjne faktury korygowanej ${index + 1}`));
+          secondColumn.push(
+            createHeader(i18n.t('invoice.correctedInvoice.identificationHeaderIndexed', { index: index + 1 }))
+          );
           generateCorrectiveData(item, secondColumn);
         }
       });
@@ -88,17 +94,12 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
 
 function generateCorrectiveData(data: DaneFaKorygowanej, column: Content[]): void {
   if (data.DataWystFaKorygowanej) {
-    column.push(
-      createLabelText(
-        'Data wystawienia faktury, której dotyczy faktura korygująca: ',
-        data.DataWystFaKorygowanej
-      )
-    );
+    column.push(createLabelText(i18n.t('invoice.correctedInvoice.issueDate'), data.DataWystFaKorygowanej));
   }
   if (data.NrFaKorygowanej) {
-    column.push(createLabelText('Numer faktury korygowanej: ', data.NrFaKorygowanej));
+    column.push(createLabelText(i18n.t('invoice.correctedInvoice.invoiceNumber'), data.NrFaKorygowanej));
   }
   if (data.NrKSeFFaKorygowanej) {
-    column.push(createLabelText('Numer KSeF faktury korygowanej: ', data.NrKSeFFaKorygowanej));
+    column.push(createLabelText(i18n.t('invoice.correctedInvoice.ksefNumber'), data.NrKSeFFaKorygowanej));
   }
 }

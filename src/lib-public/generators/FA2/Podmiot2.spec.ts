@@ -100,9 +100,7 @@ describe(generatePodmiot2.name, () => {
     const result: Content = generatePodmiot2(podmiot as Podmiot2);
     expect(result[0]).toEqual({ text: 'Nabywca', style: 'header' });
     expect(result.some((c: any): boolean => c.text === 'mockDaneIdentyfikacyjne')).toBe(true);
-    expect(
-      result.filter((c: any): boolean => c.text === 'mockAddress').length + (result as any)[5].length
-    ).toBe(2);
+    expect(result.filter((c: any): boolean => c.text === 'mockAddress').length).toBe(2);
     expect(result.some((c: any): boolean => c.text === 'mockDaneKontaktowe')).toBe(true);
   });
 });

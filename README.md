@@ -13,7 +13,7 @@ This project's versioning is separate from `CIRFMF/ksef-pdf-generator`. It is ke
 - Generate invoice and UPO PDFs from XML input files.
 - Run as a standalone Windows executable or as a Node.js CLI.
 - Add KSeF metadata, QR codes, text watermarks, simplified invoice output, and optional PDF merge.
-- Control number formatting with CLI flags or an optional `parameters.ini` file.
+- Control language and number formatting with CLI flags, environment variables, or an optional `parameters.ini` file.
 
 ## Documentation
 

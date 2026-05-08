@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { generateAdres } from './Adres';
 import { createLabelText, formatText } from '../../../shared/PDF-functions';
 import FormatTyp from '../../../shared/enums/common.enum';
+import i18n from 'i18next';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   formatText: vi.fn((text: string, style: string) => ({ text, style })),
@@ -31,15 +32,15 @@ describe(generateAdres.name, () => {
       expect(formatText).toHaveBeenCalledWith(text, FormatTyp.Value);
     });
 
-    expect(createLabelText).toHaveBeenCalledWith('GLN: ', (adres as any).GLN);
-    expect((result[result.length - 1] as any).text).toContain('GLN:');
+    expect(createLabelText).not.toHaveBeenCalled();
+    expect(result).toHaveLength(expectedTexts.length);
   });
 
   it('zwraca tylko GLN gdy brak innych pól', () => {
     const adres = { GLN: '1234567890' };
     const result = generateAdres(adres as any);
     expect(formatText).not.toHaveBeenCalled();
-    expect(createLabelText).toHaveBeenCalledWith('GLN: ', '1234567890');
+    expect(createLabelText).toHaveBeenCalledWith(i18n.t('invoice.address.GLN'), '1234567890');
     expect(result).toHaveLength(1);
     expect((result[0] as any).text).toContain('GLN:');
   });

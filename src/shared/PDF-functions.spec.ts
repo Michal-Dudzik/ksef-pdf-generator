@@ -32,6 +32,7 @@ describe('formatText', () => {
     } else {
       process.env.KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR = currencyThousandsSeparatorEnv;
     }
+
   });
 
   it('returns empty string for null or undefined value', () => {
@@ -159,6 +160,7 @@ describe('formatText', () => {
       })
     );
   });
+
 });
 
 describe('hasValue', () => {
@@ -210,6 +212,7 @@ describe('createLabelText', () => {
       typeof result2[0] === 'object' && 'text' in result2[0] && (result2[0] as any).text.length === 2
     ).toBe(true);
   });
+
 });
 
 describe('generateQRCode', () => {
@@ -231,7 +234,7 @@ describe('generateQRCode', () => {
 });
 
 describe('getKraj', () => {
-  it('returns country name if code exists, else returns input code', () => {
+  it('returns country name translation if code exists, else returns input code', () => {
     expect(getKraj('PL')).toBe('Polska');
     expect(getKraj('XYZ')).toBe('XYZ');
   });

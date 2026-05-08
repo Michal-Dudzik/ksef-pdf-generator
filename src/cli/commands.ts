@@ -53,6 +53,7 @@ Environment Variables:
   KSEF_LOG_FILE       Path to log file for detailed logging
   KSEF_PERSISTENT_LOG Set to 0 to disable persistent session logging (enabled by default)
   KSEF_LOG_DIR        Custom directory for persistent logs (default: ~/.ksef-pdf-generator/logs)
+  KSEF_LANGUAGE       UI language for generated PDFs: "pl" or "en"
 
 Logging:
   The application automatically logs all operations to a persistent log file:

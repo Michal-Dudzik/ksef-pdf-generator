@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
+import i18n from 'i18next';
 
 import {
   FA1RolaPodmiotu3,
@@ -9,9 +10,10 @@ import {
   TRolaPodmiotuUpowaznionegoFA1,
   TRolaPodmiotuUpowaznionegoFA2,
   TRolaPodmiotuUpowaznionegoFA3,
+  TypLadunku,
   TypRachunkowWlasnych,
 } from '../../consts/FA.const';
-import { TypLadunku } from '../../consts/const';
+import { initI18next } from '../../../lib-public/i18n/i18n-init';
 import {
   formatDateTime,
   formatDateTimePl,
@@ -19,6 +21,10 @@ import {
   getDateTimeWithoutSeconds,
   translateMap,
 } from './functions';
+
+beforeAll(async () => {
+  await initI18next();
+});
 
 describe('translateMap', () => {
   it('returns empty string if value is undefined or empty', () => {
@@ -29,70 +35,76 @@ describe('translateMap', () => {
 
   it('translates FA=1 role values', () => {
     const key = Object.keys(FA1RolaPodmiotu3)[0];
-    const expected = FA1RolaPodmiotu3[key as keyof typeof FA1RolaPodmiotu3];
+    const expectedKey = FA1RolaPodmiotu3[key as keyof typeof FA1RolaPodmiotu3];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, FA1RolaPodmiotu3)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FA1RolaPodmiotu3)).toBe(expectedTranslation);
   });
 
   it('translates FA=2 role values', () => {
     const key = Object.keys(FA2RolaPodmiotu3)[0];
-    const expected = FA2RolaPodmiotu3[key as keyof typeof FA2RolaPodmiotu3];
+    const expectedKey = FA2RolaPodmiotu3[key as keyof typeof FA2RolaPodmiotu3];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, FA2RolaPodmiotu3)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FA2RolaPodmiotu3)).toBe(expectedTranslation);
   });
 
   it('translates FA=3 role values', () => {
     const key = Object.keys(FA3RolaPodmiotu3)[0];
-    const expected = FA3RolaPodmiotu3[key as keyof typeof FA3RolaPodmiotu3];
+    const expectedKey = FA3RolaPodmiotu3[key as keyof typeof FA3RolaPodmiotu3];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, FA3RolaPodmiotu3)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FA3RolaPodmiotu3)).toBe(expectedTranslation);
   });
 
   it('translates authorized-role values for FA=1', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA1)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA1[key];
+    const expected = i18n.t(TRolaPodmiotuUpowaznionegoFA1[key]);
 
     expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA1)).toBe(expected);
   });
 
   it('translates authorized-role values for FA=2', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA2)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA2[key];
+    const expected = i18n.t(TRolaPodmiotuUpowaznionegoFA2[key]);
 
     expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA2)).toBe(expected);
   });
 
   it('translates authorized-role values for FA=3', () => {
     const key = Object.keys(TRolaPodmiotuUpowaznionegoFA3)[0];
-    const expected = TRolaPodmiotuUpowaznionegoFA3[key];
+    const expected = i18n.t(TRolaPodmiotuUpowaznionegoFA3[key]);
 
     expect(translateMap({ _text: key } as any, TRolaPodmiotuUpowaznionegoFA3)).toBe(expected);
   });
 
   it('translates payment-form values', () => {
     const key = Object.keys(FormaPlatnosci)[0];
-    const expected = FormaPlatnosci[key as keyof typeof FormaPlatnosci];
+    const expectedKey = FormaPlatnosci[key as keyof typeof FormaPlatnosci];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, FormaPlatnosci)).toBe(expected);
+    expect(translateMap({ _text: key } as any, FormaPlatnosci)).toBe(expectedTranslation);
   });
 
   it('translates transport-type values', () => {
     const key = Object.keys(RodzajTransportu)[0];
-    const expected = RodzajTransportu[key as keyof typeof RodzajTransportu];
+    const expectedKey = RodzajTransportu[key as keyof typeof RodzajTransportu];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, RodzajTransportu)).toBe(expected);
+    expect(translateMap({ _text: key } as any, RodzajTransportu)).toBe(expectedTranslation);
   });
 
   it('translates own-account-type values', () => {
     const key = Object.keys(TypRachunkowWlasnych)[0];
-    const expected = TypRachunkowWlasnych[key as keyof typeof TypRachunkowWlasnych];
+    const expectedKey = TypRachunkowWlasnych[key as keyof typeof TypRachunkowWlasnych];
+    const expectedTranslation = i18n.t(expectedKey);
 
-    expect(translateMap({ _text: key } as any, TypRachunkowWlasnych)).toBe(expected);
+    expect(translateMap({ _text: key } as any, TypRachunkowWlasnych)).toBe(expectedTranslation);
   });
 
   it('translates cargo-type values', () => {
     const key = Object.keys(TypLadunku)[0];
-    const expected = TypLadunku[key as keyof typeof TypLadunku];
+    const expected = i18n.t(TypLadunku[key as keyof typeof TypLadunku]);
 
     expect(translateMap({ _text: key } as any, TypLadunku)).toBe(expected);
   });

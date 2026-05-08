@@ -38,7 +38,7 @@ describe('generateDaneIdentyfikacyjne', () => {
     expect(result).toEqual(expect.arrayContaining([{ text: 'LABEL:Pełna nazwa: INSTRUMENTS INC.' }]));
   });
 
-  it('adds Nazwa handlowa when surname is present', () => {
+  it('adds Nazwa handlowa when trade name is present', () => {
     const dane: DaneIdentyfikacyjneTPodmiot2Dto = {
       NIP: { _text: '43210' },
       Nazwisko: { _text: 'Smith' },
@@ -47,6 +47,16 @@ describe('generateDaneIdentyfikacyjne', () => {
     const result = generateDaneIdentyfikacyjne(dane);
 
     expect(result).toEqual(expect.arrayContaining([{ text: 'LABEL:Nazwa handlowa: Smithy PLC' }]));
+  });
+
+  it('skips Nazwa handlowa when surname is present but trade name is missing', () => {
+    const dane: DaneIdentyfikacyjneTPodmiot2Dto = {
+      NIP: { _text: '43210' },
+      Nazwisko: { _text: 'Smith' },
+    };
+    const result = generateDaneIdentyfikacyjne(dane);
+
+    expect(result).not.toEqual(expect.arrayContaining([{ text: expect.stringContaining('LABEL:Nazwa handlowa:') }]));
   });
 
   it('returns array including only expected fields', () => {

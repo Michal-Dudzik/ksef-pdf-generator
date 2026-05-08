@@ -24,7 +24,10 @@ vi.mock('./Przewoznik', () => ({
 
 vi.mock('../../../shared/generators/common/functions', () => ({
   getDateTimeWithoutSeconds: vi.fn(),
-  translateMap: vi.fn((value: any) => (value?._text === 'Goods' ? 'Opis' : 'Road')),
+  translateMap: vi.fn((value: any, map?: Record<string, string>) => {
+    const code = value?._text ?? value;
+    return map === Kraj ? Kraj[code] ?? '' : code === 'Goods' ? 'Opis' : 'Road';
+  }),
 }));
 
 describe(generateTransport.name, () => {
@@ -70,9 +73,10 @@ describe(generateTransport.name, () => {
     vi.mocked(PDFFunctions.hasValue).mockReturnValue(true);
     vi.mocked(PrzewoznikModule.generatePrzewoznik).mockReturnValue('przewoznik' as any);
     vi.mocked(CommonFunctions.getDateTimeWithoutSeconds).mockReturnValue('2024-01-01 10:00');
-    vi.mocked(CommonFunctions.translateMap).mockImplementation((value: any) =>
-      value?._text === 'Goods' ? 'Opis' : 'Road'
-    );
+    vi.mocked(CommonFunctions.translateMap).mockImplementation((value: any, map?: Record<string, string>) => {
+      const code = value?._text ?? value;
+      return map === Kraj ? Kraj[code] ?? '' : code === 'Goods' ? 'Opis' : 'Road';
+    });
   });
 
   it('should call createHeader with "Transport"', () => {
@@ -333,7 +337,7 @@ describe(generateTransport.name, () => {
 
       generateTransport(data);
 
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(Kraj[''], FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith('', FormatTyp.Default);
     });
   });
 

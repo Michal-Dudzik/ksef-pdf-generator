@@ -5,6 +5,8 @@ import { log } from './logger';
 const CONFIG_FILE_NAME = 'parameters.ini';
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
 const CURRENCY_THOUSANDS_SEPARATOR_ENV = 'KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR';
+const LANGUAGE_ENV = 'KSEF_LANGUAGE';
+const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
 
 type AppConfig = {
   numberFormat?: {
@@ -12,6 +14,9 @@ type AppConfig = {
   };
   currencyFormat?: {
     thousandsSeparator?: boolean;
+  };
+  i18n?: {
+    language?: (typeof SUPPORTED_LANGUAGES)[number];
   };
 };
 
@@ -121,6 +126,28 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         'error'
       );
     }
+
+    if (section === 'i18n' && key === 'language') {
+      if (!value) {
+        log(
+          `Invalid "i18n.language" in ${filePath}:${lineNumber}. Expected one of: ${SUPPORTED_LANGUAGES.join(', ')}. Using default behavior.`,
+          'error'
+        );
+        continue;
+      }
+
+      const normalizedLanguage = value.toLowerCase();
+
+      if (SUPPORTED_LANGUAGES.includes(normalizedLanguage as (typeof SUPPORTED_LANGUAGES)[number])) {
+        result.i18n = { language: normalizedLanguage as (typeof SUPPORTED_LANGUAGES)[number] };
+        continue;
+      }
+
+      log(
+        `Invalid "i18n.language" in ${filePath}:${lineNumber}. Expected one of: ${SUPPORTED_LANGUAGES.join(', ')}. Using default behavior.`,
+        'error'
+      );
+    }
   }
 
   return result;
@@ -165,6 +192,17 @@ function applyCurrencyFormatConfig(config: AppConfig, filePath: string): void {
   );
 }
 
+function applyI18nConfig(config: AppConfig, filePath: string): void {
+  const language = config.i18n?.language;
+
+  if (!language) {
+    return;
+  }
+
+  process.env[LANGUAGE_ENV] = language;
+  log(`Config loaded from ${filePath}: i18n.language=${language}`, 'info');
+}
+
 export function applyConfigFromFile(): void {
   const configPath = getConfigSearchPaths().find((p: string): boolean => fs.existsSync(p));
 
@@ -180,4 +218,5 @@ export function applyConfigFromFile(): void {
 
   applyNumberFormatConfig(config, configPath);
   applyCurrencyFormatConfig(config, configPath);
+  applyI18nConfig(config, configPath);
 }
