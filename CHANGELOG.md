@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-05-08
+
+### Added
+
+- internationalization logic with Polish and English translations (changes from the update 1.1.9 from upstream repository)
+
+### Fixed
+
+- Synced selected upstream `1.1.11` changes from commit `153a7535d6c5d502f9ab83d108fc60555e389484`
+- Fixed `P_6` label detection in `FA1`, `FA2`, and `FA3` details generators to resolve invoice type from object values via `getValue(...)`
+- Updated `P_6` label tests in `FA1`, `FA2`, and `FA3` to mock `getValue(...)` for object-backed values (`{ _text: ... }`)
+- Switched UPO context NIP label lookup from `invoice.subjectIdentificationData.nip` to `invoice.upo.nip` in `UPO4_2` and `UPO4_3`
+- Added missing `invoice.upo.nip` translation key to both Polish and English language files
+
 ## [1.0.1] - 2026-04-14
 
 ### Changed

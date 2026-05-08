@@ -897,7 +897,8 @@
       "upoPage": "UPO document page: ",
       "upoPageTotal": "Total number of pages of the UPO document: ",
       "vendorNIP": "Seller NIP",
-      "xsdFileLogicName": "XSD schema file name:"
+      "xsdFileLogicName": "XSD schema file name:",
+      "nip": "NIP"
     },
     "wz": {
       "documentsHeader": "WZ warehouse document numbers",
