@@ -22,6 +22,7 @@ function collectLeafPaths(value: unknown, basePath = ''): string[] {
 
 describe('initI18next', () => {
   const originalLanguageEnv = process.env.KSEF_LANGUAGE;
+  const englishVatHeader = (en as any).invoice.header.vat;
 
   afterEach(async () => {
     vi.restoreAllMocks();
@@ -94,7 +95,7 @@ describe('initI18next', () => {
     await initI18next('en');
 
     expect(i18next.language).toBe('en');
-    expect(i18next.t('invoice.header.vat')).toBe('ExampleText');
+    expect(i18next.t('invoice.header.vat')).toBe(englishVatHeader);
   });
 
   it('uses KSEF_LANGUAGE when no explicit language is provided', async () => {
@@ -103,7 +104,7 @@ describe('initI18next', () => {
     await initI18next();
 
     expect(i18next.language).toBe('en');
-    expect(i18next.t('invoice.header.vat')).toBe('ExampleText');
+    expect(i18next.t('invoice.header.vat')).toBe(englishVatHeader);
   });
 
   it('normalizes explicit language value', async () => {
@@ -118,7 +119,7 @@ describe('initI18next', () => {
     await initI18next('de');
 
     expect(i18next.language).toBe('en');
-    expect(i18next.t('invoice.header.vat')).toBe('ExampleText');
+    expect(i18next.t('invoice.header.vat')).toBe(englishVatHeader);
   });
 
   it('keeps translation key structure in sync between pl and en', async () => {
