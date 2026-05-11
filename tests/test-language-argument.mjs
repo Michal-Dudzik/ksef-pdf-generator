@@ -9,7 +9,7 @@ const TEST_NAME = 'Language Argument';
 const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-language-argument.pdf';
 const CONFIG_FILE = 'tests/test-language-argument.ini';
-const ENGLISH_MARKER = 'ExampleText';
+const ENGLISH_MARKER = 'Basic invoice';
 const POLISH_MARKER = 'Faktura podstawowa';
 const UTF16_BE_DECODER = new TextDecoder('utf-16be');
 

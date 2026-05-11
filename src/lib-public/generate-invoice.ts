@@ -9,6 +9,9 @@ import { TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { AdditionalDataTypes } from './types/common.types';
 import { generateFARR } from './FARR-generator';
 import { FaRR } from './types/FaRR.types';
+import { initI18next } from './i18n/i18n-init';
+
+const i18nInitPromise = initI18next();
 
 export async function generateInvoice(
   file: File,
@@ -25,6 +28,13 @@ export async function generateInvoice(
   additionalData: AdditionalDataTypes,
   formatType: FormatType = 'blob'
 ): Promise<FormatTypeResult> {
+  try {
+    await i18nInitPromise;
+  } catch (err) {
+    throw new Error(
+      `i18n initialization failed for invoice generation: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
   const xml: unknown = await parseXML(file);
   const wersja: any = (xml as any)?.Faktura?.Naglowek?.KodFormularza?._attributes?.kodSystemowy;
 
