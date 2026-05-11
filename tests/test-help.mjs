@@ -15,11 +15,16 @@ if (!exists) {
 console.log(`Using ${type} mode: ${command}`);
 
 try {
-  execSync(`${command} --help`, { stdio: 'pipe' });
+  const output = execSync(`${command} --help`, { stdio: 'pipe' }).toString();
+
+  if (!output.includes('--language')) {
+    console.log(`FAIL: ${TEST_NAME} - Help output does not mention --language`);
+    process.exit(1);
+  }
+
   console.log(`PASS: ${TEST_NAME}`);
   process.exit(0);
 } catch (error) {
   console.log(`FAIL: ${TEST_NAME} - Exit code: ${error.status}`);
   process.exit(1);
 }
-

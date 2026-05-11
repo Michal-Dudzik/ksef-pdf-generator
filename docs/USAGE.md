@@ -51,6 +51,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice
 
 ### Invoice-only options
 
+- `--language`: generated PDF label language, either `pl` or `en`
 - `--nrKSeF`: KSeF number, or `OFFLINE` for offline invoices
 - `--watermark`, `--watermark-text`: watermark text
 - `--watermark-color`: watermark color such as `#cc0000` or `gray`
@@ -79,6 +80,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice
 
 ```batch
 bin\ksef-pdf-generator.exe -i invoice.xml -o invoice.pdf -t invoice ^
+  --language en ^
   --nrKSeF "5265877635-20250808-9231003CA67B-BE" ^
   --qrCode1 "https://ksef-test.mf.gov.pl/client-app/invoice/..."
 ```
@@ -167,7 +169,17 @@ Behavior:
 - supported languages are `pl` and `en`
 - missing or invalid language falls back to `pl`
 
-You can also override the language with an environment variable:
+You can also override the language with the CLI argument:
+
+```batch
+bin\ksef-pdf-generator.exe -i assets\invoice.xml -o invoice.pdf -t invoice --language en
+```
+
+```bash
+node dist/cli.cjs --input assets/invoice.xml --output invoice.pdf --type invoice --language en
+```
+
+Or with an environment variable:
 
 ```batch
 set KSEF_LANGUAGE=en
@@ -176,6 +188,8 @@ set KSEF_LANGUAGE=en
 ```bash
 export KSEF_LANGUAGE=en
 ```
+
+Precedence is: CLI argument, then `parameters.ini`, then `KSEF_LANGUAGE`, then the default `pl`.
 
 ## Logging
 
@@ -207,9 +221,17 @@ import { promisify } from "util";
 
 const execPromise = promisify(exec);
 
+const ALLOWED_LANGUAGES = ["pl", "en"];
+
 async function generatePDF(inputPath, outputPath, type, options = {}) {
   let command = `./bin/ksef-pdf-generator.exe --input "${inputPath}" --output "${outputPath}" --type ${type}`;
 
+  if (options.language) {
+    if (!ALLOWED_LANGUAGES.includes(options.language)) {
+      throw new Error(`Invalid language: must be one of: ${ALLOWED_LANGUAGES.join(", ")}`);
+    }
+    command += ` --language "${options.language}"`;
+  }
   if (options.nrKSeF) {
     command += ` --nrKSeF "${options.nrKSeF}"`;
   }
@@ -234,6 +256,7 @@ async function generatePDF(inputPath, outputPath, type, options = {}) {
 }
 
 await generatePDF("assets/invoice.xml", "output/invoice.pdf", "invoice", {
+  language: "en",
   nrKSeF: "5265877635-20250808-9231003CA67B-BE",
   qrCode1: "https://ksef-test.mf.gov.pl/...",
   currencyThousandsSeparator: true,
@@ -259,12 +282,23 @@ public class KSefPdfGenerator
         string inputPath,
         string outputPath,
         string type,
+        string? language = null,
         string? nrKSeF = null,
         string? qrCode1 = null,
         bool currencyThousandsSeparator = false,
         bool simplifiedMode = false)
     {
         var arguments = $"--input \"{inputPath}\" --output \"{outputPath}\" --type {type}";
+
+        var validLanguages = new[] { "pl", "en" };
+        if (!string.IsNullOrEmpty(language))
+        {
+            if (!validLanguages.Contains(language))
+            {
+                throw new ArgumentException($"Invalid language: {language}. Must be 'pl' or 'en'.", nameof(language));
+            }
+            arguments += $" --language \"{language}\"";
+        }
 
         if (!string.IsNullOrEmpty(nrKSeF))
         {

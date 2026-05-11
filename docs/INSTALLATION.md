@@ -104,7 +104,7 @@ bin\ksef-pdf-generator.exe -i assets\upo.xml -o test_upo.pdf -t upo
 
 ### Optional language selection
 
-The generated PDF language can be controlled in `parameters.ini` or with the `KSEF_LANGUAGE` environment variable.
+The generated PDF language can be controlled with the `--language` CLI argument, in `parameters.ini`, or with the `KSEF_LANGUAGE` environment variable.
 
 Example `parameters.ini`:
 
@@ -119,6 +119,18 @@ Supported values:
 - `en`
 
 If the value is missing or invalid, the default is `pl`.
+
+Examples:
+
+```batch
+bin\ksef-pdf-generator.exe -i assets\invoice.xml -o test_invoice.pdf -t invoice --language en
+```
+
+```bash
+node dist/cli.cjs --input assets/invoice.xml --output test_invoice.pdf --type invoice --language en
+```
+
+Precedence is: CLI argument, then `parameters.ini`, then `KSEF_LANGUAGE`, then the default `pl`.
 
 For a broader Node.js smoke test:
 

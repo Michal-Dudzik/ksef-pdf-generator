@@ -1,6 +1,8 @@
 import type { CliOptions } from './types';
 import { printHelp, printVersion } from './commands';
 
+export const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
+
 export async function parseArguments(): Promise<CliOptions | null> {
   const args = process.argv.slice(2);
   const options: Partial<CliOptions> = {};
@@ -37,6 +39,22 @@ export async function parseArguments(): Promise<CliOptions | null> {
         options.type = nextArg as 'invoice' | 'upo';
         i++;
         break;
+      case '--language': {
+        if (!nextArg) {
+          console.error('Error: --language requires a value');
+          return null;
+        }
+
+        const normalizedLanguage = nextArg.toLowerCase();
+        if (!(SUPPORTED_LANGUAGES as readonly string[]).includes(normalizedLanguage)) {
+          console.error(`Error: --language must be one of: ${SUPPORTED_LANGUAGES.join(', ')}`);
+          return null;
+        }
+
+        options.language = normalizedLanguage as CliOptions['language'];
+        i++;
+        break;
+      }
       case '--nrKSeF':
         if (!nextArg) {
           console.error('Error: --nrKSeF requires a value');

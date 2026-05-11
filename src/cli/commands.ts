@@ -27,6 +27,7 @@ Required Arguments:
   --type, -t     Type of document: "invoice" or "upo"
 
 Optional Arguments (for invoice type):
+  --language     UI language for generated PDFs: "pl" or "en" (overrides KSEF_LANGUAGE)
   --nrKSeF       KSeF number for the invoice (use "OFFLINE" for offline invoices)
   --watermark, --watermark-text
                  Watermark text rendered diagonally on each invoice page (e.g. "DRAFT")
@@ -69,6 +70,7 @@ Examples:
 
   # Generate invoice PDF with KSeF data (online)
   ksef-pdf-generator --input invoice.xml --output invoice.pdf --type invoice \\
+    --language "en" \\
     --nrKSeF "5265877635-20250808-9231003CA67B-BE" \\
     --qrCode1 "https://ksef-te.mf.gov.pl/client-app/invoice/5265877635/..."
 

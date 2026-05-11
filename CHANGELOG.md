@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2026-05-11
+
+### Added
+
+- Added support for language selection to the CLI
+
 ## [1.1.2] - 2026-05-08
 
 ### Fixed

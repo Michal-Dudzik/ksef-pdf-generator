@@ -3,7 +3,7 @@ import * as path from 'path';
 import { PDFDocument } from 'pdf-lib';
 import type { Watermark } from 'pdfmake/interfaces';
 import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
-import { parseArguments } from './args';
+import { parseArguments, SUPPORTED_LANGUAGES } from './args';
 import { initializeApp } from './init';
 import { applyConfigFromFile } from './config';
 
@@ -25,6 +25,19 @@ export async function main(): Promise<void> {
 
   if (!options) {
     process.exit(1);
+  }
+
+  if (options.language) {
+    if ((SUPPORTED_LANGUAGES as readonly string[]).includes(options.language)) {
+      process.env.KSEF_LANGUAGE = options.language;
+    } else {
+      const existing = process.env.KSEF_LANGUAGE;
+      const keepNote = existing ? ` Keeping existing KSEF_LANGUAGE="${existing}".` : '';
+      const msg = `Invalid language "${options.language}". Supported: ${SUPPORTED_LANGUAGES.join(', ')}.${keepNote}`;
+      logError(msg);
+      console.error(`Error: ${msg}`);
+      process.exit(1);
+    }
   }
 
   // Initialize the application (setup jsdom, load generator module)

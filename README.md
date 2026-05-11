@@ -15,6 +15,8 @@ This project's versioning is separate from `CIRFMF/ksef-pdf-generator`. It is ke
 - Add KSeF metadata, QR codes, text watermarks, simplified invoice output, and optional PDF merge.
 - Control language and number formatting with CLI flags, environment variables, or an optional `parameters.ini` file.
 
+CLI flags take precedence over `parameters.ini` and environment variables.
+
 ## Documentation
 
 - [Installation and setup](docs/INSTALLATION.md)

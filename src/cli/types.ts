@@ -2,6 +2,7 @@ export interface CliOptions {
   input: string;
   output: string;
   type: 'invoice' | 'upo';
+  language?: 'pl' | 'en';
   nrKSeF?: string;
   watermark?: string;
   watermarkColor?: string;
