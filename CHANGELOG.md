@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-05-12
+
+### Added
+
+- PDF file metadata is now embedded in every generated invoice PDF:
+  - **Title** — set to `Faktura {RodzajFaktury} {NrKSeF}`, e.g. `Faktura VAT 20260101-SE-1234567890-ABC`
+  - **Author** — set to the seller's full name or company name from Podmiot1 (for FA_RR: the issuing VAT taxpayer from Podmiot1)
+  - **Keywords** — a comma-separated list of all unique tax and entity identifiers found in the XML (NIP, NrVatUE, NrID, IDWewn/IDWew, PESEL, NrEORI) across all parties: Podmiot1, Podmiot2, Podmiot3, and PodmiotUpoważniony
+  - **Creator / Producer** — changed from `pdfmake` to `ksef-pdf-generator/{version}`, enabling unambiguous identification of the generating application and its version in PDF viewers and diagnostic reports
+
 ## [1.1.3] - 2026-05-11
 
 ### Added

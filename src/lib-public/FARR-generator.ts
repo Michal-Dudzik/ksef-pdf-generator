@@ -16,6 +16,7 @@ import { generateStopka } from './generators/common/Stopka';
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
 import { generateWatermark } from '../shared/consts/watermark';
+import { generatePdfInfo } from '../shared/pdf-metadata';
 import i18n from 'i18next';
 
 pdfMake.vfs = pdfFonts;
@@ -30,8 +31,20 @@ export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes)
     }
     const fakturaRR = invoice.FakturaRR;
 
+    const sellerName = invoice.Podmiot1?.DaneIdentyfikacyjne?.Nazwa?._text;
+
+    const taxIds: string[] = [
+      invoice.Podmiot1?.DaneIdentyfikacyjne?.NIP?._text,
+      invoice.Podmiot2?.DaneIdentyfikacyjne?.NIP?._text,
+      ...(invoice.Podmiot3 ?? []).flatMap(p => [
+        p.DaneIdentyfikacyjne?.NIP?._text,
+        p.DaneIdentyfikacyjne?.IDWew?._text,
+      ]),
+    ].filter((id): id is string => !!id);
+
     const docDefinition: TDocumentDefinitions = {
       ...generateWatermark(additionalData?.watermark),
+      info: generatePdfInfo(fakturaRR.RodzajFaktury?._text, additionalData.nrKSeF, sellerName, taxIds),
       content: [
         ...generateNaglowek(fakturaRR, additionalData),
         generateDaneFaKorygowanej(fakturaRR),

@@ -97,4 +97,72 @@ describe('generateFA3', (): void => {
     expect(createPdfSpy).toHaveBeenCalled();
     expect(result).toBe(mockCreatePdfReturn);
   });
+
+  describe('PDF metadata (info field)', () => {
+    it('passes title, author and keywords derived from invoice data', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: {
+            Nazwa: { _text: 'Sprzedawca FA3 Sp. k.' },
+            NIP: { _text: '3333344444' },
+          },
+        },
+        Podmiot2: {
+          DaneIdentyfikacyjne: {
+            NrVatUE: { _text: 'DE123456789' },
+          } as any,
+        },
+        Fa: { RodzajFaktury: { _text: 'ZAL' } },
+        Zalacznik: {},
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const additionalData: AdditionalDataTypes = { nrKSeF: 'ZAL-NR-FA3' };
+      const createPdfSpy: MockInstance = vi
+        .spyOn(pdfMake, 'createPdf')
+        .mockReturnValue(mockCreatePdfReturn as any);
+
+      generateFA3(invoice, additionalData);
+
+      expect(createPdfSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          info: expect.objectContaining({
+            title: 'Faktura ZAL ZAL-NR-FA3',
+            author: 'Sprzedawca FA3 Sp. k.',
+            keywords: expect.stringContaining('3333344444'),
+            creator: expect.stringMatching(/^ksef-pdf-generator\//),
+            producer: expect.stringMatching(/^ksef-pdf-generator\//),
+          }),
+        })
+      );
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.keywords).toContain('DE123456789');
+    });
+
+    it('collects identifiers from all Podmiot3 entries', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: { Nazwa: { _text: 'Firma' }, NIP: { _text: '1000000001' } },
+        },
+        Podmiot3: [
+          { DaneIdentyfikacyjne: { NIP: { _text: '2000000002' } } as any },
+          { DaneIdentyfikacyjne: { NrID: { _text: 'US987654321' } } as any },
+        ],
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Zalacznik: {},
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy: MockInstance = vi
+        .spyOn(pdfMake, 'createPdf')
+        .mockReturnValue(mockCreatePdfReturn as any);
+      generateFA3(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.keywords).toContain('2000000002');
+      expect(info?.keywords).toContain('US987654321');
+    });
+  });
 });

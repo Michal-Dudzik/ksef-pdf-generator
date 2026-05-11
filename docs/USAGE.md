@@ -14,6 +14,7 @@ This guide covers the main features, CLI options, common commands, configuration
 - simplified invoice output
 - appending simplified output to an existing PDF
 - configurable language, decimal formatting, and currency formatting
+- embedded PDF file metadata (title, author, keywords, application identity) for archiving and diagnostics
 
 ## Quick Start
 
@@ -136,6 +137,57 @@ bin\ksef-pdf-generator.exe -i invoice.xml -o invoice-merged.pdf -t invoice ^
 - `--watermark` and `--watermark-text` are equivalent.
 - If you pass watermark style options, you must also pass watermark text.
 - Watermark styling is rendered through `pdfmake`, so it appears on every page.
+
+## PDF File Metadata
+
+Every generated invoice PDF (FA1, FA2, FA3, FA_RR) automatically contains the following metadata fields, readable in any PDF viewer under the file properties dialog or via command-line tools:
+
+| Field | Value | Source |
+|---|---|---|
+| **Title** | `Faktura {RodzajFaktury} {NrKSeF}` | `Fa.RodzajFaktury` + `--nrKSeF` argument |
+| **Author** | Seller's full name or company name | `Podmiot1.DaneIdentyfikacyjne` (FA_RR: issuing VAT taxpayer) |
+| **Keywords** | Comma-separated list of all tax/entity identifiers in the XML | NIP, NrVatUE, NrID, IDWewn, PESEL, NrEORI from all parties |
+| **Creator / Producer** | `ksef-pdf-generator/{version}` | Always reflects the version that generated the file |
+
+### Title examples
+
+| Invoice type | Title |
+|---|---|
+| Standard VAT invoice | `Faktura VAT 20260101-SE-1234567890-ABC` |
+| Correction invoice | `Faktura KOR 20260101-SE-1234567890-ABC` |
+| Advance invoice | `Faktura ZAL 20260101-SE-1234567890-ABC` |
+| Agricultural flat-rate invoice | `Faktura RR 20260101-SE-1234567890-ABC` |
+| Offline invoice (no KSeF number) | `Faktura VAT` |
+
+### Keywords field
+
+The keywords field contains all unique tax and entity identifiers found anywhere in the invoice XML, drawn from all parties:
+
+- **Podmiot1** (seller / issuing taxpayer): NIP, NrEORI
+- **Podmiot2** (buyer): NIP, NrVatUE, NrID, IDWewn, PESEL, NrEORI
+- **Podmiot3** (third parties): all identifier fields present
+- **PodmiotUpoważniony** (authorized entity): NIP, NrEORI
+
+Identifiers are deduplicated and joined with `, `. Non-identifier fields (company names, `BrakID` flags) are excluded.
+
+Example value: `1234567890, PL9876543210, DE123456789`
+
+### Creator / Producer field
+
+The **Creator** and **Producer** PDF metadata fields are both set to `ksef-pdf-generator/{version}`, where `{version}` is the version number from `package.json`. This replaces the previous default value of `pdfmake`.
+
+This is useful for:
+- identifying which tool and version produced a given PDF when filing bug reports
+- filtering PDFs by origin in document management or archiving systems
+
+### Practical use for PDF archiving
+
+PDF viewers (Adobe Acrobat, Windows Explorer, macOS Finder, Sumatra PDF) expose these metadata fields in the file properties dialog. Operating system search and indexing tools (Windows Search, macOS Spotlight) can search PDF metadata, making it possible to locate invoices by:
+
+- seller name (Author field)
+- KSeF reference number (Title field)
+- NIP or other tax identifier (Keywords field)
+- generating tool version (Creator field)
 
 ## Optional Configuration File
 

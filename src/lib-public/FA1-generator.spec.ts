@@ -91,4 +91,145 @@ describe('generateFA1', () => {
     expect(createPdfSpy).toHaveBeenCalled();
     expect(result).toBe(mockCreatePdfReturn);
   });
+
+  describe('PDF metadata (info field)', () => {
+    it('passes title, author and keywords derived from invoice data', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: {
+            PelnaNazwa: { _text: 'Sprzedawca Sp. z o.o.' },
+            NIP: { _text: '1234567890' },
+          },
+        },
+        Podmiot2: {
+          DaneIdentyfikacyjne: {
+            NIP: { _text: '0987654321' },
+          } as any,
+        },
+        Fa: {
+          RodzajFaktury: { _text: 'VAT' },
+        },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const additionalData: AdditionalDataTypes = { nrKSeF: 'TEST-NR-KSEF' };
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+
+      generateFA1(invoice, additionalData);
+
+      expect(createPdfSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          info: expect.objectContaining({
+            title: 'Faktura VAT TEST-NR-KSEF',
+            author: 'Sprzedawca Sp. z o.o.',
+            keywords: expect.stringContaining('1234567890'),
+            creator: expect.stringMatching(/^ksef-pdf-generator\//),
+            producer: expect.stringMatching(/^ksef-pdf-generator\//),
+          }),
+        })
+      );
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.keywords).toContain('0987654321');
+    });
+
+    it('uses NazwaHandlowa as author when PelnaNazwa is absent', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: {
+            NazwaHandlowa: { _text: 'HandelBrand' },
+            NIP: { _text: '1111111111' },
+          },
+        },
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+      generateFA1(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.author).toBe('HandelBrand');
+    });
+
+    it('concatenates ImiePierwsze and Nazwisko as author when no company name is present', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: {
+            ImiePierwsze: { _text: 'Jan' },
+            Nazwisko: { _text: 'Kowalski' },
+            NIP: { _text: '2222222222' },
+          },
+        },
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+      generateFA1(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.author).toBe('Jan Kowalski');
+    });
+
+    it('collects NrEORI from Podmiot1 into keywords', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: { NIP: { _text: '3333333333' } },
+          NrEORI: { _text: 'PL333EORI' },
+        },
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+      generateFA1(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.keywords).toContain('PL333EORI');
+    });
+
+    it('deduplicates identical identifiers across Podmiot1 and Podmiot2', () => {
+      const sharedNIP = '5555555555';
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: { PelnaNazwa: { _text: 'Firma' }, NIP: { _text: sharedNIP } },
+        },
+        Podmiot2: {
+          DaneIdentyfikacyjne: { NIP: { _text: sharedNIP } } as any,
+        },
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+      generateFA1(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      const keywords = info?.keywords as string;
+      const occurrences = (keywords.match(new RegExp(sharedNIP, 'g')) ?? []).length;
+      expect(occurrences).toBe(1);
+    });
+
+    it('sets author to empty string when Podmiot1 has no name data', () => {
+      const invoice: Faktura = {
+        Podmiot1: {
+          DaneIdentyfikacyjne: { NIP: { _text: '4444444444' } },
+        },
+        Fa: { RodzajFaktury: { _text: 'VAT' } },
+        Stopka: {},
+        Naglowek: {},
+      } as any;
+
+      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
+      generateFA1(invoice, { nrKSeF: 'NR' });
+
+      const info = createPdfSpy.mock.calls[0][0].info;
+      expect(info?.author).toBe('');
+    });
+  });
 });
