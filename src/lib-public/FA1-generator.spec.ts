@@ -123,14 +123,12 @@ describe('generateFA1', () => {
           info: expect.objectContaining({
             title: 'Faktura VAT TEST-NR-KSEF',
             author: 'Sprzedawca Sp. z o.o.',
-            keywords: expect.stringContaining('1234567890'),
+            keywords: '',
             creator: expect.stringMatching(/^ksef-pdf-generator\//),
             producer: expect.stringMatching(/^ksef-pdf-generator\//),
           }),
         })
       );
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('0987654321');
     });
 
     it('uses NazwaHandlowa as author when PelnaNazwa is absent', () => {
@@ -172,47 +170,6 @@ describe('generateFA1', () => {
 
       const info = createPdfSpy.mock.calls[0][0].info;
       expect(info?.author).toBe('Jan Kowalski');
-    });
-
-    it('collects NrEORI from Podmiot1 into keywords', () => {
-      const invoice: Faktura = {
-        Podmiot1: {
-          DaneIdentyfikacyjne: { NIP: { _text: '3333333333' } },
-          NrEORI: { _text: 'PL333EORI' },
-        },
-        Fa: { RodzajFaktury: { _text: 'VAT' } },
-        Stopka: {},
-        Naglowek: {},
-      } as any;
-
-      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
-      generateFA1(invoice, { nrKSeF: 'NR' });
-
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('PL333EORI');
-    });
-
-    it('deduplicates identical identifiers across Podmiot1 and Podmiot2', () => {
-      const sharedNIP = '5555555555';
-      const invoice: Faktura = {
-        Podmiot1: {
-          DaneIdentyfikacyjne: { PelnaNazwa: { _text: 'Firma' }, NIP: { _text: sharedNIP } },
-        },
-        Podmiot2: {
-          DaneIdentyfikacyjne: { NIP: { _text: sharedNIP } } as any,
-        },
-        Fa: { RodzajFaktury: { _text: 'VAT' } },
-        Stopka: {},
-        Naglowek: {},
-      } as any;
-
-      const createPdfSpy = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
-      generateFA1(invoice, { nrKSeF: 'NR' });
-
-      const info = createPdfSpy.mock.calls[0][0].info;
-      const keywords = info?.keywords as string;
-      const occurrences = (keywords.match(new RegExp(sharedNIP, 'g')) ?? []).length;
-      expect(occurrences).toBe(1);
     });
 
     it('sets author to empty string when Podmiot1 has no name data', () => {

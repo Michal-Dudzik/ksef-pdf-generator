@@ -130,39 +130,12 @@ describe('generateFA3', (): void => {
           info: expect.objectContaining({
             title: 'Faktura ZAL ZAL-NR-FA3',
             author: 'Sprzedawca FA3 Sp. k.',
-            keywords: expect.stringContaining('3333344444'),
+            keywords: '',
             creator: expect.stringMatching(/^ksef-pdf-generator\//),
             producer: expect.stringMatching(/^ksef-pdf-generator\//),
           }),
         })
       );
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('DE123456789');
-    });
-
-    it('collects identifiers from all Podmiot3 entries', () => {
-      const invoice: Faktura = {
-        Podmiot1: {
-          DaneIdentyfikacyjne: { Nazwa: { _text: 'Firma' }, NIP: { _text: '1000000001' } },
-        },
-        Podmiot3: [
-          { DaneIdentyfikacyjne: { NIP: { _text: '2000000002' } } as any },
-          { DaneIdentyfikacyjne: { NrID: { _text: 'US987654321' } } as any },
-        ],
-        Fa: { RodzajFaktury: { _text: 'VAT' } },
-        Zalacznik: {},
-        Stopka: {},
-        Naglowek: {},
-      } as any;
-
-      const createPdfSpy: MockInstance = vi
-        .spyOn(pdfMake, 'createPdf')
-        .mockReturnValue(mockCreatePdfReturn as any);
-      generateFA3(invoice, { nrKSeF: 'NR' });
-
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('2000000002');
-      expect(info?.keywords).toContain('US987654321');
     });
   });
 });

@@ -12,6 +12,11 @@ import { FaRR } from './types/FaRR.types';
 import { initI18next } from './i18n/i18n-init';
 
 const i18nInitPromise = initI18next();
+i18nInitPromise.catch((err: unknown) => {
+  console.error(
+    `[ksef-pdf-generator] i18n initialization failed: ${err instanceof Error ? err.message : String(err)}`
+  );
+});
 
 export async function generateInvoice(
   file: File,

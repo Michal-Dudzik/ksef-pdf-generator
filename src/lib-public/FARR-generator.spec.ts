@@ -88,43 +88,12 @@ describe('generateFARR', () => {
           info: expect.objectContaining({
             title: 'Faktura RR RR-NR-KSEF',
             author: 'Nabywca VAT Sp. z o.o.',
-            keywords: expect.stringContaining('7777788888'),
+            keywords: '',
             creator: expect.stringMatching(/^ksef-pdf-generator\//),
             producer: expect.stringMatching(/^ksef-pdf-generator\//),
           }),
         })
       );
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('9999900000');
-    });
-
-    it('collects IDWew from Podmiot3 entries into keywords', () => {
-      const invoice: FaRR = {
-        Podmiot1: {
-          DaneIdentyfikacyjne: { Nazwa: { _text: 'Firma RR' }, NIP: { _text: '1234512345' } },
-        },
-        Podmiot3: [
-          {
-            DaneIdentyfikacyjne: {
-              NIP: { _text: '5678956789' },
-              IDWew: { _text: 'WEWN-RR-01' },
-            },
-          },
-        ],
-        FakturaRR: {
-          RodzajFaktury: { _text: 'RR' },
-          KodWaluty: { _text: 'PLN' },
-        },
-        Stopka: {},
-        Naglowek: {},
-      } as any;
-
-      const createPdfSpy: MockInstance = vi.spyOn(pdfMake, 'createPdf').mockReturnValue(mockCreatePdfReturn as any);
-      generateFARR(invoice, { nrKSeF: 'NR' });
-
-      const info = createPdfSpy.mock.calls[0][0].info;
-      expect(info?.keywords).toContain('5678956789');
-      expect(info?.keywords).toContain('WEWN-RR-01');
     });
 
     it('uses RR_KOR as rodzajFaktury in the title for correction RR invoices', () => {

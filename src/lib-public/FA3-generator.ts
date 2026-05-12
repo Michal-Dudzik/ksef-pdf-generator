@@ -24,7 +24,7 @@ import { getSimplifiedPageSize, SIMPLIFIED_PAGE_MARGINS } from './utils/simplifi
 import { Position } from '../shared/enums/common.enum';
 import { applyRuntimeFormattingConfig, resetRuntimeFormattingConfig } from '../shared/formatting-config';
 import { generateWatermark } from '../shared/consts/watermark';
-import { extractTaxIdsFromRecord, generatePdfInfo } from '../shared/pdf-metadata';
+import { generatePdfInfo } from '../shared/pdf-metadata';
 import i18n from 'i18next';
 
 pdfMake.vfs = pdfFonts;
@@ -66,23 +66,10 @@ export function generateFA3(invoice: Faktura, additionalData: AdditionalDataType
       ];
     const sellerName = invoice.Podmiot1?.DaneIdentyfikacyjne?.Nazwa?._text;
 
-    const taxIds: string[] = [
-      invoice.Podmiot1?.DaneIdentyfikacyjne?.NIP?._text,
-      invoice.Podmiot1?.NrEORI?._text,
-      ...extractTaxIdsFromRecord(invoice.Podmiot2?.DaneIdentyfikacyjne),
-      invoice.Podmiot2?.NrEORI?._text,
-      ...(invoice.Podmiot3 ?? []).flatMap(p => [
-        ...extractTaxIdsFromRecord(p.DaneIdentyfikacyjne),
-        p.NrEORI?._text,
-      ]),
-      invoice.PodmiotUpowazniony?.DaneIdentyfikacyjne?.NIP?._text,
-      invoice.PodmiotUpowazniony?.NrEORI?._text,
-    ].filter((id): id is string => !!id);
-
     const docDefinition: TDocumentDefinitions = {
       ...generateWatermark(additionalData?.watermark),
       content,
-      info: generatePdfInfo(invoice.Fa?.RodzajFaktury?._text, additionalData.nrKSeF, sellerName, taxIds),
+      info: generatePdfInfo(invoice.Fa?.RodzajFaktury?._text, additionalData.nrKSeF, sellerName),
       footer: (currentPage, pageCount) => {
         return {
           text: i18n.t('invoice.footer.pageOf', { current: currentPage, total: pageCount }),

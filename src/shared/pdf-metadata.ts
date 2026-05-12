@@ -34,16 +34,12 @@ export function extractTaxIdsFromRecord(
  * @param rodzajFaktury - Invoice type code from RodzajFaktury (e.g. VAT, KOR, ZAL, RR).
  * @param nrKSeF       - KSeF reference number from additionalData.
  * @param sellerName   - Full name or company name of the seller (Podmiot1).
- * @param taxIdentifiers - Deduplicated list of all tax/entity identifiers found in the XML.
  */
 export function generatePdfInfo(
   rodzajFaktury: string | undefined,
   nrKSeF: string | undefined,
-  sellerName: string | undefined,
-  taxIdentifiers: string[]
+  sellerName: string | undefined
 ): TDocumentInformation {
-  const uniqueIds = [...new Set(taxIdentifiers.filter(Boolean))];
-
   const titleParts: string[] = ['Faktura'];
   if (rodzajFaktury) titleParts.push(rodzajFaktury);
   if (nrKSeF) titleParts.push(nrKSeF);
@@ -51,7 +47,7 @@ export function generatePdfInfo(
   return {
     title: titleParts.join(' '),
     author: sellerName ?? '',
-    keywords: uniqueIds.join(', '),
+    keywords: '',
     creator: `ksef-pdf-generator/${packageJson.version}`,
     producer: `ksef-pdf-generator/${packageJson.version}`,
   };

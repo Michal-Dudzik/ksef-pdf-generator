@@ -33,18 +33,9 @@ export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes)
 
     const sellerName = invoice.Podmiot1?.DaneIdentyfikacyjne?.Nazwa?._text;
 
-    const taxIds: string[] = [
-      invoice.Podmiot1?.DaneIdentyfikacyjne?.NIP?._text,
-      invoice.Podmiot2?.DaneIdentyfikacyjne?.NIP?._text,
-      ...(invoice.Podmiot3 ?? []).flatMap(p => [
-        p.DaneIdentyfikacyjne?.NIP?._text,
-        p.DaneIdentyfikacyjne?.IDWew?._text,
-      ]),
-    ].filter((id): id is string => !!id);
-
     const docDefinition: TDocumentDefinitions = {
       ...generateWatermark(additionalData?.watermark),
-      info: generatePdfInfo(fakturaRR.RodzajFaktury?._text, additionalData.nrKSeF, sellerName, taxIds),
+      info: generatePdfInfo(fakturaRR.RodzajFaktury?._text, additionalData.nrKSeF, sellerName),
       content: [
         ...generateNaglowek(fakturaRR, additionalData),
         generateDaneFaKorygowanej(fakturaRR),

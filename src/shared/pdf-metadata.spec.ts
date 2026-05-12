@@ -106,28 +106,28 @@ describe('extractTaxIdsFromRecord', () => {
 describe('generatePdfInfo', () => {
   describe('title', () => {
     it('combines Faktura, rodzajFaktury and nrKSeF', () => {
-      const info = generatePdfInfo('VAT', '20260101-SE-ABC', 'Firma', []);
+      const info = generatePdfInfo('VAT', '20260101-SE-ABC', 'Firma');
       expect(info.title).toBe('Faktura VAT 20260101-SE-ABC');
     });
 
     it('omits nrKSeF when undefined', () => {
-      const info = generatePdfInfo('VAT', undefined, 'Firma', []);
+      const info = generatePdfInfo('VAT', undefined, 'Firma');
       expect(info.title).toBe('Faktura VAT');
     });
 
     it('omits rodzajFaktury when undefined', () => {
-      const info = generatePdfInfo(undefined, '20260101-SE-ABC', 'Firma', []);
+      const info = generatePdfInfo(undefined, '20260101-SE-ABC', 'Firma');
       expect(info.title).toBe('Faktura 20260101-SE-ABC');
     });
 
     it('falls back to just Faktura when both are undefined', () => {
-      const info = generatePdfInfo(undefined, undefined, 'Firma', []);
+      const info = generatePdfInfo(undefined, undefined, 'Firma');
       expect(info.title).toBe('Faktura');
     });
 
     it('handles all known RodzajFaktury codes', () => {
       for (const kod of ['VAT', 'KOR', 'ZAL', 'ROZ', 'KOR_ZAL', 'KOR_ROZ', 'UPR', 'RR', 'RR_KOR']) {
-        const info = generatePdfInfo(kod, 'NR', 'Firma', []);
+        const info = generatePdfInfo(kod, 'NR', 'Firma');
         expect(info.title).toBe(`Faktura ${kod} NR`);
       }
     });
@@ -135,66 +135,45 @@ describe('generatePdfInfo', () => {
 
   describe('author', () => {
     it('sets author to sellerName', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Kowalski Jan', []);
+      const info = generatePdfInfo('VAT', 'NR', 'Kowalski Jan');
       expect(info.author).toBe('Kowalski Jan');
     });
 
     it('sets author to empty string when sellerName is undefined', () => {
-      const info = generatePdfInfo('VAT', 'NR', undefined, []);
+      const info = generatePdfInfo('VAT', 'NR', undefined);
       expect(info.author).toBe('');
     });
 
     it('preserves full company names with special characters', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Przedsiębiorstwo „Alfa" Sp. z o.o.', []);
+      const info = generatePdfInfo('VAT', 'NR', 'Przedsiębiorstwo „Alfa" Sp. z o.o.');
       expect(info.author).toBe('Przedsiębiorstwo „Alfa" Sp. z o.o.');
     });
   });
 
   describe('keywords', () => {
-    it('joins identifiers with comma-space separator', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', ['1234567890', 'PL9876543210']);
-      expect(info.keywords).toBe('1234567890, PL9876543210');
-    });
-
-    it('deduplicates identical identifiers', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', ['1234567890', '1234567890', '9999999999']);
-      expect(info.keywords).toBe('1234567890, 9999999999');
-    });
-
-    it('filters out empty-string identifiers', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', ['1234567890', '', '9999999999']);
-      expect(info.keywords).toBe('1234567890, 9999999999');
-    });
-
-    it('returns empty string when no identifiers are provided', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', []);
-      expect(info.keywords).toBe('');
-    });
-
-    it('handles a single identifier without trailing separator', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', ['1234567890']);
-      expect(info.keywords).toBe('1234567890');
+    it('is always an empty string to prevent PII exposure in PDF metadata', () => {
+      expect(generatePdfInfo('VAT', 'NR', 'Firma').keywords).toBe('');
     });
   });
 
   describe('creator and producer', () => {
     it('sets creator to ksef-pdf-generator/{version}', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', []);
+      const info = generatePdfInfo('VAT', 'NR', 'Firma');
       expect(info.creator).toBe(`ksef-pdf-generator/${packageJson.version}`);
     });
 
     it('sets producer to ksef-pdf-generator/{version}', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', []);
+      const info = generatePdfInfo('VAT', 'NR', 'Firma');
       expect(info.producer).toBe(`ksef-pdf-generator/${packageJson.version}`);
     });
 
     it('creator and producer match each other', () => {
-      const info = generatePdfInfo('KOR', 'NR', 'Firma', []);
+      const info = generatePdfInfo('KOR', 'NR', 'Firma');
       expect(info.creator).toBe(info.producer);
     });
 
     it('creator does not equal the old default pdfmake value', () => {
-      const info = generatePdfInfo('VAT', 'NR', 'Firma', []);
+      const info = generatePdfInfo('VAT', 'NR', 'Firma');
       expect(info.creator).not.toBe('pdfmake');
       expect(info.producer).not.toBe('pdfmake');
     });
