@@ -523,6 +523,11 @@
       "margin": "margin",
       "pageOf": "{{current}} of {{total}}"
     },
+    "technicalInformation": {
+      "acquisitionDate": "Acquisition date: ",
+      "generatedIn": "Produced in: ",
+      "header": "Technical information"
+    },
     "header": {
       "advance": "Advance invoice",
       "attachmentWarning": "Please note that the invoice contains an attachment, but due to visualization limitations, it has not been included in the PDF file",

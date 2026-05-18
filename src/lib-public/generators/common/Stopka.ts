@@ -19,15 +19,20 @@ import { Zalacznik } from '../../types/fa3.types';
 import { generateZalaczniki } from './Zalaczniki';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { Informacje, Rejestry } from '../../types/fa1.types';
-import { AdditionalDataTypes } from '../../types/common.types';
+import { AdditionalDataTypes, TechnicalInfoConfig } from '../../types/common.types';
 import i18n from 'i18next';
+
+interface TechnicalInformationContext {
+  acquisitionDate?: FP;
+}
 
 export function generateStopka(
   additionalData?: AdditionalDataTypes,
   stopka?: Stopka,
   naglowek?: Naglowek,
   wz?: FP[],
-  zalacznik?: Zalacznik
+  zalacznik?: Zalacznik,
+  technicalInformationContext?: TechnicalInformationContext
 ): Content[] {
   if (additionalData?.simplifiedMode) {
     return generateQRCodeData(additionalData);
@@ -38,6 +43,10 @@ export function generateStopka(
   const informacje: Content[] = generateInformacje(stopka);
   const qrCode: Content[] = generateQRCodeData(additionalData);
   const zalaczniki: Content[] = !additionalData?.isMobile ? generateZalaczniki(zalacznik) : [];
+  const technicalInformation: Content[] = generateTechnicalInformation(additionalData, {
+    ...technicalInformationContext,
+    systemInfo: naglowek?.SystemInfo,
+  });
 
   const result: Content = [
     verticalSpacing(1),
@@ -48,19 +57,84 @@ export function generateStopka(
     ...informacje,
     ...(zalaczniki.length ? zalaczniki : []),
     { stack: [...qrCode], unbreakable: true },
-    createSection(
-      [
-        {
-          stack: createLabelText(i18n.t('invoice.footer.generatedIn'), naglowek?.SystemInfo),
-          margin: [0, 8, 0, 0],
-        },
-      ],
-      true,
-      [0, 0, 0, 0]
-    ),
+    ...technicalInformation,
   ];
 
   return createSection(result, false);
+}
+
+interface TechnicalInformationField {
+  isEnabled: (config: NormalizedTechnicalInfoConfig) => boolean;
+  canRender: (context: TechnicalInformationContextWithSystemInfo, config: NormalizedTechnicalInfoConfig) => boolean;
+  render: (context: TechnicalInformationContextWithSystemInfo) => Content[];
+}
+
+interface TechnicalInformationContextWithSystemInfo extends TechnicalInformationContext {
+  systemInfo?: FP;
+}
+
+type NormalizedTechnicalInfoConfig = Required<
+  Pick<TechnicalInfoConfig, 'enabled' | 'showGeneratedIn' | 'showAcquisitionDate'>
+> &
+  TechnicalInfoConfig;
+
+function generateTechnicalInformation(
+  additionalData: AdditionalDataTypes | undefined,
+  context: TechnicalInformationContextWithSystemInfo
+): Content[] {
+  const config = normalizeTechnicalInfoConfig(additionalData?.technicalInfo);
+
+  if (!config.enabled) {
+    return [];
+  }
+
+  const fields: TechnicalInformationField[] = [
+    {
+      isEnabled: (normalizedConfig) => normalizedConfig.showGeneratedIn,
+      canRender: (fieldContext) => !!fieldContext.systemInfo?._text,
+      render: (fieldContext) =>
+        createLabelText(i18n.t('invoice.technicalInformation.generatedIn'), fieldContext.systemInfo),
+    },
+    {
+      isEnabled: (normalizedConfig) => normalizedConfig.showAcquisitionDate,
+      canRender: (fieldContext) => !!fieldContext.acquisitionDate?._text,
+      render: (fieldContext) =>
+        createLabelText(
+          i18n.t('invoice.technicalInformation.acquisitionDate'),
+          fieldContext.acquisitionDate,
+          FormatTyp.DateTime
+        ),
+    },
+  ];
+
+  const content = fields.flatMap((field: TechnicalInformationField): Content[] =>
+    field.isEnabled(config) && field.canRender(context, config) ? field.render(context) : []
+  );
+
+  if (!content.length) {
+    return [];
+  }
+
+  return createSection(
+    [
+      ...createHeader(i18n.t('invoice.technicalInformation.header')),
+      {
+        stack: content,
+        margin: [0, 4, 0, 0],
+      },
+    ],
+    true,
+    [0, 0, 0, 0]
+  );
+}
+
+function normalizeTechnicalInfoConfig(config?: TechnicalInfoConfig): NormalizedTechnicalInfoConfig {
+  return {
+    ...config,
+    enabled: config?.enabled ?? true,
+    showGeneratedIn: config?.showGeneratedIn ?? true,
+    showAcquisitionDate: config?.showAcquisitionDate ?? true,
+  };
 }
 
 function generateWZ(wz?: FP[]): Content[] {

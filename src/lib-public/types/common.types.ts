@@ -30,5 +30,12 @@ export interface AdditionalDataTypes {
   isMobile?: boolean;
   simplifiedMode?: boolean;
   useCurrencyThousandsSeparator?: boolean;
+  technicalInfo?: TechnicalInfoConfig;
   watermark?: string | Watermark;
+}
+
+export interface TechnicalInfoConfig {
+  enabled?: boolean;
+  showGeneratedIn?: boolean;
+  showAcquisitionDate?: boolean;
 }

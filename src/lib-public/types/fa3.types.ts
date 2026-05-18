@@ -17,6 +17,7 @@ export interface Faktura {
   Fa?: Fa;
   Stopka?: Stopka;
   Zalacznik?: Zalacznik;
+  AcquisitionDate?: FP;
 }
 
 export interface Fa {

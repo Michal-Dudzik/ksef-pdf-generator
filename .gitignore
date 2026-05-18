@@ -2,6 +2,10 @@ node_modules/
 .idea
 .vscode
 
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store
+
 # Build outputs (CLI bundle)
 dist/
 # Exception: keep xhr-sync-worker.js (required by jsdom at runtime)

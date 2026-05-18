@@ -523,6 +523,11 @@
       "margin": "marża",
       "pageOf": "{{current}} z {{total}}"
     },
+    "technicalInformation": {
+      "acquisitionDate": "Data nabycia: ",
+      "generatedIn": "Wytworzona w: ",
+      "header": "Informacje techniczne"
+    },
     "header": {
       "advance": "Faktura zaliczkowa",
       "attachmentWarning": "Uwaga, faktura zawiera załącznik, jednak ze względu na ograniczenia wizualizacji, nie został on uwzględniony w pliku PDF",

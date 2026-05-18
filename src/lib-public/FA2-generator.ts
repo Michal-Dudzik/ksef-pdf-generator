@@ -36,8 +36,21 @@ export function generateFA2(invoice: Faktura, additionalData: AdditionalDataType
 
     const isKOR_RABAT: boolean =
       invoice.Fa?.RodzajFaktury?._text == TRodzajFaktury.KOR && hasValue(invoice.Fa?.OkresFaKorygowanej);
+    const technicalInformationContext = {
+      acquisitionDate: invoice.AcquisitionDate,
+    };
     const content: Content[] = additionalData?.simplifiedMode
-      ? [...generateNaglowek(invoice.Fa, additionalData), ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ)]
+      ? [
+        ...generateNaglowek(invoice.Fa, additionalData),
+        ...generateStopka(
+          additionalData,
+          invoice.Stopka,
+          invoice.Naglowek,
+          invoice.Fa?.WZ,
+          undefined,
+          technicalInformationContext
+        ),
+      ]
       : [
         ...generateNaglowek(invoice.Fa, additionalData),
         generateDaneFaKorygowanej(invoice.Fa),
@@ -58,7 +71,14 @@ export function generateFA2(invoice: Faktura, additionalData: AdditionalDataType
         generateRozliczenie(invoice.Fa?.Rozliczenie, invoice.Fa?.KodWaluty?._text ?? ''),
         generatePlatnosc(invoice.Fa?.Platnosc, invoice.Fa?.P_15),
         generateWarunkiTransakcji(invoice.Fa?.WarunkiTransakcji),
-        ...generateStopka(additionalData, invoice.Stopka, invoice.Naglowek, invoice.Fa?.WZ),
+        ...generateStopka(
+          additionalData,
+          invoice.Stopka,
+          invoice.Naglowek,
+          invoice.Fa?.WZ,
+          undefined,
+          technicalInformationContext
+        ),
       ];
     const sellerName = invoice.Podmiot1?.DaneIdentyfikacyjne?.Nazwa?._text;
 

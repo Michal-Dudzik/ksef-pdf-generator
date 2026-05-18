@@ -6,8 +6,12 @@ import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnable
 import { parseArguments, SUPPORTED_LANGUAGES } from './args';
 import { initializeApp } from './init';
 import { applyConfigFromFile } from './config';
+import type { TechnicalInfoConfig } from '../lib-public/types/common.types';
 
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
+const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
+const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
+const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
 
 export async function main(): Promise<void> {
   log('KSeF PDF Generator starting...', 'info');
@@ -26,6 +30,8 @@ export async function main(): Promise<void> {
   if (!options) {
     process.exit(1);
   }
+
+  const technicalInfoConfig = getTechnicalInfoConfigFromEnvironment();
 
   if (options.language) {
     if ((SUPPORTED_LANGUAGES as readonly string[]).includes(options.language)) {
@@ -59,6 +65,7 @@ export async function main(): Promise<void> {
       simplifiedMode: options.simplifiedMode || null,
       mergePdf: options.mergePdf || null,
       useCurrencyThousandsSeparator: options.useCurrencyThousandsSeparator || null,
+      technicalInfo: technicalInfoConfig || null,
       language: process.env.KSEF_LANGUAGE || null,
     },
     options.type,
@@ -166,6 +173,10 @@ export async function main(): Promise<void> {
         additionalData.useCurrencyThousandsSeparator = true;
         log('Using useCurrencyThousandsSeparator: true', 'debug');
       }
+      if (technicalInfoConfig) {
+        additionalData.technicalInfo = technicalInfoConfig;
+        log(`Using technicalInfo: ${JSON.stringify(technicalInfoConfig)}`, 'debug');
+      }
 
       log('Generating invoice PDF...', 'info');
       pdfBlob = await generators.generateInvoice(file, additionalData, 'blob');
@@ -253,6 +264,44 @@ async function mergePdfBuffers(first: Buffer, second: Buffer): Promise<Buffer> {
 
   const mergedBytes = await mergedPdf.save();
   return Buffer.from(mergedBytes);
+}
+
+function parseOptionalBoolean(value: string | undefined): boolean | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const normalizedValue = value.trim().toLowerCase();
+  if (['1', 'true', 'yes', 'on'].includes(normalizedValue)) {
+    return true;
+  }
+
+  if (['0', 'false', 'no', 'off'].includes(normalizedValue)) {
+    return false;
+  }
+
+  return undefined;
+}
+
+function getTechnicalInfoConfigFromEnvironment(): TechnicalInfoConfig | undefined {
+  const technicalInfo: TechnicalInfoConfig = {};
+  const enabled = parseOptionalBoolean(process.env[TECHNICAL_INFO_ENABLED_ENV]);
+  const showGeneratedIn = parseOptionalBoolean(process.env[TECHNICAL_INFO_GENERATED_IN_ENV]);
+  const showAcquisitionDate = parseOptionalBoolean(process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV]);
+
+  if (enabled !== undefined) {
+    technicalInfo.enabled = enabled;
+  }
+
+  if (showGeneratedIn !== undefined) {
+    technicalInfo.showGeneratedIn = showGeneratedIn;
+  }
+
+  if (showAcquisitionDate !== undefined) {
+    technicalInfo.showAcquisitionDate = showAcquisitionDate;
+  }
+
+  return Object.keys(technicalInfo).length ? technicalInfo : undefined;
 }
 
 async function convertBlobToBuffer(pdfBlob: any): Promise<Buffer> {

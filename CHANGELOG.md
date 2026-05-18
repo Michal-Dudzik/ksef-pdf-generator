@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-05-18
+
+### Added
+
+- Added a `Technical information` section for invoice PDFs, including the existing generated-in system value and optional `AcquisitionDate` rendering when present in the XML and controllable via parameters file.
+
 ## [1.2.0] - 2026-05-12
 
 ### Added

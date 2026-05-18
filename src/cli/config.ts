@@ -6,6 +6,9 @@ const CONFIG_FILE_NAME = 'parameters.ini';
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
 const CURRENCY_THOUSANDS_SEPARATOR_ENV = 'KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR';
 const LANGUAGE_ENV = 'KSEF_LANGUAGE';
+const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
+const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
+const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
 const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
 
 type AppConfig = {
@@ -18,7 +21,24 @@ type AppConfig = {
   i18n?: {
     language?: (typeof SUPPORTED_LANGUAGES)[number];
   };
+  technicalInfo?: {
+    enabled?: boolean;
+    generatedIn?: boolean;
+    acquisitionDate?: boolean;
+  };
 };
+
+function parseBooleanConfigValue(value: string): boolean | null {
+  if (['1', 'true', 'yes', 'on'].includes(value.toLowerCase())) {
+    return true;
+  }
+
+  if (['0', 'false', 'no', 'off'].includes(value.toLowerCase())) {
+    return false;
+  }
+
+  return null;
+}
 
 function isPackagedRuntime(): boolean {
   return !!((process as any).pkg || (process as any).isSEA);
@@ -111,13 +131,9 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         continue;
       }
 
-      if (['1', 'true', 'yes', 'on'].includes(value.toLowerCase())) {
-        result.currencyFormat = { thousandsSeparator: true };
-        continue;
-      }
-
-      if (['0', 'false', 'no', 'off'].includes(value.toLowerCase())) {
-        result.currencyFormat = { thousandsSeparator: false };
+      const parsed = parseBooleanConfigValue(value);
+      if (parsed !== null) {
+        result.currencyFormat = { thousandsSeparator: parsed };
         continue;
       }
 
@@ -147,6 +163,34 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         `Invalid "i18n.language" in ${filePath}:${lineNumber}. Expected one of: ${SUPPORTED_LANGUAGES.join(', ')}. Using default behavior.`,
         'error'
       );
+    }
+
+    if (section === 'technicalinfo') {
+      if (key === 'enabled' || key === 'generated_in' || key === 'acquisition_date') {
+        if (!value) {
+          log(
+            `Invalid "technicalInfo.${key}" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
+            'error'
+          );
+          continue;
+        }
+
+        const parsed = parseBooleanConfigValue(value);
+        if (parsed === null) {
+          log(
+            `Invalid "technicalInfo.${key}" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
+            'error'
+          );
+          continue;
+        }
+
+        result.technicalInfo = {
+          ...result.technicalInfo,
+          ...(key === 'enabled' ? { enabled: parsed } : {}),
+          ...(key === 'generated_in' ? { generatedIn: parsed } : {}),
+          ...(key === 'acquisition_date' ? { acquisitionDate: parsed } : {}),
+        };
+      }
     }
   }
 
@@ -203,6 +247,35 @@ function applyI18nConfig(config: AppConfig, filePath: string): void {
   log(`Config loaded from ${filePath}: i18n.language=${language}`, 'info');
 }
 
+function applyTechnicalInfoConfig(config: AppConfig, filePath: string): void {
+  const technicalInfo = config.technicalInfo;
+
+  if (!technicalInfo) {
+    return;
+  }
+
+  if (technicalInfo.enabled !== undefined) {
+    process.env[TECHNICAL_INFO_ENABLED_ENV] = String(technicalInfo.enabled);
+    log(`Config loaded from ${filePath}: technicalInfo.enabled=${technicalInfo.enabled}`, 'info');
+  }
+
+  if (technicalInfo.generatedIn !== undefined) {
+    process.env[TECHNICAL_INFO_GENERATED_IN_ENV] = String(technicalInfo.generatedIn);
+    log(
+      `Config loaded from ${filePath}: technicalInfo.generated_in=${technicalInfo.generatedIn}`,
+      'info'
+    );
+  }
+
+  if (technicalInfo.acquisitionDate !== undefined) {
+    process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV] = String(technicalInfo.acquisitionDate);
+    log(
+      `Config loaded from ${filePath}: technicalInfo.acquisition_date=${technicalInfo.acquisitionDate}`,
+      'info'
+    );
+  }
+}
+
 export function applyConfigFromFile(): void {
   const configPath = getConfigSearchPaths().find((p: string): boolean => fs.existsSync(p));
 
@@ -219,4 +292,5 @@ export function applyConfigFromFile(): void {
   applyNumberFormatConfig(config, configPath);
   applyCurrencyFormatConfig(config, configPath);
   applyI18nConfig(config, configPath);
+  applyTechnicalInfoConfig(config, configPath);
 }

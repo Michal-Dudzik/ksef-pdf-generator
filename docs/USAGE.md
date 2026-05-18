@@ -210,6 +210,11 @@ thousands_separator = true
 
 [i18n]
 language = en
+
+[technicalInfo]
+enabled = true
+generated_in = true
+acquisition_date = true
 ```
 
 Behavior:
@@ -220,6 +225,9 @@ Behavior:
 - `i18n.language = en` generates English PDF labels
 - supported languages are `pl` and `en`
 - missing or invalid language falls back to `pl`
+- `technicalInfo.enabled = true` shows the final technical information section
+- `technicalInfo.generated_in = true` shows `Naglowek.SystemInfo` as `Wytworzona w` / `Produced in`
+- `technicalInfo.acquisition_date = true` shows `AcquisitionDate` when the XML contains this field
 
 You can also override the language with the CLI argument:
 

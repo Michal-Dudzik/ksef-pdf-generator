@@ -7,6 +7,7 @@ export interface Faktura {
   PodmiotUpowazniony?: PodmiotUpowazniony;
   Fa?: Fa;
   Stopka?: Stopka;
+  AcquisitionDate?: FP;
 }
 
 export interface Fa {
