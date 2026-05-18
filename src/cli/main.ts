@@ -5,13 +5,16 @@ import type { Watermark } from 'pdfmake/interfaces';
 import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
 import { parseArguments, SUPPORTED_LANGUAGES } from './args';
 import { initializeApp } from './init';
-import { applyConfigFromFile } from './config';
+import {
+  applyConfigFromFile,
+  parseBooleanConfigValue,
+  TECHNICAL_INFO_ENABLED_ENV,
+  TECHNICAL_INFO_GENERATED_IN_ENV,
+  TECHNICAL_INFO_ACQUISITION_DATE_ENV,
+} from './config';
 import type { TechnicalInfoConfig } from '../lib-public/types/common.types';
 
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
-const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
-const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
-const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
 
 export async function main(): Promise<void> {
   log('KSeF PDF Generator starting...', 'info');
@@ -266,28 +269,11 @@ async function mergePdfBuffers(first: Buffer, second: Buffer): Promise<Buffer> {
   return Buffer.from(mergedBytes);
 }
 
-function parseOptionalBoolean(value: string | undefined): boolean | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  const normalizedValue = value.trim().toLowerCase();
-  if (['1', 'true', 'yes', 'on'].includes(normalizedValue)) {
-    return true;
-  }
-
-  if (['0', 'false', 'no', 'off'].includes(normalizedValue)) {
-    return false;
-  }
-
-  return undefined;
-}
-
 function getTechnicalInfoConfigFromEnvironment(): TechnicalInfoConfig | undefined {
   const technicalInfo: TechnicalInfoConfig = {};
-  const enabled = parseOptionalBoolean(process.env[TECHNICAL_INFO_ENABLED_ENV]);
-  const showGeneratedIn = parseOptionalBoolean(process.env[TECHNICAL_INFO_GENERATED_IN_ENV]);
-  const showAcquisitionDate = parseOptionalBoolean(process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV]);
+  const enabled = parseBooleanConfigValue(process.env[TECHNICAL_INFO_ENABLED_ENV]);
+  const showGeneratedIn = parseBooleanConfigValue(process.env[TECHNICAL_INFO_GENERATED_IN_ENV]);
+  const showAcquisitionDate = parseBooleanConfigValue(process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV]);
 
   if (enabled !== undefined) {
     technicalInfo.enabled = enabled;

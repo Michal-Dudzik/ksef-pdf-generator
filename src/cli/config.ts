@@ -6,9 +6,9 @@ const CONFIG_FILE_NAME = 'parameters.ini';
 const NUMBER_DECIMALS_ENV = 'KSEF_FORMAT_NUMBER_DECIMALS';
 const CURRENCY_THOUSANDS_SEPARATOR_ENV = 'KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARATOR';
 const LANGUAGE_ENV = 'KSEF_LANGUAGE';
-const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
-const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
-const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
+export const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
+export const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
+export const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
 const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
 
 type AppConfig = {
@@ -23,21 +23,26 @@ type AppConfig = {
   };
   technicalInfo?: {
     enabled?: boolean;
-    generatedIn?: boolean;
-    acquisitionDate?: boolean;
+    showGeneratedIn?: boolean;
+    showAcquisitionDate?: boolean;
   };
 };
 
-function parseBooleanConfigValue(value: string): boolean | null {
-  if (['1', 'true', 'yes', 'on'].includes(value.toLowerCase())) {
+export function parseBooleanConfigValue(value: string | undefined): boolean | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) {
     return true;
   }
 
-  if (['0', 'false', 'no', 'off'].includes(value.toLowerCase())) {
+  if (['0', 'false', 'no', 'off'].includes(normalized)) {
     return false;
   }
 
-  return null;
+  return undefined;
 }
 
 function isPackagedRuntime(): boolean {
@@ -132,7 +137,7 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
       }
 
       const parsed = parseBooleanConfigValue(value);
-      if (parsed !== null) {
+      if (parsed !== undefined) {
         result.currencyFormat = { thousandsSeparator: parsed };
         continue;
       }
@@ -176,7 +181,7 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         }
 
         const parsed = parseBooleanConfigValue(value);
-        if (parsed === null) {
+        if (parsed === undefined) {
           log(
             `Invalid "technicalInfo.${key}" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
             'error'
@@ -187,8 +192,8 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
         result.technicalInfo = {
           ...result.technicalInfo,
           ...(key === 'enabled' ? { enabled: parsed } : {}),
-          ...(key === 'generated_in' ? { generatedIn: parsed } : {}),
-          ...(key === 'acquisition_date' ? { acquisitionDate: parsed } : {}),
+          ...(key === 'generated_in' ? { showGeneratedIn: parsed } : {}),
+          ...(key === 'acquisition_date' ? { showAcquisitionDate: parsed } : {}),
         };
       }
     }
@@ -259,18 +264,18 @@ function applyTechnicalInfoConfig(config: AppConfig, filePath: string): void {
     log(`Config loaded from ${filePath}: technicalInfo.enabled=${technicalInfo.enabled}`, 'info');
   }
 
-  if (technicalInfo.generatedIn !== undefined) {
-    process.env[TECHNICAL_INFO_GENERATED_IN_ENV] = String(technicalInfo.generatedIn);
+  if (technicalInfo.showGeneratedIn !== undefined) {
+    process.env[TECHNICAL_INFO_GENERATED_IN_ENV] = String(technicalInfo.showGeneratedIn);
     log(
-      `Config loaded from ${filePath}: technicalInfo.generated_in=${technicalInfo.generatedIn}`,
+      `Config loaded from ${filePath}: technicalInfo.generated_in=${technicalInfo.showGeneratedIn}`,
       'info'
     );
   }
 
-  if (technicalInfo.acquisitionDate !== undefined) {
-    process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV] = String(technicalInfo.acquisitionDate);
+  if (technicalInfo.showAcquisitionDate !== undefined) {
+    process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV] = String(technicalInfo.showAcquisitionDate);
     log(
-      `Config loaded from ${filePath}: technicalInfo.acquisition_date=${technicalInfo.acquisitionDate}`,
+      `Config loaded from ${filePath}: technicalInfo.acquisition_date=${technicalInfo.showAcquisitionDate}`,
       'info'
     );
   }

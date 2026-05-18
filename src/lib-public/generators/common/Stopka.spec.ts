@@ -56,4 +56,35 @@ describe('generateStopka technical information', () => {
 
     expect(stringifyContent(content)).not.toContain('Data nabycia: ');
   });
+
+  it('does not render the technical information section when enabled is false', () => {
+    const additionalData: AdditionalDataTypes = {
+      nrKSeF: 'TEST-KSEF',
+      technicalInfo: {
+        enabled: false,
+      },
+    };
+
+    const content = generateStopka(additionalData, undefined, naglowek);
+    const serializedContent = stringifyContent(content);
+
+    expect(serializedContent).not.toContain('Informacje techniczne');
+    expect(serializedContent).not.toContain('Wytworzona w: ');
+    expect(serializedContent).not.toContain('QAD Enterprise Applications');
+  });
+
+  it('does not render generated system information when showGeneratedIn is false', () => {
+    const additionalData: AdditionalDataTypes = {
+      nrKSeF: 'TEST-KSEF',
+      technicalInfo: {
+        showGeneratedIn: false,
+      },
+    };
+
+    const content = generateStopka(additionalData, undefined, naglowek);
+    const serializedContent = stringifyContent(content);
+
+    expect(serializedContent).not.toContain('Wytworzona w: ');
+    expect(serializedContent).not.toContain('QAD Enterprise Applications');
+  });
 });

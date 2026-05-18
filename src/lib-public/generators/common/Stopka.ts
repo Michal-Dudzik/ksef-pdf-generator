@@ -65,7 +65,7 @@ export function generateStopka(
 
 interface TechnicalInformationField {
   isEnabled: (config: NormalizedTechnicalInfoConfig) => boolean;
-  canRender: (context: TechnicalInformationContextWithSystemInfo, config: NormalizedTechnicalInfoConfig) => boolean;
+  canRender: (context: TechnicalInformationContextWithSystemInfo) => boolean;
   render: (context: TechnicalInformationContextWithSystemInfo) => Content[];
 }
 
@@ -73,10 +73,7 @@ interface TechnicalInformationContextWithSystemInfo extends TechnicalInformation
   systemInfo?: FP;
 }
 
-type NormalizedTechnicalInfoConfig = Required<
-  Pick<TechnicalInfoConfig, 'enabled' | 'showGeneratedIn' | 'showAcquisitionDate'>
-> &
-  TechnicalInfoConfig;
+type NormalizedTechnicalInfoConfig = Required<TechnicalInfoConfig>;
 
 function generateTechnicalInformation(
   additionalData: AdditionalDataTypes | undefined,
@@ -108,7 +105,7 @@ function generateTechnicalInformation(
   ];
 
   const content = fields.flatMap((field: TechnicalInformationField): Content[] =>
-    field.isEnabled(config) && field.canRender(context, config) ? field.render(context) : []
+    field.isEnabled(config) && field.canRender(context) ? field.render(context) : []
   );
 
   if (!content.length) {
