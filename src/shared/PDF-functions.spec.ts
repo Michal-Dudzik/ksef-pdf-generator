@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   createLabelText,
+  formatBankAccountNumber,
   formatText,
   generateLine,
   generateQRCode,
@@ -161,6 +162,35 @@ describe('formatText', () => {
     );
   });
 
+  it('formats account number with bank account grouping', () => {
+    const content = formatText('12345678901234567890123456', FormatTyp.AccountNumber);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '12 3456 7890 1234 5678 9012 3456',
+        style: FormatTyp.AccountNumber,
+      })
+    );
+  });
+
+});
+
+describe('formatBankAccountNumber', () => {
+  it('leaves short values unchanged', () => {
+    expect(formatBankAccountNumber('123456789012')).toBe('123456789012');
+  });
+
+  it('groups domestic bank account numbers after the first two characters', () => {
+    expect(formatBankAccountNumber('12345678901234567890123456')).toBe(
+      '12 3456 7890 1234 5678 9012 3456'
+    );
+  });
+
+  it('groups accounts starting with a letter or symbol from the beginning', () => {
+    expect(formatBankAccountNumber('PL61109010140000071219812874')).toBe(
+      'PL61 1090 1014 0000 0712 1981 2874'
+    );
+  });
 });
 
 describe('hasValue', () => {

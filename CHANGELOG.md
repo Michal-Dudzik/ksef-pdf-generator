@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-05-22
+
+### Added
+
+- Implemented changes from upstream release 1.1.12
+  - Added bank account number formatting for FA2, FA3, and FA_RR invoice PDFs, grouping long account numbers for readability.
+
 ## [1.3.0] - 2026-05-18
 
 ### Added

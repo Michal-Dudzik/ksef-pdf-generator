@@ -81,7 +81,7 @@ describe(generujRachunekBankowy.name, () => {
       generujRachunekBankowy([mockAccount], 'Rachunek bankowy');
 
       expect(PDFFunctions.formatText).toHaveBeenCalledWith('Pełny numer rachunku', FormatTyp.GrayBoldTitle);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NrRB?._text, FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NrRB?._text, FormatTyp.AccountNumber);
     });
 
     it('should format "Kod SWIFT" field', () => {
@@ -231,8 +231,8 @@ describe(generujRachunekBankowy.name, () => {
 
       generujRachunekBankowy([mockAccount, account2], 'Rachunek bankowy');
 
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NrRB?._text, FormatTyp.Default);
-      expect(PDFFunctions.formatText).toHaveBeenCalledWith(account2.NrRB?._text, FormatTyp.Default);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(mockAccount.NrRB?._text, FormatTyp.AccountNumber);
+      expect(PDFFunctions.formatText).toHaveBeenCalledWith(account2.NrRB?._text, FormatTyp.AccountNumber);
     });
   });
 
