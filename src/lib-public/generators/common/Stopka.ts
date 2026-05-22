@@ -48,19 +48,18 @@ export function generateStopka(
     systemInfo: naglowek?.SystemInfo,
   });
 
-  const result: Content = [
-    verticalSpacing(1),
+  const result: Content[] = [
     ...(wzty.length ? [generateLine()] : []),
     ...(wzty.length ? [generateTwoColumns(wzty, [])] : []),
     ...(rejestry.length || informacje.length ? [generateLine()] : []),
     ...rejestry,
     ...informacje,
     ...(zalaczniki.length ? zalaczniki : []),
-    { stack: [...qrCode], unbreakable: true },
+    ...(qrCode.length ? [{ stack: [...qrCode], unbreakable: true } as Content] : []),
     ...technicalInformation,
   ];
 
-  return createSection(result, false);
+  return createSection(result.length ? [verticalSpacing(1), ...result] : [], false);
 }
 
 interface TechnicalInformationField {

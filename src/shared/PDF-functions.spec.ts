@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   createLabelText,
+  createSection,
   formatBankAccountNumber,
   formatText,
   generateLine,
@@ -243,6 +244,24 @@ describe('createLabelText', () => {
     ).toBe(true);
   });
 
+});
+
+describe('createSection', () => {
+  it('returns empty array when there is no content', () => {
+    expect(createSection([], true)).toEqual([]);
+    expect(createSection([], false, [0, 0, 0, 0])).toEqual([]);
+  });
+
+  it('wraps non-empty content with default margin', () => {
+    const result = createSection([{ text: 'value' }], false);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        margin: [0, 0, 0, 8],
+      })
+    );
+  });
 });
 
 describe('generateQRCode', () => {

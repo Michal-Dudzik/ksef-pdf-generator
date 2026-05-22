@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-05-22
+
+### Fixed
+
+- Prevented empty PDF sections from adding default bottom margin when `createSection(...)` receives no content, avoiding layout shifts and potential blank pages.
+- Prevented the invoice footer from rendering spacer-only or empty QR blocks when no footer section has renderable data, including invoices with attachments and no `SystemInfo`.
+
 ## [1.4.0] - 2026-05-22
 
 ### Added

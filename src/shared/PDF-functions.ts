@@ -318,12 +318,15 @@ export function createLabelText(
 }
 
 export function createSection(content: Content[], isLineOnTop: boolean, margin?: Margins): Content[] {
+  if (!content.length) {
+    return [];
+  }
+
   return [
     {
       stack: [
-        ...(content.length
-          ? [...(isLineOnTop ? [{ stack: [generateLine()], margin: [0, 8, 0, 0] } as Content] : []), content]
-          : []),
+        ...(isLineOnTop ? [{ stack: [generateLine()], margin: [0, 8, 0, 0] } as Content] : []),
+        content,
       ],
       margin: margin ?? [0, 0, 0, 8],
     },

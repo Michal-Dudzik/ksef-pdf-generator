@@ -87,4 +87,12 @@ describe('generateStopka technical information', () => {
     expect(serializedContent).not.toContain('Wytworzona w: ');
     expect(serializedContent).not.toContain('QAD Enterprise Applications');
   });
+
+  it('returns empty content when no footer section has renderable data', () => {
+    const additionalData: AdditionalDataTypes = {
+      nrKSeF: 'TEST-KSEF',
+    };
+
+    expect(generateStopka(additionalData, undefined, {})).toEqual([]);
+  });
 });
