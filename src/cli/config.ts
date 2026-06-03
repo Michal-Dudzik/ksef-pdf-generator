@@ -8,6 +8,7 @@ const CURRENCY_THOUSANDS_SEPARATOR_ENV = 'KSEF_FORMAT_CURRENCY_THOUSANDS_SEPARAT
 const LANGUAGE_ENV = 'KSEF_LANGUAGE';
 export const TECHNICAL_INFO_ENABLED_ENV = 'KSEF_TECHNICAL_INFO_ENABLED';
 export const TECHNICAL_INFO_GENERATED_IN_ENV = 'KSEF_TECHNICAL_INFO_GENERATED_IN';
+export const TECHNICAL_INFO_APP_VERSION_ENV = 'KSEF_TECHNICAL_INFO_APP_VERSION';
 export const TECHNICAL_INFO_ACQUISITION_DATE_ENV = 'KSEF_TECHNICAL_INFO_ACQUISITION_DATE';
 const SUPPORTED_LANGUAGES = ['pl', 'en'] as const;
 
@@ -24,6 +25,7 @@ type AppConfig = {
   technicalInfo?: {
     enabled?: boolean;
     showGeneratedIn?: boolean;
+    showAppVersion?: boolean;
     showAcquisitionDate?: boolean;
   };
 };
@@ -171,7 +173,7 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
     }
 
     if (section === 'technicalinfo') {
-      if (key === 'enabled' || key === 'generated_in' || key === 'acquisition_date') {
+      if (key === 'enabled' || key === 'generated_in' || key === 'app_version' || key === 'acquisition_date') {
         if (!value) {
           log(
             `Invalid "technicalInfo.${key}" in ${filePath}:${lineNumber}. Expected boolean true/false. Using default behavior.`,
@@ -193,6 +195,7 @@ function parseIniConfig(content: string, filePath: string): AppConfig {
           ...result.technicalInfo,
           ...(key === 'enabled' ? { enabled: parsed } : {}),
           ...(key === 'generated_in' ? { showGeneratedIn: parsed } : {}),
+          ...(key === 'app_version' ? { showAppVersion: parsed } : {}),
           ...(key === 'acquisition_date' ? { showAcquisitionDate: parsed } : {}),
         };
       }
@@ -268,6 +271,14 @@ function applyTechnicalInfoConfig(config: AppConfig, filePath: string): void {
     process.env[TECHNICAL_INFO_GENERATED_IN_ENV] = String(technicalInfo.showGeneratedIn);
     log(
       `Config loaded from ${filePath}: technicalInfo.generated_in=${technicalInfo.showGeneratedIn}`,
+      'info'
+    );
+  }
+
+  if (technicalInfo.showAppVersion !== undefined) {
+    process.env[TECHNICAL_INFO_APP_VERSION_ENV] = String(technicalInfo.showAppVersion);
+    log(
+      `Config loaded from ${filePath}: technicalInfo.app_version=${technicalInfo.showAppVersion}`,
       'info'
     );
   }

@@ -45,35 +45,31 @@ export async function generateInvoice(
 
   let pdf: TCreatedPdf;
 
-  return new Promise((resolve): void => {
-    switch (wersja) {
-      case 'FA (1)':
-        pdf = generateFA1((xml as any).Faktura as Faktura1, additionalData);
-        break;
-      case 'FA (2)':
-        pdf = generateFA2((xml as any).Faktura as Faktura2, additionalData);
-        break;
-      case 'FA (3)':
-        pdf = generateFA3((xml as any).Faktura as Faktura3, additionalData);
-        break;
-      case 'FA_RR (1)':
-      case 'FA_RR(1)':
-        pdf = generateFARR((xml as any).Faktura as FaRR, additionalData);
-        break;
-    }
-    switch (formatType) {
-      case 'blob':
-        pdf.getBlob((blob: Blob): void => {
-          resolve(blob);
-        });
-        break;
-      case 'base64':
-      default:
-        pdf.getBase64((base64: string): void => {
-          resolve(base64);
-        });
-    }
-  });
+  switch (wersja) {
+    case 'FA (1)':
+      pdf = generateFA1((xml as any).Faktura as Faktura1, additionalData);
+      break;
+    case 'FA (2)':
+      pdf = generateFA2((xml as any).Faktura as Faktura2, additionalData);
+      break;
+    case 'FA (3)':
+      pdf = generateFA3((xml as any).Faktura as Faktura3, additionalData);
+      break;
+    case 'FA_RR (1)':
+    case 'FA_RR(1)':
+      pdf = generateFARR((xml as any).Faktura as FaRR, additionalData);
+      break;
+    default:
+      throw new Error(`Unknown XML Version: ${wersja}`);
+  }
+
+  switch (formatType) {
+    case 'blob':
+      return pdf.getBlob();
+    case 'base64':
+    default:
+      return pdf.getBase64();
+  }
 }
 
 type FormatType = 'blob' | 'base64';

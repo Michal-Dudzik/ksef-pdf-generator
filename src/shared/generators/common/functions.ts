@@ -1,4 +1,5 @@
 import { FP as FP2 } from '../../../lib-public/types/fa2.types';
+import packageInfo from '../../../../package.json';
 import i18n from 'i18next';
 
 export function translateMap(value: FP2 | string | undefined, map: Record<string, string>): string {
@@ -86,4 +87,12 @@ export function formatTime(data?: string, withoutSeconds?: boolean): string {
     return `${hours}:${minutes}`;
   }
   return `${hours}:${minutes}:${seconds}`;
+}
+
+export function createApplicationLabel(application?: string): string {
+  return application ?? i18n.t('invoice.footer.appName');
+}
+
+export function createVersionLabel(): string {
+  return packageInfo.version;
 }

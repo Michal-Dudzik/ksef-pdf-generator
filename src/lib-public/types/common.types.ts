@@ -37,5 +37,6 @@ export interface AdditionalDataTypes {
 export interface TechnicalInfoConfig {
   enabled?: boolean;
   showGeneratedIn?: boolean;
+  showAppVersion?: boolean;
   showAcquisitionDate?: boolean;
 }

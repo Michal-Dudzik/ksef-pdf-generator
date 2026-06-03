@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-06-03
+
+### Added
+
+- Synced upstream changes `1.1.16` / `1.1.16 HF1`:
+  - Added the generator application/version label to invoice technical information.
+  - Added `technicalInfo.app_version` in `parameters.ini` and CLI config handling to control that version label independently from `technicalInfo.generated_in`.
+- Updated `pdfmake` to `0.3.7` and migrated PDF generation to the new font-registration and promise-based output APIs.
+
+### Fixed
+
+- Fixed UPO 4.2 PDF generation to use UPO 4.2 types and UPO 4.2 document/header generators instead of the UPO 4.3 implementation.
+- Fixed unsupported invoice XML versions to fail with an explicit `Unknown XML Version` error.
+- Fixed invoice row `KwotaAkcyzy` formatting in FA1, FA2, and FA3 so it renders as currency.
+- Split the technical information application and PDF generator version details into separate lines.
+
 ## [1.4.1] - 2026-05-22
 
 ### Fixed

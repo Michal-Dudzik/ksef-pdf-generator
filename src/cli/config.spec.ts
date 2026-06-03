@@ -22,6 +22,7 @@ describe('applyConfigFromFile i18n config', () => {
   const technicalInfoEnvNames = [
     'KSEF_TECHNICAL_INFO_ENABLED',
     'KSEF_TECHNICAL_INFO_GENERATED_IN',
+    'KSEF_TECHNICAL_INFO_APP_VERSION',
     'KSEF_TECHNICAL_INFO_ACQUISITION_DATE',
   ] as const;
   const originalTechnicalInfoEnv = Object.fromEntries(
@@ -107,6 +108,7 @@ language = de
 [technicalInfo]
 enabled = true
 generated_in = false
+app_version = false
 acquisition_date = true
 `);
     process.env.KSEF_CONFIG_PATH = configPath;
@@ -115,6 +117,7 @@ acquisition_date = true
 
     expect(process.env.KSEF_TECHNICAL_INFO_ENABLED).toBe('true');
     expect(process.env.KSEF_TECHNICAL_INFO_GENERATED_IN).toBe('false');
+    expect(process.env.KSEF_TECHNICAL_INFO_APP_VERSION).toBe('false');
     expect(process.env.KSEF_TECHNICAL_INFO_ACQUISITION_DATE).toBe('true');
   });
 
@@ -122,14 +125,20 @@ acquisition_date = true
     const configPath = writeTempConfig(`
 [technicalInfo]
 acquisition_date = maybe
+app_version = sometimes
 `);
     process.env.KSEF_CONFIG_PATH = configPath;
 
     applyConfigFromFile();
 
     expect(process.env.KSEF_TECHNICAL_INFO_ACQUISITION_DATE).toBeUndefined();
+    expect(process.env.KSEF_TECHNICAL_INFO_APP_VERSION).toBeUndefined();
     expect(log).toHaveBeenCalledWith(
       `Invalid "technicalInfo.acquisition_date" in ${configPath}:3. Expected boolean true/false. Using default behavior.`,
+      'error'
+    );
+    expect(log).toHaveBeenCalledWith(
+      `Invalid "technicalInfo.app_version" in ${configPath}:4. Expected boolean true/false. Using default behavior.`,
       'error'
     );
   });

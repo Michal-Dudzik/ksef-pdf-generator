@@ -19,7 +19,7 @@ import { generateWatermark } from '../shared/consts/watermark';
 import { generatePdfInfo } from '../shared/pdf-metadata';
 import i18n from 'i18next';
 
-pdfMake.vfs = pdfFonts;
+pdfMake.addVirtualFileSystem(pdfFonts);
 
 export function generateFARR(invoice: FaRR, additionalData: AdditionalDataTypes): TCreatedPdf {
 

@@ -519,12 +519,16 @@
       "unit": "Miara"
     },
     "footer": {
+      "appName": "Aplikacja Podatnika KSeF",
       "generatedIn": "Wytworzona w: ",
       "margin": "marża",
-      "pageOf": "{{current}} z {{total}}"
+      "pageOf": "{{current}} z {{total}}",
+      "version": "wersja"
     },
     "technicalInformation": {
       "acquisitionDate": "Data nabycia: ",
+      "appVersion": "Wygenerowano przez: ",
+      "generatorVersion": "Wersja generatora PDF: ",
       "generatedIn": "Wytworzona w: ",
       "header": "Informacje techniczne"
     },

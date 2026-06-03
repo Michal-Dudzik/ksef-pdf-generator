@@ -20,6 +20,7 @@ import { generateZalaczniki } from './Zalaczniki';
 import FormatTyp from '../../../shared/enums/common.enum';
 import { Informacje, Rejestry } from '../../types/fa1.types';
 import { AdditionalDataTypes, TechnicalInfoConfig } from '../../types/common.types';
+import { createApplicationLabel, createVersionLabel } from '../../../shared/generators/common/functions';
 import i18n from 'i18next';
 
 interface TechnicalInformationContext {
@@ -92,6 +93,14 @@ function generateTechnicalInformation(
         createLabelText(i18n.t('invoice.technicalInformation.generatedIn'), fieldContext.systemInfo),
     },
     {
+      isEnabled: (normalizedConfig) => normalizedConfig.showAppVersion,
+      canRender: () => true,
+      render: () => [
+        ...createLabelText(i18n.t('invoice.technicalInformation.appVersion'), createApplicationLabel()),
+        ...createLabelText(i18n.t('invoice.technicalInformation.generatorVersion'), createVersionLabel()),
+      ],
+    },
+    {
       isEnabled: (normalizedConfig) => normalizedConfig.showAcquisitionDate,
       canRender: (fieldContext) => !!fieldContext.acquisitionDate?._text,
       render: (fieldContext) =>
@@ -129,6 +138,7 @@ function normalizeTechnicalInfoConfig(config?: TechnicalInfoConfig): NormalizedT
     ...config,
     enabled: config?.enabled ?? true,
     showGeneratedIn: config?.showGeneratedIn ?? true,
+    showAppVersion: config?.showAppVersion ?? true,
     showAcquisitionDate: config?.showAcquisitionDate ?? true,
   };
 }
