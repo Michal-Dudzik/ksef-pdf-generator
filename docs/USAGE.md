@@ -214,6 +214,7 @@ language = en
 [technicalInfo]
 enabled = true
 generated_in = true
+app_version = true
 acquisition_date = true
 ```
 
@@ -227,6 +228,7 @@ Behavior:
 - missing or invalid language falls back to `pl`
 - `technicalInfo.enabled = true` shows the final technical information section
 - `technicalInfo.generated_in = true` shows `Naglowek.SystemInfo` as `Wytworzona w` / `Produced in`
+- `technicalInfo.app_version = true` shows the generated-by application line and the PDF generator version line
 - `technicalInfo.acquisition_date = true` shows `AcquisitionDate` when the XML contains this field
 
 You can also override the language with the CLI argument:

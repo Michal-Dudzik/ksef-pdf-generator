@@ -71,7 +71,7 @@ export function generateWiersze(faVat: Fa): Content {
       mappingData: Procedura,
       width: '*',
     },
-    { name: 'KwotaAkcyzy', title: i18n.t('invoice.rows.exciseTaxAmount'), format: FormatTyp.Default, width: 'auto' },
+    { name: 'KwotaAkcyzy', title: i18n.t('invoice.rows.exciseTaxAmount'), format: FormatTyp.Currency, width: 'auto' },
     { name: 'GTU', title: i18n.t('invoice.rows.gtu'), format: FormatTyp.Default, width: 'auto' },
     { name: 'Procedura', title: i18n.t('invoice.rows.procedureMarkings'), format: FormatTyp.Default, width: '*' },
     { name: 'P_6A', title: i18n.t('invoice.rows.deliveryDate'), format: FormatTyp.Default, width: 'auto' },

@@ -13,9 +13,9 @@ import { Dokument, IDKontekstu, Potwierdzenie } from '../../types/upo-v4_2.types
 import FormatTyp from '../../../shared/enums/common.enum';
 import { FormContentState } from '../../../shared/types/additional-data.types';
 import { DEFAULT_TABLE_LAYOUT } from '../../../shared/consts/FA.const';
-import i18n from "i18next";
+import i18n from 'i18next';
 
-export function generateDokumnetUPO(potwierdzenie: Potwierdzenie): Content[] {
+export function generateDokumentUPO(potwierdzenie: Potwierdzenie): Content[] {
   const dokumenty: Dokument[] = getTable(potwierdzenie.Dokument);
 
   const result: Content[] = [];

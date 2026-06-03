@@ -33,7 +33,7 @@ describe('generateInvoice', () => {
 
     vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
 
-    const getBlobMock = vi.fn().mockImplementation((cb) => cb(mockBlob));
+    const getBlobMock = vi.fn().mockResolvedValue(mockBlob);
 
     vi.spyOn(FA1Generator, 'generateFA1').mockReturnValue({ getBlob: getBlobMock } as any);
 
@@ -60,7 +60,7 @@ describe('generateInvoice', () => {
 
     vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
 
-    const getBlobMock = vi.fn().mockImplementation((cb) => cb(mockBlob));
+    const getBlobMock = vi.fn().mockResolvedValue(mockBlob);
 
     vi.spyOn(FA2Generator, 'generateFA2').mockReturnValue({ getBlob: getBlobMock } as any);
 
@@ -87,7 +87,7 @@ describe('generateInvoice', () => {
 
     vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
 
-    const getBlobMock = vi.fn().mockImplementation((cb) => cb(mockBlob));
+    const getBlobMock = vi.fn().mockResolvedValue(mockBlob);
 
     vi.spyOn(FA3Generator, 'generateFA3').mockReturnValue({ getBlob: getBlobMock } as any);
 
@@ -114,7 +114,7 @@ describe('generateInvoice', () => {
 
     vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
 
-    const getBlobMock = vi.fn().mockImplementation((cb) => cb(mockBlob));
+    const getBlobMock = vi.fn().mockResolvedValue(mockBlob);
 
     vi.spyOn(FARRGenerator, 'generateFARR').mockReturnValue({ getBlob: getBlobMock } as any);
 
@@ -126,5 +126,29 @@ describe('generateInvoice', () => {
     expect(XMLParser.parseXML).toHaveBeenCalledWith(file);
     expect(FARRGenerator.generateFARR).toHaveBeenCalledWith(fakeXml.Faktura, additionalData);
     expect(getBlobMock).toHaveBeenCalled();
+  });
+
+  it('should reject for unsupported XML version', async () => {
+    const fakeXml = {
+      Faktura: {
+        Naglowek: {
+          KodFormularza: {
+            _attributes: { kodSystemowy: 'FA (99)' },
+          },
+        },
+      },
+    };
+
+    vi.spyOn(XMLParser, 'parseXML').mockResolvedValue(fakeXml);
+
+    const file = new File([], 'test.xml');
+
+    await expect(generateInvoice(file, additionalData, 'blob')).rejects.toThrow(
+      'Unknown XML Version: FA (99)'
+    );
+    expect(FA1Generator.generateFA1).not.toHaveBeenCalled();
+    expect(FA2Generator.generateFA2).not.toHaveBeenCalled();
+    expect(FA3Generator.generateFA3).not.toHaveBeenCalled();
+    expect(FARRGenerator.generateFARR).not.toHaveBeenCalled();
   });
 });

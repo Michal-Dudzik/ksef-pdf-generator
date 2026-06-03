@@ -18,6 +18,8 @@ import {
   formatDateTime,
   formatDateTimePl,
   formatTime,
+  createVersionLabel,
+  createApplicationLabel,
   getDateTimeWithoutSeconds,
   translateMap,
 } from './functions';
@@ -242,5 +244,21 @@ describe('formatDateTimePl', () => {
     expect(formatDateTimePl(undefined as any, true)).toBe('');
     expect(formatDateTimePl('', true)).toBe('');
     expect(formatDateTimePl('ABC', true)).toBe('ABC');
+  });
+});
+
+describe('createVersionLabel', () => {
+  it('returns the package version', () => {
+    expect(createVersionLabel()).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+});
+
+describe('createApplicationLabel', () => {
+  it('creates a localized default application label', () => {
+    expect(createApplicationLabel()).toBe('Aplikacja Podatnika KSeF');
+  });
+
+  it('uses the provided application name when present', () => {
+    expect(createApplicationLabel('Custom App')).toBe('Custom App');
   });
 });

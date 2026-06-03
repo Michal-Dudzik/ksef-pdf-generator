@@ -86,13 +86,36 @@ describe('generateStopka technical information', () => {
 
     expect(serializedContent).not.toContain('Wytworzona w: ');
     expect(serializedContent).not.toContain('QAD Enterprise Applications');
+    expect(serializedContent).toContain('Wygenerowano przez: ');
+    expect(serializedContent).toContain('Aplikacja Podatnika KSeF');
+    expect(serializedContent).toContain('Wersja generatora PDF: ');
+    expect(serializedContent).toMatch(/\d+\.\d+\.\d+/);
   });
 
-  it('returns empty content when no footer section has renderable data', () => {
+  it('renders default app version information when no system info is present', () => {
     const additionalData: AdditionalDataTypes = {
       nrKSeF: 'TEST-KSEF',
     };
+    const serializedContent = stringifyContent(generateStopka(additionalData, undefined, {}));
 
-    expect(generateStopka(additionalData, undefined, {})).toEqual([]);
+    expect(serializedContent).toContain('Informacje techniczne');
+    expect(serializedContent).toContain('Wygenerowano przez: ');
+    expect(serializedContent).toContain('Aplikacja Podatnika KSeF');
+    expect(serializedContent).toContain('Wersja generatora PDF: ');
+    expect(serializedContent).toMatch(/\d+\.\d+\.\d+/);
+  });
+
+  it('does not render app version information when showAppVersion is false', () => {
+    const additionalData: AdditionalDataTypes = {
+      nrKSeF: 'TEST-KSEF',
+      technicalInfo: {
+        showAppVersion: false,
+      },
+    };
+    const serializedContent = stringifyContent(generateStopka(additionalData, undefined, {}));
+
+    expect(serializedContent).not.toContain('Informacje techniczne');
+    expect(serializedContent).not.toContain('Wygenerowano przez: ');
+    expect(serializedContent).not.toContain('Wersja generatora PDF: ');
   });
 });

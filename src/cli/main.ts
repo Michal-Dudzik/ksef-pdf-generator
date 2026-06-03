@@ -10,6 +10,7 @@ import {
   parseBooleanConfigValue,
   TECHNICAL_INFO_ENABLED_ENV,
   TECHNICAL_INFO_GENERATED_IN_ENV,
+  TECHNICAL_INFO_APP_VERSION_ENV,
   TECHNICAL_INFO_ACQUISITION_DATE_ENV,
 } from './config';
 import type { TechnicalInfoConfig } from '../lib-public/types/common.types';
@@ -273,6 +274,7 @@ function getTechnicalInfoConfigFromEnvironment(): TechnicalInfoConfig | undefine
   const technicalInfo: TechnicalInfoConfig = {};
   const enabled = parseBooleanConfigValue(process.env[TECHNICAL_INFO_ENABLED_ENV]);
   const showGeneratedIn = parseBooleanConfigValue(process.env[TECHNICAL_INFO_GENERATED_IN_ENV]);
+  const showAppVersion = parseBooleanConfigValue(process.env[TECHNICAL_INFO_APP_VERSION_ENV]);
   const showAcquisitionDate = parseBooleanConfigValue(process.env[TECHNICAL_INFO_ACQUISITION_DATE_ENV]);
 
   if (enabled !== undefined) {
@@ -281,6 +283,10 @@ function getTechnicalInfoConfigFromEnvironment(): TechnicalInfoConfig | undefine
 
   if (showGeneratedIn !== undefined) {
     technicalInfo.showGeneratedIn = showGeneratedIn;
+  }
+
+  if (showAppVersion !== undefined) {
+    technicalInfo.showAppVersion = showAppVersion;
   }
 
   if (showAcquisitionDate !== undefined) {
