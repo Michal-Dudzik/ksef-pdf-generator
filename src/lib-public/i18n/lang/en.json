@@ -691,6 +691,7 @@
       "stateBefore": "State before",
       "taxRate": "Tax rate",
       "totalAmountDue": "Total amount due: ",
+      "totalAmountDueCorrection": "Total amount due correction: ",
       "uniqueRowNumber": "Unique row number",
       "unit": "Unit",
       "unitPrice": "Unit price",

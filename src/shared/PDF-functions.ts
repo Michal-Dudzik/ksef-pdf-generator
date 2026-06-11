@@ -234,9 +234,10 @@ function dotToComma(value: string): string {
   return value.replace('.', ',');
 }
 
-export function hasValue(value: FP | string | number | undefined): boolean {
+export function hasValue(value: FP | string | number | undefined, zeroValidator: boolean = true): boolean {
   return (
-    !!((typeof value !== 'object' && value) || (typeof value === 'object' && value._text)) || value === 0
+    !!((typeof value !== 'object' && value) || (typeof value === 'object' && value._text)) ||
+    (zeroValidator && value === 0)
   );
 }
 
@@ -714,6 +715,8 @@ function splitStringAfter(input: string, after: number): string[] {
 export function formatBankAccountNumber(number: string): string {
   if (typeof number !== 'string' || number.length === 0) return '';
   if (number.length <= 12) return number;
+
+  if (/\s/.test(number.trim())) return number.trim();
 
   const startsWithLetterOrSymbolRegex = /^[a-z!-\/:-@[-`{-~]/i;
   if (number.charAt(0).match(startsWithLetterOrSymbolRegex)) {

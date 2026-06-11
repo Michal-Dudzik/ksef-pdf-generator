@@ -691,6 +691,7 @@
       "stateBefore": "Stan przed",
       "taxRate": "Stawka podatku",
       "totalAmountDue": "Kwota należności ogółem: ",
+      "totalAmountDueCorrection": "Korekta kwoty należności ogółem: ",
       "uniqueRowNumber": "Unikalny numer wiersza",
       "unit": "Miara",
       "unitPrice": "Cena jedn.",

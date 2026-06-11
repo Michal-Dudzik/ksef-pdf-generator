@@ -54,11 +54,13 @@ describe('generatePlatnosc', () => {
     );
   });
 
-  it('handles case: not paid', () => {
+  it('does not add "Brak zapłaty" when payment status is not explicit', () => {
     const p: Platnosc = {};
     const result = generatePlatnosc(p);
 
-    expect(result).toEqual(expect.arrayContaining([{ text: 'LABEL:Informacja o płatności: Brak zapłaty' }]));
+    expect(result).not.toEqual(
+      expect.arrayContaining([{ text: 'LABEL:Informacja o płatności: Brak zapłaty' }])
+    );
   });
 
   it('adds "Forma płatności" with translateMap when present', () => {
@@ -68,22 +70,21 @@ describe('generatePlatnosc', () => {
     expect(result).toEqual(expect.arrayContaining([{ text: 'LABEL:Forma płatności: Przelew' }]));
   });
 
-  it('falls back on "Brak zapłaty" and inna/opis if FormaPlatnosci undefined but OpisPlatnosci present', () => {
+  it('falls back on inna/opis if FormaPlatnosci undefined but OpisPlatnosci present', () => {
     const p: Platnosc = { OpisPlatnosci: { _text: 'Gotówka przy odbiorze' } };
     const result = generatePlatnosc(p);
 
     expect(result).toEqual(
       expect.arrayContaining([
-        { text: 'LABEL:Informacja o płatności: Brak zapłaty' },
         { text: 'LABEL:Forma płatności: Płatność inna' },
         { text: 'LABEL:Opis płatności innej: Gotówka przy odbiorze' },
       ])
     );
   });
 
-  it('does not show "Brak zapłaty" when P_15 is 0 and payment section is empty', () => {
+  it('does not show "Brak zapłaty" when payment section is empty', () => {
     const p: Platnosc = {};
-    const result = generatePlatnosc(p, { _text: '0.00' });
+    const result = generatePlatnosc(p);
 
     expect(result).not.toEqual(
       expect.arrayContaining([{ text: 'LABEL:Informacja o płatności: Brak zapłaty' }])
