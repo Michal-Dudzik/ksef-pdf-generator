@@ -18,17 +18,7 @@ import { generujRachunekBankowy } from './RachunekBankowy';
 import FormatTyp from '../../../shared/enums/common.enum';
 import i18n from 'i18next';
 
-function isZeroCurrencyValue(value: unknown): boolean {
-  const rawValue = getValue(value as any);
-  if (rawValue === undefined || rawValue === null || rawValue === '') {
-    return false;
-  }
-
-  const parsedValue = Number(String(rawValue).replace(',', '.'));
-  return Number.isFinite(parsedValue) && parsedValue === 0;
-}
-
-export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?: unknown): Content {
+export function generatePlatnosc(platnosc: Platnosc | undefined, _kwotaOgolnaP15?: unknown): Content {
   if (!platnosc) {
     return [];
   }
@@ -65,9 +55,7 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
   ];
 
   const table: Content[] = [generateLine(), ...createHeader(i18n.t('invoice.payment.payment'))];
-  const isP15EqualZero = isZeroCurrencyValue(kwotaOgolnaP15);
 
-  //  TODO: Add to FA2 and FA1? (KSEF20-15289)
   if (getValue(platnosc.Zaplacono) === '1') {
     table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.paidStatus')));
     table.push(createLabelText(i18n.t('invoice.payment.paymentDate'), platnosc.DataZaplaty, FormatTyp.Date));
@@ -84,8 +72,6 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
           : i18n.t('invoice.payment.paidAllInParts')
       )
     );
-  } else if (!isP15EqualZero) {
-    table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.noPayment')));
   }
 
   if (hasValue(platnosc.FormaPlatnosci)) {

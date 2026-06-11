@@ -57,7 +57,6 @@ describe(generatePlatnosc.name, () => {
       { ZnacznikZaplatyCzesciowej: { _text: '2' }, FormaPlatnosci: 'Karta' } as Partial<Platnosc>,
       'Zapłata częściowa',
     ],
-    [{} as Partial<Platnosc>, 'Brak zapłaty'],
   ])(
     'generuje poprawnie informacje o płatności dla %o',
     (platnosc: Partial<Platnosc>, expected: string): void => {
@@ -74,6 +73,17 @@ describe(generatePlatnosc.name, () => {
       expect((result as Content[]).length).toBeGreaterThan(0);
     }
   );
+
+  it('nie dodaje "Brak zapłaty" gdy brak jawnej informacji o płatności', () => {
+    const platnosc: Partial<Platnosc> = {};
+    generatePlatnosc(platnosc as Platnosc);
+
+    const brakZaplatyCall = mockedCreateLabelText.mock.calls.find(
+      ([label, value]) => label === 'Informacja o płatności: ' && value === 'Brak zapłaty'
+    );
+
+    expect(brakZaplatyCall).toBeUndefined();
+  });
 
   it('dodaje informacje o formie płatności jeśli hasValue zwraca true', () => {
     const platnosc: Partial<Platnosc> = { FormaPlatnosci: { _text: 'Karta' } };

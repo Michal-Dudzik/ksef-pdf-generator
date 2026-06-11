@@ -5,7 +5,6 @@ import {
   generateLine,
   generateTwoColumns,
   getContentTable,
-  getValue,
   getTable,
   hasValue,
 } from '../../../shared/PDF-functions';
@@ -18,17 +17,7 @@ import FormatTyp from '../../../shared/enums/common.enum';
 import { TableWithFields, TerminPlatnosciContent } from '../../types/fa1-additional-types';
 import i18n from 'i18next';
 
-function isZeroCurrencyValue(value: unknown): boolean {
-  const rawValue = getValue(value as any);
-  if (rawValue === undefined || rawValue === null || rawValue === '') {
-    return false;
-  }
-
-  const parsedValue = Number(String(rawValue).replace(',', '.'));
-  return Number.isFinite(parsedValue) && parsedValue === 0;
-}
-
-export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?: unknown): Content {
+export function generatePlatnosc(platnosc: Platnosc | undefined, _kwotaOgolnaP15?: unknown): Content {
   if (!platnosc) {
     return [];
   }
@@ -66,15 +55,12 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, kwotaOgolnaP15?
   ];
 
   const table: Content[] = [generateLine(), ...createHeader(i18n.t('invoice.payment.payment'))];
-  const isP15EqualZero = isZeroCurrencyValue(kwotaOgolnaP15);
 
   if (platnosc.Zaplacono?._text === '1') {
     table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.paidStatus')));
     table.push(createLabelText(i18n.t('invoice.payment.paymentDate'), platnosc.DataZaplaty, FormatTyp.Date));
   } else if (platnosc.ZaplataCzesciowa?._text === '1') {
     table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.partialPayment')));
-  } else if (!isP15EqualZero) {
-    table.push(createLabelText(i18n.t('invoice.payment.paymentInformation'), i18n.t('invoice.payment.noPayment')));
   }
 
   if (hasValue(platnosc.FormaPlatnosci)) {

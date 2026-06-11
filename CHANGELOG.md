@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-06-11
+
+### Changed
+
+- Synced selected upstream `1.1.18` changes from commits `42508b9ac46d52077333d1d47c6c01ca10233193` and `8264d23959cc1870056f3585d2986f6b61a022c5`.
+- Removed implicit `Brak zapłaty` rendering from FA1, FA2, and FA3 payment sections when the XML does not explicitly mark the invoice as paid or partially paid.
+- VAT summaries for FA1, FA2, and FA3 now render rows for zero-valued tax fields when those fields are present in the XML.
+- Correction invoices (`KOR`, `KOR_ROZ`) now use a dedicated `Korekta kwoty należności ogółem` label for `P_15`.
+- Bank account formatting now preserves account numbers that are already formatted with spaces.
+
+### Added
+
+- Added an executable integration plan for the upstream `1.1.18` sync in `docs/UPSTREAM_1_1_18_INTEGRATION_PLAN.md`.
+- Added regression tests for implicit payment status rendering, zero-valued VAT summary rows, corrected `P_15` labels, and already-formatted bank account numbers.
+
 ## [1.5.0] - 2026-06-03
 
 ### Added

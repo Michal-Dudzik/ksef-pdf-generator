@@ -14,9 +14,15 @@ vi.mock('../../../shared/PDF-functions', () => ({
   createHeader: vi.fn((text: string) => [{ text }]),
   createSection: vi.fn((content: any[], flag: boolean) => ({ content, flag })),
   formatText: vi.fn((value: any, type: FormatTyp) => ({ value, type })),
-  getNumberRounded: vi.fn((val: any) => Number(val ?? 0)),
+  getNumberRounded: vi.fn((val: any) => Number(val?._text ?? val ?? 0)),
   getValue: vi.fn((val: any) => val?._text ?? val ?? 0),
-  hasValue: vi.fn((val: any) => val !== null && val !== undefined && val !== 0),
+  hasValue: vi.fn(
+    (val: any, zeroValidator = true) =>
+      val !== null &&
+      val !== undefined &&
+      ((typeof val === 'object' && val._text !== undefined && val._text !== '') ||
+        (typeof val !== 'object' && (zeroValidator ? true : val !== 0)))
+  ),
 }));
 
 import type { Faktura, Fa, FP } from '../../types/fa2.types';
@@ -86,11 +92,29 @@ describe(generatePodsumowanieStawekPodatkuVat.name, () => {
     expect(summary[2].taxRateString).toBe('');
   });
 
+  it('includes tax rates with zero values when fields exist in XML', () => {
+    const fa: Fa = {
+      P_13_1: { _text: '0' },
+      P_14_1: { _text: '0' },
+      P_14_1W: { _text: '0' },
+    } as any;
+
+    const summary = getSummaryTaxRate(fa);
+
+    expect(summary).toHaveLength(1);
+    expect(summary[0]).toMatchObject({
+      net: '0.00',
+      tax: '0.00',
+      taxPLN: '0.00',
+      gross: '0.00',
+      taxRateString: '23% lub 22%',
+    });
+  });
+
   it('calls helper functions correctly', () => {
     const fa: Fa = { P_13_1: 100, P_14_1: 23, P_14_1W: 23 } as any;
     getSummaryTaxRate(fa);
     expect(hasValue).toHaveBeenCalled();
-    expect(getValue).toHaveBeenCalled();
     expect(getNumberRounded).toHaveBeenCalled();
     expect(formatText).not.toHaveBeenCalled();
   });

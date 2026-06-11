@@ -192,6 +192,12 @@ describe('formatBankAccountNumber', () => {
       'PL61 1090 1014 0000 0712 1981 2874'
     );
   });
+
+  it('preserves already formatted account numbers', () => {
+    expect(formatBankAccountNumber('  PL61 1090 1014 0000 0712 1981 2874  ')).toBe(
+      'PL61 1090 1014 0000 0712 1981 2874'
+    );
+  });
 });
 
 describe('hasValue', () => {
@@ -203,6 +209,12 @@ describe('hasValue', () => {
   it('returns true for string or object with _text', () => {
     expect(hasValue('val')).toBe(true);
     expect(hasValue({ _text: '123' })).toBe(true);
+  });
+
+  it('can treat primitive zero as empty while keeping XML zero values present', () => {
+    expect(hasValue(0)).toBe(true);
+    expect(hasValue(0, false)).toBe(false);
+    expect(hasValue({ _text: '0' }, false)).toBe(true);
   });
 });
 
