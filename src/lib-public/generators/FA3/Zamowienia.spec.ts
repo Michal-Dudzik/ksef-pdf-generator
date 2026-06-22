@@ -260,12 +260,15 @@ describe(generateZamowienie.name, () => {
         ]);
       });
 
-      it('should not add description for ZAL invoice when p_15 = 0', () => {
+      it('should add description for ZAL invoice when p_15 = 0', () => {
         vi.mocked(PDFFunctions.createLabelTextArray).mockClear();
 
         generateZamowienie(mockOrderData, ZamowienieKorekta.BeforeCorrection, '0', TRodzajFaktury.ZAL, 'PLN');
 
-        expect(PDFFunctions.createLabelTextArray).not.toHaveBeenCalled();
+        expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
+          { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
+          { value: '0', formatTyp: FormatTyp.CurrencyGreater },
+        ]);
       });
 
       it('should add description for advance correction (KOR_ZAL) when not BeforeCorrection', () => {
@@ -282,6 +285,23 @@ describe(generateZamowienie.name, () => {
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
           { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
           { value: '150', formatTyp: FormatTyp.CurrencyGreater },
+        ]);
+      });
+
+      it('should add description for advance correction (KOR_ZAL) when p_15 is negative', () => {
+        vi.mocked(PDFFunctions.createLabelTextArray).mockReturnValue(['Label', 'Value'] as any);
+
+        generateZamowienie(
+          mockOrderData,
+          ZamowienieKorekta.AfterCorrection,
+          '-150',
+          TRodzajFaktury.KOR_ZAL,
+          'PLN'
+        );
+
+        expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
+          { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
+          { value: '-150', formatTyp: FormatTyp.CurrencyGreater },
         ]);
       });
     });

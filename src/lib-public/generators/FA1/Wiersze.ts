@@ -108,11 +108,26 @@ export function generateWiersze(faVat: Fa): Content {
         margin: [0, 8, 0, 0],
       },
     ];
-  } else if ((rodzajFaktury == TRodzajFaktury.KOR || rodzajFaktury == TRodzajFaktury.KOR_ROZ) && hasP15) {
+  } else if (rodzajFaktury == TRodzajFaktury.KOR && hasP15) {
     opis = [
       {
         stack: createLabelTextArray([
           { value: i18n.t('invoice.rows.totalAmountDueCorrection'), formatTyp: FormatTyp.LabelGreater },
+          {
+            value: p_15,
+            formatTyp: [FormatTyp.CurrencyGreater],
+            currency: getValue(faVat.KodWaluty)?.toString() ?? '',
+          },
+        ]),
+        alignment: Position.RIGHT,
+        margin: [0, 8, 0, 0],
+      },
+    ];
+  } else if (rodzajFaktury == TRodzajFaktury.KOR_ROZ && hasP15) {
+    opis = [
+      {
+        stack: createLabelTextArray([
+          { value: i18n.t('invoice.rows.remainingAmountCorrection'), formatTyp: FormatTyp.LabelGreater },
           {
             value: p_15,
             formatTyp: [FormatTyp.CurrencyGreater],

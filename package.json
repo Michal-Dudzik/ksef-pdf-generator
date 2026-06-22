@@ -21,7 +21,7 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:integration": "node tests/run-all.mjs",
+    "test:integration": "npm run build && node tests/run-all.mjs",
     "analyze-bundle": "node scripts/analyze-bundle.mjs"
   },
   "keywords": [

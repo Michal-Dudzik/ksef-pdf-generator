@@ -688,6 +688,7 @@
       "qualityDesc": "Description of class or quality",
       "quantity": "Quantity",
       "remainingAmount": "Amount remaining to be paid: ",
+      "remainingAmountCorrection": "Correction of amount remaining to be paid: ",
       "stateBefore": "State before",
       "taxRate": "Tax rate",
       "totalAmountDue": "Total amount due: ",

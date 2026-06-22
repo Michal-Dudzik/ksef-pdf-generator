@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] - 2026-06-22
+
+### Changed
+
+- Synced selected upstream `1.1.19` changes from commits `bcc3cfce9fb921b5b6531dc28be16d7e417c1918` and `c0392137f7817ca7e532c1f2c71e47bcb896952d`.
+- Settlement correction invoices (`KOR_ROZ`) now use a dedicated `Korekta kwoty pozostałej do zapłaty` label for `P_15`.
+- Advance invoice order summaries now render the `P_15` description for zero-valued `ZAL` invoices and all non-before-correction `KOR_ZAL` values.
+- Payment terms and footer WZ two-column blocks can now split across pages instead of being forced into unbreakable blocks.
+- Payment terms without partial payments now render in the same two-column position across FA1, FA2, and FA3.
+- Integration tests now rebuild the CLI before running so they validate the current source instead of a stale `dist/cli.cjs`.
+
+### Fixed
+
+- Fixed PDF blob/base64 generation with `pdfmake@0.3`, whose output methods require callback-style invocation.
+
 ## [1.6.0] - 2026-06-11
 
 ### Changed

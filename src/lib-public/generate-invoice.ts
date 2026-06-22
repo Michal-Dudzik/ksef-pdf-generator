@@ -10,6 +10,7 @@ import { AdditionalDataTypes } from './types/common.types';
 import { generateFARR } from './FARR-generator';
 import { FaRR } from './types/FaRR.types';
 import { initI18next } from './i18n/i18n-init';
+import { getPdfBase64, getPdfBlob } from './pdf-output';
 
 const i18nInitPromise = initI18next();
 i18nInitPromise.catch((err: unknown) => {
@@ -65,10 +66,10 @@ export async function generateInvoice(
 
   switch (formatType) {
     case 'blob':
-      return pdf.getBlob();
+      return getPdfBlob(pdf);
     case 'base64':
     default:
-      return pdf.getBase64();
+      return getPdfBase64(pdf);
   }
 }
 

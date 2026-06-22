@@ -51,7 +51,7 @@ export function generateStopka(
 
   const result: Content[] = [
     ...(wzty.length ? [generateLine()] : []),
-    ...(wzty.length ? [generateTwoColumns(wzty, [])] : []),
+    ...(wzty.length ? [generateTwoColumns(wzty, [], undefined, false)] : []),
     ...(rejestry.length || informacje.length ? [generateLine()] : []),
     ...rejestry,
     ...informacje,

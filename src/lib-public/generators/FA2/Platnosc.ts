@@ -106,12 +106,13 @@ export function generatePlatnosc(platnosc: Platnosc | undefined, _kwotaOgolnaP15
       generateTwoColumns(
         tableZaplataCzesciowa.content ?? [],
         tableTerminPlatnosci.content ?? [],
-        [0, 4, 0, 0]
+        [0, 4, 0, 0],
+        false
       )
     );
   } else if (terminPlatnosci.length > 0) {
     if (tableTerminPlatnosci.content) {
-      table.push(generateTwoColumns(tableTerminPlatnosci.content, []));
+      table.push(generateTwoColumns(tableTerminPlatnosci.content, [], undefined, false));
     }
   } else if (zaplataCzesciowa.length > 0 && tableZaplataCzesciowa.content) {
     table.push(tableZaplataCzesciowa.content);

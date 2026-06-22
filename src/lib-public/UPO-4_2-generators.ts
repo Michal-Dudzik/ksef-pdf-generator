@@ -6,6 +6,7 @@ import { generateNaglowekUPO } from './generators/UPO4_2/Naglowek';
 import { generateDokumentUPO } from './generators/UPO4_2/Dokumenty';
 import { parseXML } from '../shared/XML-parser';
 import { Position } from '../shared/enums/common.enum';
+import { getPdfBlob } from './pdf-output';
 import i18n from 'i18next';
 
 export async function generatePDFUPO(file: File): Promise<Blob> {
@@ -24,5 +25,5 @@ export async function generatePDFUPO(file: File): Promise<Blob> {
     },
   };
 
-  return pdfMake.createPdf(docDefinition).getBlob();
+  return getPdfBlob(pdfMake.createPdf(docDefinition));
 }

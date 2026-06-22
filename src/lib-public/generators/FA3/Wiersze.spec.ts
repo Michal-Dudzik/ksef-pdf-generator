@@ -281,13 +281,13 @@ describe(generateWiersze.name, () => {
         ]);
       });
 
-      it('should add description for KOR_ROZ invoice when P_15 > 0', () => {
+      it('should add remaining amount correction description for KOR_ROZ invoice when P_15 > 0', () => {
         setupBasicMocks('250', TRodzajFaktury.KOR_ROZ, 'PLN');
 
         generateWiersze(mockFaVat);
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
-          { value: 'Korekta kwoty należności ogółem: ', formatTyp: FormatTyp.LabelGreater },
+          { value: 'Korekta kwoty pozostałej do zapłaty: ', formatTyp: FormatTyp.LabelGreater },
           {
             value: '250',
             formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],

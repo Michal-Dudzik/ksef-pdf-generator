@@ -105,7 +105,7 @@ describe('generatePlatnosc', () => {
     expect(result.some((el: any) => el.type === '2COL')).toBe(true);
   });
 
-  it('renders payment terms in the right column when terms exist without partial payments', () => {
+  it('renders payment terms in the left column when terms exist without partial payments', () => {
     const p: Platnosc = {
       TerminyPlatnosci: [{ TerminPlatnosci: { _text: '2025-02-01' } }],
     };
@@ -113,8 +113,10 @@ describe('generatePlatnosc', () => {
     generatePlatnosc(p);
 
     expect(vi.mocked(PDFFunctions.generateTwoColumns)).toHaveBeenCalledWith(
+      { data: p.TerminyPlatnosci },
       [],
-      { data: p.TerminyPlatnosci }
+      undefined,
+      false
     );
   });
 

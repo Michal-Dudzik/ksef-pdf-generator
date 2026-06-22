@@ -114,7 +114,7 @@ export function generateZamowienie(
   });
   let opis: Content = '';
 
-  if (Number(p_15) > 0 && rodzajFaktury == TRodzajFaktury.ZAL) {
+  if (rodzajFaktury == TRodzajFaktury.ZAL) {
     opis = {
       stack: createLabelTextArray([
         { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
@@ -125,8 +125,7 @@ export function generateZamowienie(
     };
   } else if (
     zamowienieKorektaKey !== ZamowienieKorekta.BeforeCorrectionKey &&
-    rodzajFaktury == TRodzajFaktury.KOR_ZAL &&
-    Number(p_15) >= 0
+    rodzajFaktury == TRodzajFaktury.KOR_ZAL
   ) {
     opis = {
       stack: createLabelTextArray([
