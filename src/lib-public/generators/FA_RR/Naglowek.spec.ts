@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TRodzajFaktury } from '../../../shared/consts/FA.const';
 import { FakturaRR } from '../../types/FaRR.types';
 import { generateNaglowek } from './Naglowek';
+import FormatTyp, { Position } from '../../../shared/enums/common.enum';
 
 describe('generateNaglowek', () => {
   it('generates header for correction invoice VAT RR', () => {
@@ -47,5 +48,30 @@ describe('generateNaglowek', () => {
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('renders the KSeF number assignment date from the upstream acDate alias', () => {
+    const result = generateNaglowek(undefined, {
+      nrKSeF: 'KSEF-RR-123',
+      acDate: '2026-06-23',
+    });
+
+    const assignmentDate = result.find(
+      (content) =>
+        typeof content === 'object' &&
+        content !== null &&
+        'text' in content &&
+        Array.isArray(content.text) &&
+        content.text.some(
+          (part) => typeof part === 'object' && part !== null && 'text' in part && part.text === 'Data nadania numeru KSeF: '
+        )
+    ) as any;
+
+    expect(assignmentDate).toBeDefined();
+    expect(assignmentDate.alignment).toBe(Position.RIGHT);
+    expect(assignmentDate.text[1]).toMatchObject({
+      text: '23.06.2026',
+      style: [FormatTyp.Date, FormatTyp.ValueMedium],
+    });
   });
 });

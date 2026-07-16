@@ -60,6 +60,7 @@ export async function main(): Promise<void> {
       output: options.output,
       type: options.type,
       nrKSeF: options.nrKSeF || null,
+      ksefNumberAssignedAt: options.ksefNumberAssignedAt || null,
       watermark: options.watermark || null,
       watermarkColor: options.watermarkColor || null,
       watermarkOpacity: options.watermarkOpacity ?? null,
@@ -143,6 +144,10 @@ export async function main(): Promise<void> {
       if (options.nrKSeF) {
         additionalData.nrKSeF = options.nrKSeF;
         log(`Using nrKSeF: ${options.nrKSeF}`, 'debug');
+      }
+      if (options.ksefNumberAssignedAt) {
+        additionalData.ksefNumberAssignedAt = options.ksefNumberAssignedAt;
+        log(`Using ksefNumberAssignedAt: ${options.ksefNumberAssignedAt}`, 'debug');
       }
       if (options.watermark) {
         const hasCustomWatermarkOptions =

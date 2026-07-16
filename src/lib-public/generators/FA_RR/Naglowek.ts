@@ -58,5 +58,16 @@ export function generateNaglowek(fa?: Fa, additionalData?: AdditionalDataTypes):
         });
     }
 
+    const ksefNumberAssignedAt = additionalData?.ksefNumberAssignedAt ?? additionalData?.acDate;
+    if (ksefNumberAssignedAt) {
+        headerContent.push({
+            text: [
+                formatText(i18n.t('invoice.header.ksefNumberAssignedAt'), FormatTyp.LabelMedium),
+                formatText(ksefNumberAssignedAt, [FormatTyp.Date, FormatTyp.ValueMedium]),
+            ],
+            alignment: Position.RIGHT,
+        });
+    }
+
     return headerContent;
 }

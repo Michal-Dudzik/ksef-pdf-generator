@@ -4,6 +4,7 @@ import { Fa as Fa1 } from '../../types/fa1.types';
 import { Fa as Fa3 } from '../../types/fa3.types';
 import { generateNaglowek } from './Naglowek';
 import pl from '../../i18n/lang/pl.json';
+import FormatTyp, { Position } from '../../../shared/enums/common.enum';
 
 describe('generateNaglowek', () => {
   it('generates header for collective correction invoice', () => {
@@ -52,5 +53,30 @@ describe('generateNaglowek', () => {
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('renders the KSeF number assignment date from the canonical field', () => {
+    const result = generateNaglowek(undefined, {
+      nrKSeF: 'KSEF-123',
+      ksefNumberAssignedAt: '2026-06-23',
+    });
+
+    const assignmentDate = result.find(
+      (content) =>
+        typeof content === 'object' &&
+        content !== null &&
+        'text' in content &&
+        Array.isArray(content.text) &&
+        content.text.some(
+          (part) => typeof part === 'object' && part !== null && 'text' in part && part.text === 'Data nadania numeru KSeF: '
+        )
+    ) as any;
+
+    expect(assignmentDate).toBeDefined();
+    expect(assignmentDate.alignment).toBe(Position.RIGHT);
+    expect(assignmentDate.text[1]).toMatchObject({
+      text: '23.06.2026',
+      style: [FormatTyp.Date, FormatTyp.ValueMedium],
+    });
   });
 });

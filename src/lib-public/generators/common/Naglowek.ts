@@ -79,6 +79,26 @@ export function generateNaglowek(
     }
   }
 
+  const ksefNumberAssignedAt = additionalData?.ksefNumberAssignedAt ?? additionalData?.acDate;
+  if (ksefNumberAssignedAt) {
+    const assignedAtLabel = formatText(
+      i18n.t('invoice.header.ksefNumberAssignedAt'),
+      FormatTyp.LabelMedium
+    );
+    const assignedAtValue = formatText(ksefNumberAssignedAt, [FormatTyp.Date, FormatTyp.ValueMedium]);
+    if (
+      typeof assignedAtLabel === 'object' &&
+      assignedAtLabel !== null &&
+      typeof assignedAtValue === 'object' &&
+      assignedAtValue !== null
+    ) {
+      headerContent.push({
+        text: [assignedAtLabel, assignedAtValue],
+        alignment: Position.RIGHT,
+      });
+    }
+  }
+
   if (additionalData?.isMobile && zalacznik) {
     headerContent.push({ stack: [generateLine()], margin: [0, 8, 0, 8] } as Content);
     headerContent.push({

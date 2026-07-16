@@ -165,6 +165,19 @@ describe(generateZamowienie.name, () => {
         expect(cenaNetto?.format).toBe(FormatTyp.CurrencyAbs);
         expect(PDFFunctions.createHeader).toHaveBeenCalledWith(i18n.t('invoice.order.header.before-correction'));
       });
+
+      it('should format order quantity as a number', () => {
+        generateZamowienie(
+          mockOrderData,
+          ZamowienieKorekta.BeforeCorrection,
+          '100',
+          TRodzajFaktury.ZAL,
+          'PLN'
+        );
+
+        const header = vi.mocked(PDFFunctions.getContentTable).mock.calls[0][0];
+        expect(header.find((item: any) => item.name === 'P_8BZ')?.format).toBe(FormatTyp.Number);
+      });
     });
 
     describe('table generation', () => {
@@ -256,7 +269,11 @@ describe(generateZamowienie.name, () => {
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
           { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
-          { value: '100', formatTyp: FormatTyp.CurrencyGreater },
+          {
+            value: '100',
+            formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+            currency: 'PLN',
+          },
         ]);
       });
 
@@ -267,7 +284,11 @@ describe(generateZamowienie.name, () => {
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
           { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
-          { value: '0', formatTyp: FormatTyp.CurrencyGreater },
+          {
+            value: '0',
+            formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+            currency: 'PLN',
+          },
         ]);
       });
 
@@ -284,7 +305,11 @@ describe(generateZamowienie.name, () => {
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
           { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
-          { value: '150', formatTyp: FormatTyp.CurrencyGreater },
+          {
+            value: '150',
+            formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+            currency: 'PLN',
+          },
         ]);
       });
 
@@ -301,7 +326,11 @@ describe(generateZamowienie.name, () => {
 
         expect(PDFFunctions.createLabelTextArray).toHaveBeenCalledWith([
           { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
-          { value: '-150', formatTyp: FormatTyp.CurrencyGreater },
+          {
+            value: '-150',
+            formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+            currency: 'PLN',
+          },
         ]);
       });
     });

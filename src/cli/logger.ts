@@ -223,6 +223,17 @@ function stringifyInlineJson(obj: Record<string, any>): string {
   return `{${body}}`;
 }
 
+/** ISO-like dates accepted for ksefNumberAssignedAt (YYYY-MM-DD with optional time). */
+const KSEF_NUMBER_ASSIGNED_AT_RE =
+  /^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
+
+function formatCommandLineDateArg(value: string): string {
+  if (KSEF_NUMBER_ASSIGNED_AT_RE.test(value)) {
+    return value;
+  }
+  return JSON.stringify(value);
+}
+
 /**
  * Gets the next sequential "Nr" for the current daily log file.
  * This is resilient across multiple CLI runs by scanning the existing log file.
@@ -312,6 +323,9 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
   if (params.nrKSeF) {
     commandLine += ` --nrKSeF ${params.nrKSeF}`;
   }
+  if (params.ksefNumberAssignedAt) {
+    commandLine += ` --ksefNumberAssignedAt ${formatCommandLineDateArg(params.ksefNumberAssignedAt)}`;
+  }
   if (params.watermark) {
     commandLine += ` --watermark "${params.watermark.length > 50 ? params.watermark.substring(0, 50) + '...' : params.watermark}"`;
   }
@@ -337,6 +351,7 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
     output: params.output,
     type: params.type,
     nrKSeF: params.nrKSeF,
+    ksefNumberAssignedAt: params.ksefNumberAssignedAt,
     watermark: params.watermark,
     watermarkColor: params.watermarkColor,
     watermarkOpacity: params.watermarkOpacity,

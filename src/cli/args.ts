@@ -63,6 +63,15 @@ export async function parseArguments(): Promise<CliOptions | null> {
         options.nrKSeF = nextArg;
         i++;
         break;
+      case '--ksefNumberAssignedAt':
+      case '--acDate':
+        if (!nextArg) {
+          console.error(`Error: ${arg} requires a value`);
+          return null;
+        }
+        options.ksefNumberAssignedAt = nextArg;
+        i++;
+        break;
       case '--watermark':
       case '--watermark-text':
         if (!nextArg) {

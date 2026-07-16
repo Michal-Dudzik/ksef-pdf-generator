@@ -4,6 +4,7 @@ export interface CliOptions {
   type: 'invoice' | 'upo';
   language?: 'pl' | 'en';
   nrKSeF?: string;
+  ksefNumberAssignedAt?: string;
   watermark?: string;
   watermarkColor?: string;
   watermarkOpacity?: number;

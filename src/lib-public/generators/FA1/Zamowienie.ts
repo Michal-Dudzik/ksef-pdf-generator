@@ -48,7 +48,7 @@ export function generateZamowienie(
       title: i18n.t('invoice.order.netUnitPrice'),
       format: formatAbs,
     },
-    { name: 'P_8BZ', title: i18n.t('invoice.order.quantity'), format: FormatTyp.Right, width: 'auto' },
+    { name: 'P_8BZ', title: i18n.t('invoice.order.quantity'), format: FormatTyp.Number, width: 'auto' },
     { name: 'P_8AZ', title: i18n.t('invoice.order.unit'), format: FormatTyp.Default, width: 'auto' },
     { name: 'P_12Z', title: i18n.t('invoice.order.taxRate'), format: FormatTyp.Default, width: 'auto' },
     { name: 'P_12Z_XII', title: i18n.t('invoice.order.ossTaxRate'), format: FormatTyp.Percentage, width: 'auto' },
@@ -117,7 +117,11 @@ export function generateZamowienie(
     opis = {
       stack: createLabelTextArray([
         { value: i18n.t('invoice.order.receivedAdvance'), formatTyp: FormatTyp.LabelGreater },
-        { value: p_15, formatTyp: FormatTyp.CurrencyGreater },
+        {
+          value: p_15,
+          formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+          currency: KodWaluty,
+        },
       ]),
       alignment: Position.RIGHT,
       margin: [0, 8, 0, 0],
@@ -129,7 +133,11 @@ export function generateZamowienie(
     opis = {
       stack: createLabelTextArray([
         { value: i18n.t('invoice.order.totalAmountDue'), formatTyp: FormatTyp.LabelGreater },
-        { value: p_15, formatTyp: FormatTyp.CurrencyGreater },
+        {
+          value: p_15,
+          formatTyp: [FormatTyp.CurrencyGreater, FormatTyp.HeaderContent, FormatTyp.Value],
+          currency: KodWaluty,
+        },
       ]),
       alignment: Position.RIGHT,
       margin: [0, 8, 0, 0],

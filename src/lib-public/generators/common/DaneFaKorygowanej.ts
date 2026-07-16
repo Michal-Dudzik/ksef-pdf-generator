@@ -13,6 +13,7 @@ import { Fa as Fa2 } from '../../types/fa2.types';
 import { FakturaRR } from '../../types/FaRR.types';
 import { Fa as Fa3 } from '../../types/fa3.types';
 import i18n from 'i18next';
+import FormatTyp from '../../../shared/enums/common.enum';
 
 type SupportedCorrectionInvoice = Pick<FakturaRR, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
   | Pick<Fa1, 'DaneFaKorygowanej' | 'NrFaKorygowany' | 'PrzyczynaKorekty' | 'TypKorekty'>
@@ -94,7 +95,13 @@ export function generateDaneFaKorygowanej(invoice?: SupportedCorrectionInvoice):
 
 function generateCorrectiveData(data: DaneFaKorygowanej, column: Content[]): void {
   if (data.DataWystFaKorygowanej) {
-    column.push(createLabelText(i18n.t('invoice.correctedInvoice.issueDate'), data.DataWystFaKorygowanej));
+    column.push(
+      createLabelText(
+        i18n.t('invoice.correctedInvoice.issueDate'),
+        data.DataWystFaKorygowanej,
+        FormatTyp.Date
+      )
+    );
   }
   if (data.NrFaKorygowanej) {
     column.push(createLabelText(i18n.t('invoice.correctedInvoice.invoiceNumber'), data.NrFaKorygowanej));

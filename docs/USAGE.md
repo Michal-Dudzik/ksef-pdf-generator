@@ -54,6 +54,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice
 
 - `--language`: generated PDF label language, either `pl` or `en`
 - `--nrKSeF`: KSeF number, or `OFFLINE` for offline invoices
+- `--ksefNumberAssignedAt`, `--acDate`: date when KSeF assigned the invoice number; ISO date is recommended
 - `--watermark`, `--watermark-text`: watermark text
 - `--watermark-color`: watermark color such as `#cc0000` or `gray`
 - `--watermark-opacity`: number from `0` to `1`

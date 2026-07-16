@@ -541,6 +541,7 @@
       "correctionCollective": "Collective correction invoice (discount)",
       "correctionSettlement": "Settlement correction invoice",
       "invoiceNumberLabel": "Invoice Number:",
+      "ksefNumberAssignedAt": "KSeF number assignment date: ",
       "ksefNumberLabel": "KSEF number:",
       "ksefPart1": "National System ",
       "ksefPart2": "e",

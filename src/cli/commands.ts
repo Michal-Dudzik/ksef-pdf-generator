@@ -29,6 +29,8 @@ Required Arguments:
 Optional Arguments (for invoice type):
   --language     UI language for generated PDFs: "pl" or "en" (overrides KSEF_LANGUAGE)
   --nrKSeF       KSeF number for the invoice (use "OFFLINE" for offline invoices)
+  --ksefNumberAssignedAt, --acDate
+                 Date when KSeF assigned the invoice number (ISO date recommended)
   --watermark, --watermark-text
                  Watermark text rendered diagonally on each invoice page (e.g. "DRAFT")
   --watermark-color

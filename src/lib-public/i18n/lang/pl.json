@@ -541,6 +541,7 @@
       "correctionCollective": "Faktura korygująca zbiorcza (rabat)",
       "correctionSettlement": "Faktura korygująca rozliczeniową",
       "invoiceNumberLabel": "Numer Faktury:",
+      "ksefNumberAssignedAt": "Data nadania numeru KSeF: ",
       "ksefNumberLabel": "Numer KSEF:",
       "ksefPart1": "Krajowy System ",
       "ksefPart2": "e",

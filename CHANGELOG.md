@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2026-07-16
+
+### Added
+
+- Added the KSeF number assignment date to invoice headers for FA1, FA2, FA3, and FA_RR documents.
+- Added `ksefNumberAssignedAt` to the invoice additional-data API, with the upstream-compatible `acDate` alias.
+- Added CLI support for the KSeF number assignment date through `--ksefNumberAssignedAt` and `--acDate`.
+- Added Polish and English labels and regression coverage for the new header field.
+
+### Changed
+
+- Order quantities (`P_8BZ`) in FA1, FA2, and FA3 now use numeric formatting and respect the configured number of decimal places.
+- Advance-payment and correction order summaries now render `P_15` using the invoice currency and the configured currency thousands separator.
+- Corrected-invoice issue dates (`DataWystFaKorygowanej`) now use the standard date formatter.
+
 ## [1.6.1] - 2026-06-22
 
 ### Changed

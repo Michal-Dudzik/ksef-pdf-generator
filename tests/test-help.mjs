@@ -22,6 +22,11 @@ try {
     process.exit(1);
   }
 
+  if (!output.includes('--ksefNumberAssignedAt') || !output.includes('--acDate')) {
+    console.log(`FAIL: ${TEST_NAME} - Help output does not mention the KSeF assignment date options`);
+    process.exit(1);
+  }
+
   console.log(`PASS: ${TEST_NAME}`);
   process.exit(0);
 } catch (error) {
