@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateDostawy } from './Adnotacje';
 import { Adnotacje } from '../../types/fa1.types';
+import FormatTyp from '../../../shared/enums/common.enum';
 
 vi.mock('../../../shared/PDF-functions', () => ({
   formatText: vi.fn((text, format) => ({ text, format })),
@@ -32,6 +33,7 @@ describe(generateDostawy.name, () => {
     };
     const result = generateDostawy(adnotacje);
     expect(result).toHaveLength(1);
+    expect(JSON.stringify(result)).toContain(`"format":"${FormatTyp.Date}"`);
   });
 
   it('does not create table when no valid values found', () => {

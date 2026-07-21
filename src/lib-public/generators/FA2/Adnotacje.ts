@@ -86,7 +86,12 @@ export function generateAdnotacje(adnotacje?: Adnotacje): Content[] {
       secondColumn.push({ text: i18n.t('invoice.annotations.reverseTax') });
     }
     if (adnotacje.P_23?._text === '1') {
-      secondColumn.push({ text: i18n.t('invoice.annotations.threePartsSimplerMethod') });
+      secondColumn.push(
+        createLabelText(
+          i18n.t('invoice.annotations.simplifiedEuInvoiceLabel'),
+          i18n.t('invoice.annotations.simplifiedEuInvoice')
+        )
+      );
     }
     if (adnotacje.PMarzy?.P_PMarzy?._text === '1') {
       let valueMarzy: string = '';
@@ -211,7 +216,7 @@ export function generateDostawy(noweSrodkiTransportu: NoweSrodkiTransportu): Con
       if (item.P_22BT?._text) {
         value.push(item.P_22BT._text);
       }
-      return [formatText(item.P_22A?._text), { text: value.join('\n') }];
+      return [formatText(item.P_22A?._text, FormatTyp.Date), { text: value.join('\n') }];
     });
     table.table.body = [[...definedHeader], ...tableBody] as TableCell[][];
   }

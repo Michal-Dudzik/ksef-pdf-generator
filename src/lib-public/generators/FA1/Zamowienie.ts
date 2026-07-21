@@ -71,7 +71,7 @@ export function generateZamowienie(
     },
     { name: 'KwotaAkcyzyZ', title: i18n.t('invoice.order.exciseTaxAmount'), format: FormatTyp.Currency, width: 'auto' },
     { name: 'GTUZ', title: i18n.t('invoice.order.gtu'), format: FormatTyp.Default, width: 'auto' },
-    { name: 'ProceduraZ', title: i18n.t('invoice.order.procedureMarkings'), format: FormatTyp.Default, width: '*' },
+    { name: 'ProceduraZ', title: i18n.t('invoice.order.procedure'), format: FormatTyp.Default, width: '*' },
   ];
 
   let content: FormContentState = getContentTable<(typeof orderTable)[0]>(

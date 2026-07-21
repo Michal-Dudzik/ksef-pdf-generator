@@ -178,6 +178,21 @@ describe(generateZamowienie.name, () => {
         const header = vi.mocked(PDFFunctions.getContentTable).mock.calls[0][0];
         expect(header.find((item: any) => item.name === 'P_8BZ')?.format).toBe(FormatTyp.Number);
       });
+
+      it('should use the unified procedure label for ProceduraZ', () => {
+        generateZamowienie(
+          mockOrderData,
+          ZamowienieKorekta.BeforeCorrection,
+          '100',
+          TRodzajFaktury.ZAL,
+          'PLN'
+        );
+
+        const header = vi.mocked(PDFFunctions.getContentTable).mock.calls[0][0];
+        expect(header.find((item: any) => item.name === 'ProceduraZ')?.title).toBe(
+          i18n.t('invoice.order.procedure')
+        );
+      });
     });
 
     describe('table generation', () => {

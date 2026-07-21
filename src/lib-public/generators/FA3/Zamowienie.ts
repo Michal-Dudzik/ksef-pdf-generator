@@ -69,7 +69,7 @@ export function generateZamowienie(
     { name: 'PKOBZ', title: i18n.t('invoice.order.pkob'), format: FormatTyp.Default, width: 'auto' },
     { name: 'KwotaAkcyzyZ', title: i18n.t('invoice.order.exciseTaxAmount'), format: FormatTyp.Currency, width: 'auto' },
     { name: 'GTUZ', title: i18n.t('invoice.order.gtu'), format: FormatTyp.Default, width: 'auto' },
-    { name: 'ProceduraZ', title: i18n.t('invoice.order.procedureMarkings'), format: FormatTyp.Default, width: '*' },
+    { name: 'ProceduraZ', title: i18n.t('invoice.order.procedure'), format: FormatTyp.Default, width: '*' },
     { name: 'IndeksZ', title: i18n.t('invoice.order.index'), format: FormatTyp.Default, width: 'auto' },
     { name: 'StanPrzedZ', title: i18n.t('invoice.order.stateBefore'), format: FormatTyp.Boolean, width: 'auto' },
   ];

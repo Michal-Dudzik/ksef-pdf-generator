@@ -174,6 +174,17 @@ describe('formatText', () => {
     );
   });
 
+  it('formats percentage with a Polish decimal separator', () => {
+    const content = formatText('6.5', FormatTyp.Percentage);
+
+    expect(content).toEqual(
+      expect.objectContaining({
+        text: '6,5%',
+        style: FormatTyp.Percentage,
+      })
+    );
+  });
+
 });
 
 describe('formatBankAccountNumber', () => {

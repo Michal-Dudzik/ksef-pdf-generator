@@ -90,7 +90,14 @@ export function generateAdnotacje(adnotacje?: Adnotacje): Content[] {
       addToColumn(firstColumn, secondColumn, { text: i18n.t('invoice.annotations.reverseTax') });
     }
     if (adnotacje.P_23?._text === '1') {
-      addToColumn(firstColumn, secondColumn, { text: i18n.t('invoice.annotations.threePartsSimplerMethod') });
+      addToColumn(
+        firstColumn,
+        secondColumn,
+        createLabelText(
+          i18n.t('invoice.annotations.simplifiedEuInvoiceLabel'),
+          i18n.t('invoice.annotations.simplifiedEuInvoice')
+        )
+      );
     }
 
     if (adnotacje.P_PMarzy?._text === '1') {
@@ -158,7 +165,7 @@ export function generateDostawy(adnotacje: Adnotacje): Content[] {
   if (hasValue(adnotacje.P_22A)) {
     table.push([
       formatText(i18n.t('invoice.annotations.transportApprovalDate'), FormatTyp.GrayBoldTitle),
-      formatText(adnotacje.P_22A?._text, FormatTyp.Default),
+      formatText(adnotacje.P_22A?._text, FormatTyp.Date),
     ]);
   }
   if (hasValue(adnotacje.P_22BMK)) {

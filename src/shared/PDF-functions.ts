@@ -166,7 +166,11 @@ function formatValue(
       result.text = (value as string) === '1' ? Answer.TRUE : Answer.FALSE;
       break;
     case FormatTyp.Percentage:
-      result.text = `${value}%`;
+      if (value === undefined) {
+        result.text = '';
+        break;
+      }
+      result.text = `${replaceDotWithCommaIfNeeded(value)}%`;
       break;
     case FormatTyp.Number:
       result.text = formatNumberByConfig(value);

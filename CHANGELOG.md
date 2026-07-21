@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.1]
+
+### Changed
+
+- Synced selected invoice-rendering changes from upstream release `1.1.30` 
+- Expanded the `P_23` annotation in FA1, FA2, and FA3 to include the required simplified intra-Community invoice wording and tax-accounting statement.
+- Unified the `ProceduraZ` order-column label as `Procedura` in FA1, FA2, and FA3.
+
+### Fixed
+
+- Percentage values, including OSS tax rates, now use a comma as the decimal separator in Polish PDF output.
+- Corrected the Polish FA_RR lump-sum tax refund rate label from `6.5%` to `6,5%`.
+- New-means-of-transport approval dates (`P_22A`) now use the standard Polish date formatter in FA1, FA2, and FA3.
+
 ## [1.8.0] - 2026-07-16
 
 ### Added
