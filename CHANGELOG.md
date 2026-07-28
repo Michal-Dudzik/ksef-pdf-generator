@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.2] - 2026-07-23
+
+### Fixed
+
+- Fixed the reported issues:
+-- https://github.com/Michal-Dudzik/ksef-pdf-generator/issues/19
+-- https://github.com/Michal-Dudzik/ksef-pdf-generator/issues/20
+
 ## [1.9.1] - 2026-07-23
 
 ### Changed
