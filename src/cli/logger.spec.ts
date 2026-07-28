@@ -80,3 +80,63 @@ describe('logger command line formatting', () => {
     );
   });
 });
+
+describe('logger default directory', () => {
+  const originalExecPath = process.execPath;
+  const originalLogDir = process.env.KSEF_LOG_DIR;
+
+  afterEach(() => {
+    process.execPath = originalExecPath;
+    if (originalLogDir === undefined) {
+      delete process.env.KSEF_LOG_DIR;
+    } else {
+      process.env.KSEF_LOG_DIR = originalLogDir;
+    }
+    vi.doUnmock('node:sea');
+    vi.resetModules();
+  });
+
+  it('places logs next to a standalone SEA executable', async () => {
+    const executableDir = path.join(os.tmpdir(), 'ksef-standalone');
+    process.execPath = path.join(executableDir, 'ksef-pdf-generator.exe');
+    delete process.env.KSEF_LOG_DIR;
+    const seaModule = { isSea: () => true };
+    vi.doMock('node:sea', () => ({ ...seaModule, default: seaModule }));
+    vi.resetModules();
+
+    const { getLogFilePath } = await import('./logger');
+
+    expect(path.dirname(getLogFilePath())).toBe(path.join(executableDir, 'logs'));
+  });
+});
+
+describe('logger quiet mode', () => {
+  const originalArgv = [...process.argv];
+  const originalQuiet = process.env.KSEF_QUIET;
+
+  afterEach(() => {
+    process.argv = [...originalArgv];
+    if (originalQuiet === undefined) {
+      delete process.env.KSEF_QUIET;
+    } else {
+      process.env.KSEF_QUIET = originalQuiet;
+    }
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it('suppresses informational output but keeps errors visible', async () => {
+    delete process.env.KSEF_QUIET;
+    vi.resetModules();
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { log, setQuietMode } = await import('./logger');
+    setQuietMode(true);
+
+    log('informational message', 'info');
+    log('debug message', 'debug');
+    log('error message', 'error');
+
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[ERROR] error message'));
+  });
+});

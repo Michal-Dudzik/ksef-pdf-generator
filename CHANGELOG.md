@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.2] - 2026-07-23
+
+### Added
+
+- Added quiet CLI output mode through `--quiet` / `-q` and the `KSEF_QUIET=1` environment variable. Errors remain visible in quiet mode.
+
+### Changed
+
+- Disabled the i18next/Locize support notice in normal application output.
+- Reduced default console noise by removing the duplicate `Processing ...` message and showing startup and output-size details only in verbose mode.
+
+### Fixed
+
+- Fixed the reported issues:
+-- https://github.com/Michal-Dudzik/ksef-pdf-generator/issues/19
+-- https://github.com/Michal-Dudzik/ksef-pdf-generator/issues/20
+
 ## [1.9.1] - 2026-07-23
 
 ### Changed

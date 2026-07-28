@@ -158,6 +158,10 @@ export async function parseArguments(): Promise<CliOptions | null> {
       case '-v':
         // Already handled in logger module, skip
         break;
+      case '--quiet':
+      case '-q':
+        options.quiet = true;
+        break;
       case '--version':
         printVersion();
         process.exit(0);

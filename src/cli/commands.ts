@@ -50,17 +50,19 @@ Other Options:
   --help, -h     Show this help message
   --version      Show version information
   --verbose, -v  Enable verbose output
+  --quiet, -q    Suppress informational output (errors are still shown)
 
 Environment Variables:
   KSEF_VERBOSE        Set to 1 for verbose output
+  KSEF_QUIET          Set to 1 to suppress informational output
   KSEF_LOG_FILE       Path to log file for detailed logging
   KSEF_PERSISTENT_LOG Set to 0 to disable persistent session logging (enabled by default)
-  KSEF_LOG_DIR        Custom directory for persistent logs (default: ~/.ksef-pdf-generator/logs)
+  KSEF_LOG_DIR        Custom directory for persistent logs
   KSEF_LANGUAGE       UI language for generated PDFs: "pl" or "en"
 
 Logging:
   The application automatically logs all operations to a persistent log file:
-  - Default location: ~/.ksef-pdf-generator/logs/ksef-generator.log
+  - Default location: logs/ next to the executable (or in the project directory in development)
   - Logs include: session start/end times, parameters, generated files, and errors
   - Logs are organized by date for easy tracking
   - To disable: set KSEF_PERSISTENT_LOG=0
@@ -115,6 +117,9 @@ Examples:
 
   # With verbose output
   ksef-pdf-generator -i invoice.xml -o invoice.pdf -t invoice --verbose
+
+  # Quiet mode (errors only)
+  ksef-pdf-generator -i invoice.xml -o invoice.pdf -t invoice --quiet
 
 Diagnostics:
   For system diagnostics and troubleshooting, run:

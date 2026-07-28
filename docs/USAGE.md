@@ -70,6 +70,7 @@ bin\ksef-pdf-generator.bat -i assets\invoice.xml -o invoice.pdf -t invoice
 - `--help`, `-h`: print help
 - `--version`: print version
 - `--verbose`, `-v`: enable verbose logging
+- `--quiet`, `-q`: suppress informational console output while keeping errors visible
 
 ### Diagnostic scripts
 
@@ -268,10 +269,12 @@ Environment variables:
 ```batch
 set KSEF_PERSISTENT_LOG=0
 set KSEF_LOG_DIR=C:\custom\path\logs
+set KSEF_QUIET=1
 ```
 
 ```bash
 export KSEF_LOG_DIR=/var/log/ksef
+export KSEF_QUIET=1
 ```
 
 ## Backend Integration

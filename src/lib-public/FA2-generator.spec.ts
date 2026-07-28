@@ -193,7 +193,11 @@ describe('generateFA2', () => {
 
     expect(createPdfSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        watermark,
+        watermark: {
+          bold: true,
+          fontSize: 50,
+          ...watermark,
+        },
       })
     );
   });

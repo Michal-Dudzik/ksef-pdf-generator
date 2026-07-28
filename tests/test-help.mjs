@@ -27,6 +27,11 @@ try {
     process.exit(1);
   }
 
+  if (!output.includes('--quiet') || !output.includes('-q')) {
+    console.log(`FAIL: ${TEST_NAME} - Help output does not mention quiet mode`);
+    process.exit(1);
+  }
+
   console.log(`PASS: ${TEST_NAME}`);
   process.exit(0);
 } catch (error) {

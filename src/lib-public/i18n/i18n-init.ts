@@ -37,6 +37,7 @@ function initializeI18next(language: SupportedLanguage): Promise<void> {
         fallbackLng: DEFAULT_LANGUAGE,
         supportedLngs: SUPPORTED_LANGUAGES,
         debug: false,
+        showSupportNotice: false,
         resources: {
           en: { translation: en },
           pl: { translation: pl },
