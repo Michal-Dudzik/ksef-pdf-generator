@@ -9,6 +9,7 @@ const INPUT_FILE = 'assets/invoice.xml';
 const OUTPUT_FILE = 'tests/test-quiet.pdf';
 const ENV_OUTPUT_FILE = 'tests/test-quiet-env.pdf';
 const DEFAULT_OUTPUT_FILE = 'tests/test-default-output.pdf';
+const ARGUMENT_VALUE_OUTPUT_FILE = 'tests/test-quiet-argument-value.pdf';
 const QUIET_LOG_DIR = 'tests/test-quiet-logs';
 
 console.log(`Running test: ${TEST_NAME}`);
@@ -23,14 +24,17 @@ console.log(`Using ${type} mode: ${command}`);
 cleanup();
 
 try {
+  const isolatedEnv = {
+    ...process.env,
+    NODE_NO_WARNINGS: '1',
+  };
+  delete isolatedEnv.KSEF_QUIET;
+
   const output = execSync(
     `${command} -i "${INPUT_FILE}" -o "${OUTPUT_FILE}" -t invoice -q`,
     {
       encoding: 'utf8',
-      env: {
-        ...process.env,
-        NODE_NO_WARNINGS: '1',
-      },
+      env: isolatedEnv,
     }
   );
 
@@ -46,9 +50,9 @@ try {
       {
         encoding: 'utf8',
         env: {
-          ...process.env,
-          NODE_NO_WARNINGS: '1',
+          ...isolatedEnv,
           KSEF_QUIET: '1',
+          KSEF_PERSISTENT_LOG: '1',
           KSEF_LOG_DIR: QUIET_LOG_DIR,
         },
       }
@@ -74,13 +78,17 @@ try {
       `${command} -i "${INPUT_FILE}" -o "${DEFAULT_OUTPUT_FILE}" -t invoice`,
       {
         encoding: 'utf8',
-        env: {
-          ...process.env,
-          NODE_NO_WARNINGS: '1',
-        },
+        env: isolatedEnv,
       }
     );
     const processingMatches = defaultOutput.match(/Processing invoice file:/g) ?? [];
+    const argumentValueOutput = execSync(
+      `${command} -i "${INPUT_FILE}" -o "${ARGUMENT_VALUE_OUTPUT_FILE}" -t invoice --watermark -q`,
+      {
+        encoding: 'utf8',
+        env: isolatedEnv,
+      }
+    );
 
     if (process.exitCode === 1) {
       // Preserve the earlier environment-mode failure.
@@ -94,6 +102,12 @@ try {
       process.exitCode = 1;
     } else if (!existsSync(DEFAULT_OUTPUT_FILE)) {
       console.log(`FAIL: ${TEST_NAME} - Default-mode PDF output was not created`);
+      process.exitCode = 1;
+    } else if (argumentValueOutput.trim() === '') {
+      console.log(`FAIL: ${TEST_NAME} - A -q option value incorrectly enabled quiet mode`);
+      process.exitCode = 1;
+    } else if (!existsSync(ARGUMENT_VALUE_OUTPUT_FILE)) {
+      console.log(`FAIL: ${TEST_NAME} - Argument-value PDF output was not created`);
       process.exitCode = 1;
     } else {
       console.log(`PASS: ${TEST_NAME}`);
@@ -109,7 +123,12 @@ try {
 
 function cleanup() {
   try {
-    for (const outputFile of [OUTPUT_FILE, ENV_OUTPUT_FILE, DEFAULT_OUTPUT_FILE]) {
+    for (const outputFile of [
+      OUTPUT_FILE,
+      ENV_OUTPUT_FILE,
+      DEFAULT_OUTPUT_FILE,
+      ARGUMENT_VALUE_OUTPUT_FILE,
+    ]) {
       if (existsSync(outputFile)) {
         unlinkSync(outputFile);
       }

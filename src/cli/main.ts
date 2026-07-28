@@ -11,6 +11,7 @@ import {
   endSession,
   isPersistentLogEnabled,
   getLogFilePath,
+  setQuietMode,
 } from './logger';
 import { parseArguments, SUPPORTED_LANGUAGES } from './args';
 import { initializeApp } from './init';
@@ -27,6 +28,14 @@ import type { TechnicalInfoConfig } from '../lib-public/types/common.types';
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
 
 export async function main(): Promise<void> {
+  const options = await parseArguments();
+
+  if (!options) {
+    process.exit(1);
+  }
+
+  setQuietMode(Boolean(options.quiet));
+
   log('KSeF PDF Generator starting...', 'debug');
   log(`Node.js version: ${process.version}`, 'debug');
   log(`Platform: ${process.platform} ${process.arch}`, 'debug');
@@ -36,12 +45,6 @@ export async function main(): Promise<void> {
   
   if (isPersistentLogEnabled()) {
     log(`Persistent logging enabled: ${getLogFilePath()}`, 'debug');
-  }
-  
-  const options = await parseArguments();
-
-  if (!options) {
-    process.exit(1);
   }
 
   const technicalInfoConfig = getTechnicalInfoConfigFromEnvironment();

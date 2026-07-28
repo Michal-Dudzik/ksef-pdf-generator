@@ -3,10 +3,7 @@ import * as path from 'path';
 import { isSea } from 'node:sea';
 
 const VERBOSE = process.env.KSEF_VERBOSE === '1' || process.argv.includes('--verbose');
-const QUIET =
-  process.env.KSEF_QUIET === '1' ||
-  process.argv.includes('--quiet') ||
-  process.argv.includes('-q');
+let QUIET = process.env.KSEF_QUIET === '1';
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
 
 // Persistent log file configuration
@@ -87,6 +84,10 @@ function getLogLockFilePath(): string {
 }
 
 export { QUIET, VERBOSE };
+
+export function setQuietMode(enabled: boolean): void {
+  QUIET = process.env.KSEF_QUIET === '1' || enabled;
+}
 
 // Session tracking
 interface LogSession {
