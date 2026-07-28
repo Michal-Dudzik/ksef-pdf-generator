@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.1] - 2026-07-23
+
+### Changed
+
+- Unified the text size under the QR codes
+
 ## [1.9.0] - 2026-07-22
 
 ### Changed

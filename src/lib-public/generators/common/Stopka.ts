@@ -23,6 +23,8 @@ import { AdditionalDataTypes, TechnicalInfoConfig } from '../../types/common.typ
 import { createApplicationLabel, createVersionLabel } from '../../../shared/generators/common/functions';
 import i18n from 'i18next';
 
+const QR_CODE_LABEL_FONT_SIZE = 7;
+
 interface TechnicalInformationContext {
   acquisitionDate?: FP;
 }
@@ -219,7 +221,11 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
       qrCode1Stack = [
         qrCode,
         {
-          stack: [formatText(additionalData.nrKSeF, FormatTyp.Default)],
+          stack: [
+            formatText(additionalData.nrKSeF, FormatTyp.Default, {
+              fontSize: QR_CODE_LABEL_FONT_SIZE,
+            }),
+          ],
           width: 'auto',
           alignment: 'center',
           marginLeft: 10,
@@ -231,7 +237,11 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
         stack: [
           qrCode,
           {
-            stack: [formatText(additionalData.nrKSeF, FormatTyp.Default)],
+            stack: [
+              formatText(additionalData.nrKSeF, FormatTyp.Default, {
+                fontSize: QR_CODE_LABEL_FONT_SIZE,
+              }),
+            ],
             width: 'auto',
             alignment: 'center',
             marginLeft: 10,
@@ -255,7 +265,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
         {
           text: i18n.t('invoice.qr2.certificate'),
           alignment: 'center',
-          fontSize: 10,
+          fontSize: QR_CODE_LABEL_FONT_SIZE,
           margin: [0, 10, 0, 0],
         },
       ];
@@ -265,7 +275,7 @@ function generateQRCodeData(additionalData?: AdditionalDataTypes): Content[] {
           {
             text: i18n.t('invoice.qr2.certificate'),
             alignment: 'center',
-            fontSize: 10,
+            fontSize: QR_CODE_LABEL_FONT_SIZE,
             margin: [0, 10, 0, 0],
           },
         ],

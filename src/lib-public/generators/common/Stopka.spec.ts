@@ -119,3 +119,42 @@ describe('generateStopka technical information', () => {
     expect(serializedContent).not.toContain('Wersja generatora PDF: ');
   });
 });
+
+describe('generateStopka QR code labels', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('pl');
+  });
+
+  it('renders the offline and certificate labels using the same font size', () => {
+    const content = generateStopka({
+      nrKSeF: 'OFFLINE',
+      qrCode1: 'offline-qr-code-data',
+      qrCode2: 'certificate-qr-code-data',
+      simplifiedMode: true,
+    });
+    const textNodes: Array<{ text?: string; fontSize?: number }> = [];
+
+    function collectTextNodes(value: unknown): void {
+      if (Array.isArray(value)) {
+        value.forEach(collectTextNodes);
+        return;
+      }
+
+      if (value && typeof value === 'object') {
+        const node = value as Record<string, unknown>;
+        if (typeof node.text === 'string') {
+          textNodes.push(node as { text: string; fontSize?: number });
+        }
+        Object.values(node).forEach(collectTextNodes);
+      }
+    }
+
+    collectTextNodes(content);
+
+    const offlineLabel = textNodes.find((node) => node.text === 'OFFLINE');
+    const certificateLabel = textNodes.find((node) => node.text === 'CERTYFIKAT');
+
+    expect(offlineLabel?.fontSize).toBe(7);
+    expect(certificateLabel?.fontSize).toBe(offlineLabel?.fontSize);
+  });
+});
