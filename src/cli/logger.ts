@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { isSea } from 'node:sea';
 
 const VERBOSE = process.env.KSEF_VERBOSE === '1' || process.argv.includes('--verbose');
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
@@ -20,7 +21,9 @@ function getDefaultLogDir(): string {
   let baseDir: string = process.cwd(); // Default fallback
   
   // Check if running as a packaged executable
-  const isPackaged = (process as any).pkg || (process as any).isSEA;
+  // `process.isSEA` is not a Node.js API. Use the official runtime check so
+  // the injected SEA executable is distinguished from `node dist/cli.cjs`.
+  const isPackaged = Boolean((process as any).pkg) || isSea();
   
   if (isPackaged) {
     // Running as packaged executable (SEA) - use exe directory
