@@ -14,6 +14,7 @@ export interface CliOptions {
   simplifiedMode?: boolean;
   mergePdf?: string;
   useCurrencyThousandsSeparator?: boolean;
+  quiet?: boolean;
 }
 
 export interface GeneratorFunctions {

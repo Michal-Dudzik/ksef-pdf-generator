@@ -109,3 +109,34 @@ describe('logger default directory', () => {
     expect(path.dirname(getLogFilePath())).toBe(path.join(executableDir, 'logs'));
   });
 });
+
+describe('logger quiet mode', () => {
+  const originalArgv = [...process.argv];
+  const originalQuiet = process.env.KSEF_QUIET;
+
+  afterEach(() => {
+    process.argv = [...originalArgv];
+    if (originalQuiet === undefined) {
+      delete process.env.KSEF_QUIET;
+    } else {
+      process.env.KSEF_QUIET = originalQuiet;
+    }
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it('suppresses informational output but keeps errors visible', async () => {
+    process.argv = [originalArgv[0], originalArgv[1], '--quiet'];
+    delete process.env.KSEF_QUIET;
+    vi.resetModules();
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+    const { log } = await import('./logger');
+
+    log('informational message', 'info');
+    log('debug message', 'debug');
+    log('error message', 'error');
+
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[ERROR] error message'));
+  });
+});

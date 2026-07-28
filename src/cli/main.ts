@@ -2,7 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PDFDocument } from 'pdf-lib';
 import type { Watermark } from 'pdfmake/interfaces';
-import { log, logError, VERBOSE, startSession, endSession, isPersistentLogEnabled, getLogFilePath } from './logger';
+import {
+  log,
+  logError,
+  QUIET,
+  VERBOSE,
+  startSession,
+  endSession,
+  isPersistentLogEnabled,
+  getLogFilePath,
+} from './logger';
 import { parseArguments, SUPPORTED_LANGUAGES } from './args';
 import { initializeApp } from './init';
 import {
@@ -18,7 +27,7 @@ import type { TechnicalInfoConfig } from '../lib-public/types/common.types';
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
 
 export async function main(): Promise<void> {
-  log('KSeF PDF Generator starting...', 'info');
+  log('KSeF PDF Generator starting...', 'debug');
   log(`Node.js version: ${process.version}`, 'debug');
   log(`Platform: ${process.platform} ${process.arch}`, 'debug');
   log(`Working directory: ${process.cwd()}`, 'debug');
@@ -72,6 +81,7 @@ export async function main(): Promise<void> {
       useCurrencyThousandsSeparator: options.useCurrencyThousandsSeparator || null,
       technicalInfo: technicalInfoConfig || null,
       language: process.env.KSEF_LANGUAGE || null,
+      quiet: QUIET || null,
     },
     options.type,
     options.input,
@@ -123,7 +133,6 @@ export async function main(): Promise<void> {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    console.log(`Processing ${options.type} file: ${options.input}`);
     log(`Processing ${options.type} file: ${options.input}`, 'info');
 
     // Read the XML file
@@ -206,14 +215,18 @@ export async function main(): Promise<void> {
       fs.writeFileSync(options.output, mergedBuffer);
 
       log(`Merged PDF written to file: ${options.output} (${mergedBuffer.length} bytes)`, 'debug');
-      console.log(`✓ PDF generated successfully: ${options.output}`);
-      log(`Success! Output file size: ${mergedBuffer.length} bytes`, 'info');
+      if (!QUIET) {
+        console.log(`✓ PDF generated successfully: ${options.output}`);
+      }
+      log(`Success! Output file size: ${mergedBuffer.length} bytes`, 'debug');
     } else {
       log(`Writing PDF to file: ${options.output} (${buffer.length} bytes)`, 'debug');
       fs.writeFileSync(options.output, buffer);
 
-      console.log(`✓ PDF generated successfully: ${options.output}`);
-      log(`Success! Output file size: ${buffer.length} bytes`, 'info');
+      if (!QUIET) {
+        console.log(`✓ PDF generated successfully: ${options.output}`);
+      }
+      log(`Success! Output file size: ${buffer.length} bytes`, 'debug');
     }
 
     // End session with success

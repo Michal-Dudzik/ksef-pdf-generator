@@ -50,9 +50,11 @@ Other Options:
   --help, -h     Show this help message
   --version      Show version information
   --verbose, -v  Enable verbose output
+  --quiet, -q    Suppress informational output (errors are still shown)
 
 Environment Variables:
   KSEF_VERBOSE        Set to 1 for verbose output
+  KSEF_QUIET          Set to 1 to suppress informational output
   KSEF_LOG_FILE       Path to log file for detailed logging
   KSEF_PERSISTENT_LOG Set to 0 to disable persistent session logging (enabled by default)
   KSEF_LOG_DIR        Custom directory for persistent logs
@@ -115,6 +117,9 @@ Examples:
 
   # With verbose output
   ksef-pdf-generator -i invoice.xml -o invoice.pdf -t invoice --verbose
+
+  # Quiet mode (errors only)
+  ksef-pdf-generator -i invoice.xml -o invoice.pdf -t invoice --quiet
 
 Diagnostics:
   For system diagnostics and troubleshooting, run:

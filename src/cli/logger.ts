@@ -3,6 +3,10 @@ import * as path from 'path';
 import { isSea } from 'node:sea';
 
 const VERBOSE = process.env.KSEF_VERBOSE === '1' || process.argv.includes('--verbose');
+const QUIET =
+  process.env.KSEF_QUIET === '1' ||
+  process.argv.includes('--quiet') ||
+  process.argv.includes('-q');
 const LOG_FILE = process.env.KSEF_LOG_FILE || '';
 
 // Persistent log file configuration
@@ -82,7 +86,7 @@ function getLogLockFilePath(): string {
   return path.join(PERSISTENT_LOG_DIR, '.ksef-generator.lock');
 }
 
-export { VERBOSE };
+export { QUIET, VERBOSE };
 
 // Session tracking
 interface LogSession {
@@ -341,6 +345,9 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
   if (params.watermarkAngle !== null && params.watermarkAngle !== undefined) {
     commandLine += ` --watermark-angle "${params.watermarkAngle}"`;
   }
+  if (params.quiet) {
+    commandLine += ' --quiet';
+  }
   if (params.qrCode1) {
     commandLine += ` --qrCode1 "${params.qrCode1.length > 50 ? params.qrCode1.substring(0, 50) + '...' : params.qrCode1}"`;
   }
@@ -359,6 +366,7 @@ export function endSession(success: boolean, outputFile?: string, error?: any): 
     watermarkColor: params.watermarkColor,
     watermarkOpacity: params.watermarkOpacity,
     watermarkAngle: params.watermarkAngle,
+    quiet: params.quiet,
     qrCode1: params.qrCode1,
     qrCode2: params.qrCode2,
   };
@@ -417,7 +425,7 @@ export function log(message: string, level: 'info' | 'error' | 'debug' = 'info')
   const timestamp = formatTime(new Date());
   const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
   
-  if (level === 'error' || VERBOSE || level === 'info') {
+  if (level === 'error' || (!QUIET && (VERBOSE || level === 'info'))) {
     console.log(logMessage);
   }
   
